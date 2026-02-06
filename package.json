@@ -8,8 +8,8 @@
     "lint:check": "turbo run lint:check",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "dev:web":"turbo run dev --filter:web",
-    "dev:api":"turbo run dev --filter:api",
+    "dev:web":"turbo run dev --filter=web",
+    "dev:api":"turbo run dev --filter=api",
     "db:up":"docker compose up -d",
     "db:down":"docker compose down"
     
