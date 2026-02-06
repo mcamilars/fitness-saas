@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: postgres_db
+    container_name: postgres_db_fitness_saas
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pepeperoni123
