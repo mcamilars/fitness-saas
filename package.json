@@ -6,16 +6,17 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "lint:check": "turbo run lint:check",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "dev:web":"turbo run dev --filter=web",
-    "dev:api":"turbo run dev --filter=api",
-    "db:up":"docker compose up -d",
-    "db:down":"docker compose down"
-    
+    "dev:web": "turbo run dev --filter=web",
+    "dev:api": "turbo run dev --filter=api",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:generate": "pnpm --filter=@repo/database db:generate",
+    "db:push": "pnpm --filter=@repo/database db:push",
+    "db:migrate": "pnpm --filter=@repo/database db:migrate",
+    "db:studio": "pnpm --filter=@repo/database db:studio"
   },
   "devDependencies": {
-    "prettier": "^3.7.4",
     "turbo": "^2.8.3",
     "typescript": "5.9.2"
   },
