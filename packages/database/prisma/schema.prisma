@@ -1,5 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Este es tu archivo de esquema de Prisma,
+// aprende más en la documentación: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -9,4 +9,387 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMERACIONES
+// ============================================================
+
+enum Rol {
+  ENTRENADOR
+  CLIENTE
+}
+
+enum EstadoPlan {
+  BORRADOR
+  ACTIVO
+  ARCHIVADO
+}
+
+enum EstadoAsignacion {
+  ACTIVO
+  INACTIVO
+}
+
+enum GrupoMuscular {
+  PECHO
+  ESPALDA
+  HOMBROS
+  BICEPS
+  TRICEPS
+  PIERNAS
+  GLUTEOS
+  CORE
+  CUERPO_COMPLETO
+  OTRO
+}
+
+// ============================================================
+// ESPACIO DE TRABAJO
+// ============================================================
+
+model EspacioDeTrabajo {
+  id            String   @id @default(uuid())
+  nombre        String
+  slug          String   @unique
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  entrenador Entrenador?
+  clientes   Cliente[]
+
+  @@map("espacios_de_trabajo")
+}
+
+// ============================================================
+// ENTRENADOR
+// ============================================================
+
+model Entrenador {
+  id                 String   @id @default(uuid())
+  usuarioId          String   @unique
+  espacioDeTrabajoId String   @unique
+  creadoEn           DateTime @default(now())
+  actualizadoEn      DateTime @updatedAt
+
+  usuario          Usuario          @relation(fields: [usuarioId], references: [id])
+  espacioDeTrabajo EspacioDeTrabajo @relation(fields: [espacioDeTrabajoId], references: [id])
+
+  clientes              Cliente[]
+  planesDeEntrenamiento PlanDeEntrenamiento[]
+  planesDeNutricion     PlanDeNutricion[]
+
+  @@map("entrenadores")
+}
+
+// ============================================================
+// USUARIO (identidad base)
+// ============================================================
+
+model Usuario {
+  id             String   @id @default(uuid())
+  correo         String   @unique
+  contrasenaHash String
+  nombre         String
+  apellido       String
+  rol            Rol
+  estaActivo     Boolean  @default(true)
+  creadoEn       DateTime @default(now())
+  actualizadoEn  DateTime @updatedAt
+
+  entrenador       Entrenador?
+  cliente          Cliente?
+  tokensDeRefresco RefreshToken[]
+
+  @@map("usuarios")
+}
+
+// ============================================================
+// TOKEN DE REFRESCO
+// ============================================================
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  usuarioId String
+  token     String   @unique
+  expiraEn  DateTime
+  creadoEn  DateTime @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("tokens_de_refresco")
+}
+
+// ============================================================
+// CLIENTE
+// ============================================================
+
+model Cliente {
+  id                 String   @id @default(uuid())
+  usuarioId          String   @unique
+  entrenadorId       String
+  espacioDeTrabajoId String
+  tokenDeInvitacion  String?  @unique
+  estaActivo         Boolean  @default(true)
+  creadoEn           DateTime @default(now())
+  actualizadoEn      DateTime @updatedAt
+
+  usuario          Usuario          @relation(fields: [usuarioId], references: [id])
+  entrenador       Entrenador       @relation(fields: [entrenadorId], references: [id])
+  espacioDeTrabajo EspacioDeTrabajo @relation(fields: [espacioDeTrabajoId], references: [id])
+
+  perfil                          PerfilDelCliente?
+  asignacionesPlanesEntrenamiento AsignacionPlanEntrenamiento[]
+  asignacionesPlanesNutricion     AsignacionPlanNutricion[]
+  registrosDeEntrenamiento        RegistroDeEntrenamiento[]
+  registrosDeNutricion            RegistroDeNutricion[]
+  registrosBiometricos            RegistroBiometrico[]
+
+  @@map("clientes")
+}
+
+// ============================================================
+// PERFIL DEL CLIENTE
+// ============================================================
+
+model PerfilDelCliente {
+  id              String    @id @default(uuid())
+  clienteId       String    @unique
+  fechaNacimiento DateTime?
+  genero          String?
+  telefono        String?
+  objetivo        String?
+  notas           String?
+  creadoEn        DateTime  @default(now())
+  actualizadoEn   DateTime  @updatedAt
+
+  cliente Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  @@map("perfiles_del_cliente")
+}
+
+// ============================================================
+// EJERCICIO
+// ============================================================
+
+model Ejercicio {
+  id            String        @id @default(uuid())
+  nombre        String
+  grupoMuscular GrupoMuscular
+  descripcion   String?
+  instrucciones String?
+  imagenUrl     String?
+  videoUrl      String?
+  creadoEn      DateTime      @default(now())
+  actualizadoEn DateTime     @updatedAt
+
+  ejercicioPlanes EjercicioPlan[]
+
+  @@map("ejercicios")
+}
+
+// ============================================================
+// EJERCICIO DEL PLAN DE ENTRENAMIENTO (relación M:N)
+// ============================================================
+
+model EjercicioPlan {
+  id                  String        @id @default(uuid())
+  planDeEntrenamientoId String
+  ejercicioId          String
+  series              Int
+  repeticiones        Int
+  segundosDeDescanso   Int?
+  notas               String?
+  orden               Int
+
+  planDeEntrenamiento PlanDeEntrenamiento @relation(fields: [planDeEntrenamientoId], references: [id], onDelete: Cascade)
+  ejercicio          Ejercicio           @relation(fields: [ejercicioId], references: [id])
+
+  @@unique([planDeEntrenamientoId, ejercicioId])
+  @@map("ejercicios_planes")
+}
+
+// ============================================================
+// PLAN DE ENTRENAMIENTO
+// ============================================================
+
+model PlanDeEntrenamiento {
+  id            String        @id @default(uuid())
+  entrenadorId  String
+  nombre        String
+  descripcion   String?
+  estado        EstadoPlan @default(BORRADOR)
+  creadoEn      DateTime      @default(now())
+  actualizadoEn DateTime      @updatedAt
+
+  entrenador Entrenador @relation(fields: [entrenadorId], references: [id])
+
+  ejercicioPlanes EjercicioPlan[]
+  asignaciones AsignacionPlanEntrenamiento[]
+
+  @@map("planes_de_entrenamiento")
+}
+
+// ============================================================
+// ASIGNACIÓN DEL PLAN DE ENTRENAMIENTO
+// ============================================================
+
+model AsignacionPlanEntrenamiento {
+  id                    String             @id @default(uuid())
+  clienteId             String
+  planDeEntrenamientoId String
+  estado                EstadoAsignacion @default(ACTIVO)
+  asignadoEn            DateTime           @default(now())
+  actualizadoEn         DateTime           @updatedAt
+
+  cliente             Cliente             @relation(fields: [clienteId], references: [id])
+  planDeEntrenamiento PlanDeEntrenamiento @relation(fields: [planDeEntrenamientoId], references: [id])
+
+  @@unique([clienteId, planDeEntrenamientoId])
+  @@map("asignaciones_de_planes_de_entrenamiento")
+}
+
+// ============================================================
+// PLAN DE NUTRICIÓN
+// ============================================================
+
+model PlanDeNutricion {
+  id              String        @id @default(uuid())
+  entrenadorId    String
+  nombre          String
+  descripcion     String?
+  caloriasTotales Int?
+  estado          EstadoPlan @default(BORRADOR)
+  creadoEn        DateTime      @default(now())
+  actualizadoEn   DateTime      @updatedAt
+
+  entrenador Entrenador @relation(fields: [entrenadorId], references: [id])
+
+  comidas      Comida[]
+  asignaciones AsignacionPlanNutricion[]
+
+  @@map("planes_de_nutricion")
+}
+
+// ============================================================
+// COMIDA DEL PLAN DE NUTRICIÓN
+// ============================================================
+
+model Comida {
+  id                    String       @id @default(uuid())
+  planDeNutricionId     String
+  nombre                String
+  calorias              Int?
+  gramosDeProteina      Float?
+  gramosDeCarbohidratos Float?
+  gramosDeGrasa         Float?
+  notas                 String?
+  orden                 Int
+
+  planDeNutricion PlanDeNutricion @relation(fields: [planDeNutricionId], references: [id], onDelete: Cascade)
+
+  @@map("comidas")
+}
+
+// ============================================================
+// ASIGNACIÓN DEL PLAN DE NUTRICIÓN
+// ============================================================
+
+model AsignacionPlanNutricion {
+  id                String             @id @default(uuid())
+  clienteId         String
+  planDeNutricionId String
+  estado            EstadoAsignacion @default(ACTIVO)
+  asignadoEn        DateTime           @default(now())
+  actualizadoEn     DateTime           @updatedAt
+
+  cliente         Cliente         @relation(fields: [clienteId], references: [id])
+  planDeNutricion PlanDeNutricion @relation(fields: [planDeNutricionId], references: [id])
+
+  @@unique([clienteId, planDeNutricionId])
+  @@map("asignaciones_de_planes_de_nutricion")
+}
+
+// ============================================================
+// REGISTRO DE ENTRENAMIENTO
+// ============================================================
+
+model RegistroDeEntrenamiento {
+  id          String   @id @default(uuid())
+  clienteId   String
+  fecha       DateTime
+  notas       String?
+  duracionMin Int?
+  creadoEn    DateTime @default(now())
+
+  cliente Cliente @relation(fields: [clienteId], references: [id])
+
+  ejercicios RegistroDeEjercicio[]
+
+  @@map("registros_de_entrenamiento")
+}
+
+// ============================================================
+// REGISTRO DE EJERCICIO
+// ============================================================
+
+model RegistroDeEjercicio {
+  id                        String        @id @default(uuid())
+  registroDeEntrenamientoId String
+  nombre                    String
+  grupoMuscular             GrupoMuscular
+  series                    Int
+  repeticiones              Int
+  pesoKg                    Float?
+  notas                     String?
+
+  registroDeEntrenamiento RegistroDeEntrenamiento @relation(fields: [registroDeEntrenamientoId], references: [id], onDelete: Cascade)
+
+  @@map("registros_de_ejercicios")
+}
+
+// ============================================================
+// REGISTRO DE NUTRICIÓN
+// ============================================================
+
+model RegistroDeNutricion {
+  id                    String       @id @default(uuid())
+  clienteId             String
+  fecha                 DateTime
+  descripcion           String
+  calorias              Int?
+  gramosDeProteina      Float?
+  gramosDeCarbohidratos Float?
+  gramosDeGrasa         Float?
+  notas                 String?
+  creadoEn              DateTime     @default(now())
+
+  cliente Cliente @relation(fields: [clienteId], references: [id])
+
+  @@map("registros_de_nutricion")
+}
+
+// ============================================================
+// REGISTRO BIOMÉTRICO
+// ============================================================
+
+model RegistroBiometrico {
+  id                      String   @id @default(uuid())
+  clienteId               String
+  fecha                   DateTime
+  pesoKg                  Float?
+  alturaCm                Float?
+  porcentajeGrasaCorporal Float?
+  masaMuscularKg          Float?
+  cinturaCm               Float?
+  caderaCm                Float?
+  pechoCm                 Float?
+  brazoCm                 Float?
+  piernaCm                Float?
+  notas                   String?
+  creadoEn                DateTime @default(now())
+
+  cliente Cliente @relation(fields: [clienteId], references: [id])
+
+  @@map("registros_biometricos")
 }
