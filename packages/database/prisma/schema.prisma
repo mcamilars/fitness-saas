@@ -159,7 +159,6 @@ model PerfilDelCliente {
   genero          String?
   telefono        String?
   objetivo        String?
-  notas           String?
   creadoEn        DateTime  @default(now())
   actualizadoEn   DateTime  @updatedAt
 
