@@ -55,8 +55,9 @@ model EspacioDeTrabajo {
   creadoEn      DateTime @default(now())
   actualizadoEn DateTime @updatedAt
 
-  entrenador Entrenador?
-  clientes   Cliente[]
+  entrenador  Entrenador?
+  clientes     Cliente[]
+  invitaciones Invitacion[]
 
   @@map("espacios_de_trabajo")
 }
@@ -121,6 +122,24 @@ model RefreshToken {
 }
 
 // ============================================================
+// INVITACIÓN
+// ============================================================
+
+model Invitacion {
+  id                 String   @id @default(uuid())
+  espacioDeTrabajoId String
+  correo             String
+  token              String   @unique
+  expiraEn           DateTime
+  consumida          Boolean  @default(false)
+  creadoEn           DateTime @default(now())
+
+  espacioDeTrabajo EspacioDeTrabajo @relation(fields: [espacioDeTrabajoId], references: [id])
+
+  @@map("invitaciones")
+}
+
+// ============================================================
 // CLIENTE
 // ============================================================
 
@@ -129,7 +148,6 @@ model Cliente {
   usuarioId          String   @unique
   entrenadorId       String
   espacioDeTrabajoId String
-  tokenDeInvitacion  String?  @unique
   estaActivo         Boolean  @default(true)
   creadoEn           DateTime @default(now())
   actualizadoEn      DateTime @updatedAt
