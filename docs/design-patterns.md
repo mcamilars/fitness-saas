@@ -56,20 +56,22 @@ Este documento describe los patrones de diseño identificados para el proyecto F
 
 ---
 
-### 4. Singleton
-**Categoría:** Creacional
+### 4. Decorator
+**Categoría:** Estructural
 
-**Función:** Garantizar que una clase tenga una única instancia y proporcionar un punto de acceso global a ella.
+**Función:** Adjuntar dinámicamente responsabilidades adicionales a un objeto. Los Decorators ofrecen una alternativa flexible a la herencia para extender funcionalidad.
 
 **Aplicación en Fitness SaaS:**
-- Configuración global del workspace (`WorkspaceConfig`)
-- Cache de ejercicios del catálogo para evitar consultas repetitivas a la DB
-- Cliente de Clerk para autenticación (una única instancia)
+- `CacheEjerciciosDecorator` para envolver `EjerciciosService`
+- Añade capa de cache en memoria sin modificar el servicio original
+- Intercepta llamadas `findAll()`, `findById()` para retornar desde cache cuando existen
+- Invalidación de cache: el decorator permite invalidar entries específicas o flush completo
 
 **¿Por qué es útil?**
-- En NestJS los módulos ya son singletons por defecto, se aprovecha este comportamiento
-- Evita crear múltiples conexiones a servicios externos
-- Mantiene caches centralizados y compartidos entre requests
+- Separa responsabilidades: el servicio original no conoce la lógica de cache
+- Extensible: se pueden apilar múltiples decorators (cache + logging + metrics)
+- Testeable: el servicio base se prueba sin el decorator
+- En NestJS se implementa fácilmente conwrappers o interceptors
 
 ---
 
@@ -189,7 +191,7 @@ Este documento describe los patrones de diseño identificados para el proyecto F
 | Factory Method | Creacional | PlanDeEntrenamiento / PlanDeNutricion | Crear planes sin switch/if |
 | Builder | Creacional | RegistroDeEntrenamiento | Construir registros con campos opcionales |
 | Prototype | Creacional | PlanDeEntrenamiento | Clonar planes rápidamente |
-| Singleton | Creacional | Configuración global | Una sola instancia de recursos compartidos |
+| Decorator | Estructural | Cache de ejercicios | Añadir cache sin modificar servicio original |
 | Observer | Comportamental | Cliente + Plan | Notificar cambios de plan a clientes |
 | State | Comportamental | Plan / Cliente | Ciclos de vida con transiciones válidas |
 | Strategy | Comportamental | Progreso | Múltiples formas de calcular progreso |
