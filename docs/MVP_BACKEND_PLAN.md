@@ -126,6 +126,8 @@ modules/<nombre>/
 ### B1.1 Dependencias
 - [x] `pnpm --filter api add bcryptjs @nestjs/jwt`.
 - [x] `pnpm --filter api add -D @types/bcryptjs`.
+- [x] `pnpm --filter api add @nestjs/passport passport passport-jwt` (decisión técnica — ver B1.4).
+- [x] `pnpm --filter api add -D @types/passport-jwt`.
 
 ### B1.2 Repositorios base (regla §0.1)
 - [x] Crear `modules/usuarios/repositories/usuarios.repository.ts` con `findByCorreo`, `findById`, `crear(tx?)`.
@@ -143,11 +145,17 @@ modules/<nombre>/
 - [x] Registrar `JwtModule.registerAsync` leyendo secret/expires del `ConfigService`.
 
 ### B1.4 Guards y decoradores comunes
-- [ ] Crear `common/guards/jwt-auth.guard.ts` que valida `Authorization: Bearer` y adjunta `req.user = { id, rol, workspaceId }`.
-- [ ] Crear `common/guards/workspace.guard.ts` que valida ownership del recurso vs `req.user.workspaceId`.
-- [ ] Crear decorador `common/decorators/current-user.decorator.ts`.
-- [ ] Crear decorador `common/decorators/current-workspace.decorator.ts`.
-- [ ] Crear `common/decorators/roles.decorator.ts` + `common/guards/roles.guard.ts`.
+- [x] Crear `common/guards/jwt-auth.guard.ts` que valida `Authorization: Bearer` y adjunta `req.user = { id, rol, workspaceId }`.
+- [x] Crear `common/guards/workspace.guard.ts` que valida ownership del recurso vs `req.user.workspaceId`.
+- [x] Crear decorador `common/decorators/current-user.decorator.ts`.
+- [x] Crear decorador `common/decorators/current-workspace.decorator.ts`.
+- [x] Crear `common/decorators/roles.decorator.ts` + `common/guards/roles.guard.ts`.
+
+**Decisión técnica — flujo JWT con `passport-jwt`:** la extracción y verificación del Bearer token se delega a `@nestjs/passport` + `passport-jwt`. El payload del JWT (`{ sub, rol, workspaceId }`) se mapea en `JwtStrategy.validate()` al objeto `AuthenticatedUser` que Passport pega automáticamente en `req.user`. `JwtAuthGuard` queda reducido a `extends AuthGuard('jwt')`. Motivación: reusar una implementación probada (manejo de expiración, errores estándar, integración con el ecosistema) en vez de mantener la extracción/verificación manualmente.
+
+- [x] Crear `modules/auth/strategies/jwt.strategy.ts` extendiendo `PassportStrategy(Strategy, 'jwt')` con `ExtractJwt.fromAuthHeaderAsBearerToken()` y secret del `ConfigService`.
+- [x] Reducir `JwtAuthGuard` a `extends AuthGuard('jwt')`.
+- [x] Registrar `PassportModule.register({ defaultStrategy: 'jwt' })` y `JwtStrategy` como provider en `AuthModule`.
 
 ### B1.5 Endpoint registro entrenador
 - [ ] DTO `RegisterEntrenadorDto` con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
