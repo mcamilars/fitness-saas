@@ -31,6 +31,12 @@ enum EstadoAsignacion {
   INACTIVO
 }
 
+enum TipoPlanEntrenamiento {
+  HIPERTROFIA
+  FUERZA
+  RESISTENCIA
+}
+
 enum GrupoMuscular {
   PECHO
   ESPALDA
@@ -78,7 +84,6 @@ model Entrenador {
 
   clientes              Cliente[]
   planesDeEntrenamiento PlanDeEntrenamiento[]
-  planesDeNutricion     PlanDeNutricion[]
 
   @@map("entrenadores")
 }
@@ -98,27 +103,10 @@ model Usuario {
   creadoEn       DateTime @default(now())
   actualizadoEn  DateTime @updatedAt
 
-  entrenador       Entrenador?
-  cliente          Cliente?
-  tokensDeRefresco RefreshToken[]
+  entrenador Entrenador?
+  cliente    Cliente?
 
   @@map("usuarios")
-}
-
-// ============================================================
-// TOKEN DE REFRESCO
-// ============================================================
-
-model RefreshToken {
-  id        String   @id @default(uuid())
-  usuarioId String
-  token     String   @unique
-  expiraEn  DateTime
-  creadoEn  DateTime @default(now())
-
-  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-
-  @@map("tokens_de_refresco")
 }
 
 // ============================================================
@@ -156,33 +144,11 @@ model Cliente {
   entrenador       Entrenador       @relation(fields: [entrenadorId], references: [id])
   espacioDeTrabajo EspacioDeTrabajo @relation(fields: [espacioDeTrabajoId], references: [id])
 
-  perfil                          PerfilDelCliente?
   asignacionesPlanesEntrenamiento AsignacionPlanEntrenamiento[]
-  asignacionesPlanesNutricion     AsignacionPlanNutricion[]
   registrosDeEntrenamiento        RegistroDeEntrenamiento[]
-  registrosDeNutricion            RegistroDeNutricion[]
-  registrosBiometricos            RegistroBiometrico[]
+  notificaciones                  Notificacion[]
 
   @@map("clientes")
-}
-
-// ============================================================
-// PERFIL DEL CLIENTE
-// ============================================================
-
-model PerfilDelCliente {
-  id              String    @id @default(uuid())
-  clienteId       String    @unique
-  fechaNacimiento DateTime?
-  genero          String?
-  telefono        String?
-  objetivo        String?
-  creadoEn        DateTime  @default(now())
-  actualizadoEn   DateTime  @updatedAt
-
-  cliente Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-
-  @@map("perfiles_del_cliente")
 }
 
 // ============================================================
@@ -235,6 +201,7 @@ model PlanDeEntrenamiento {
   entrenadorId  String
   nombre        String
   descripcion   String?
+  tipo          TipoPlanEntrenamiento
   estado        EstadoPlan @default(BORRADOR)
   creadoEn      DateTime      @default(now())
   actualizadoEn DateTime      @updatedAt
@@ -264,67 +231,6 @@ model AsignacionPlanEntrenamiento {
 
   @@unique([clienteId, planDeEntrenamientoId])
   @@map("asignaciones_de_planes_de_entrenamiento")
-}
-
-// ============================================================
-// PLAN DE NUTRICIÓN
-// ============================================================
-
-model PlanDeNutricion {
-  id              String        @id @default(uuid())
-  entrenadorId    String
-  nombre          String
-  descripcion     String?
-  caloriasTotales Int?
-  estado          EstadoPlan @default(BORRADOR)
-  creadoEn        DateTime      @default(now())
-  actualizadoEn   DateTime      @updatedAt
-
-  entrenador Entrenador @relation(fields: [entrenadorId], references: [id])
-
-  comidas      Comida[]
-  asignaciones AsignacionPlanNutricion[]
-
-  @@map("planes_de_nutricion")
-}
-
-// ============================================================
-// COMIDA DEL PLAN DE NUTRICIÓN
-// ============================================================
-
-model Comida {
-  id                    String       @id @default(uuid())
-  planDeNutricionId     String
-  nombre                String
-  calorias              Int?
-  gramosDeProteina      Float?
-  gramosDeCarbohidratos Float?
-  gramosDeGrasa         Float?
-  notas                 String?
-  orden                 Int
-
-  planDeNutricion PlanDeNutricion @relation(fields: [planDeNutricionId], references: [id], onDelete: Cascade)
-
-  @@map("comidas")
-}
-
-// ============================================================
-// ASIGNACIÓN DEL PLAN DE NUTRICIÓN
-// ============================================================
-
-model AsignacionPlanNutricion {
-  id                String             @id @default(uuid())
-  clienteId         String
-  planDeNutricionId String
-  estado            EstadoAsignacion @default(ACTIVO)
-  asignadoEn        DateTime           @default(now())
-  actualizadoEn     DateTime           @updatedAt
-
-  cliente         Cliente         @relation(fields: [clienteId], references: [id])
-  planDeNutricion PlanDeNutricion @relation(fields: [planDeNutricionId], references: [id])
-
-  @@unique([clienteId, planDeNutricionId])
-  @@map("asignaciones_de_planes_de_nutricion")
 }
 
 // ============================================================
@@ -366,47 +272,18 @@ model RegistroDeEjercicio {
 }
 
 // ============================================================
-// REGISTRO DE NUTRICIÓN
+// NOTIFICACIÓN
 // ============================================================
 
-model RegistroDeNutricion {
-  id                    String       @id @default(uuid())
-  clienteId             String
-  fecha                 DateTime
-  descripcion           String
-  calorias              Int?
-  gramosDeProteina      Float?
-  gramosDeCarbohidratos Float?
-  gramosDeGrasa         Float?
-  notas                 String?
-  creadoEn              DateTime     @default(now())
+model Notificacion {
+  id        String   @id @default(uuid())
+  clienteId String
+  mensaje   String
+  leida     Boolean  @default(false)
+  creadoEn  DateTime @default(now())
 
-  cliente Cliente @relation(fields: [clienteId], references: [id])
+  cliente Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 
-  @@map("registros_de_nutricion")
-}
-
-// ============================================================
-// REGISTRO BIOMÉTRICO
-// ============================================================
-
-model RegistroBiometrico {
-  id                      String   @id @default(uuid())
-  clienteId               String
-  fecha                   DateTime
-  pesoKg                  Float?
-  alturaCm                Float?
-  porcentajeGrasaCorporal Float?
-  masaMuscularKg          Float?
-  cinturaCm               Float?
-  caderaCm                Float?
-  pechoCm                 Float?
-  brazoCm                 Float?
-  piernaCm                Float?
-  notas                   String?
-  creadoEn                DateTime @default(now())
-
-  cliente Cliente @relation(fields: [clienteId], references: [id])
-
-  @@map("registros_biometricos")
+  @@index([clienteId, leida])
+  @@map("notificaciones")
 }

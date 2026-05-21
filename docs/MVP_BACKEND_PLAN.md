@@ -72,27 +72,27 @@ modules/<nombre>/
 **Objetivo:** repo listo para construir encima, con schema mínimo y `.env` cargado.
 
 ### B0.1 Limpiar `packages/database/prisma/schema.prisma`
-- [ ] Eliminar modelo `PerfilDelCliente`.
-- [ ] Eliminar modelo `PlanDeNutricion`.
-- [ ] Eliminar modelo `Comida`.
-- [ ] Eliminar modelo `AsignacionPlanNutricion`.
-- [ ] Eliminar modelo `RegistroDeNutricion`.
-- [ ] Eliminar modelo `RegistroBiometrico`.
-- [ ] Eliminar modelo `RefreshToken`.
-- [ ] Eliminar las relaciones a esos modelos en `Cliente`, `Entrenador` y `Usuario`.
-- [ ] Verificar que queden únicamente: `EspacioDeTrabajo`, `Usuario`, `Entrenador`, `Cliente`, `Invitacion`, `Ejercicio`, `PlanDeEntrenamiento`, `EjercicioPlan`, `AsignacionPlanEntrenamiento`, `RegistroDeEntrenamiento`, `RegistroDeEjercicio`.
+- [x] Eliminar modelo `PerfilDelCliente`.
+- [x] Eliminar modelo `PlanDeNutricion`.
+- [x] Eliminar modelo `Comida`.
+- [x] Eliminar modelo `AsignacionPlanNutricion`.
+- [x] Eliminar modelo `RegistroDeNutricion`.
+- [x] Eliminar modelo `RegistroBiometrico`.
+- [x] Eliminar modelo `RefreshToken`.
+- [x] Eliminar las relaciones a esos modelos en `Cliente`, `Entrenador` y `Usuario`.
+- [x] Verificar que queden únicamente: `EspacioDeTrabajo`, `Usuario`, `Entrenador`, `Cliente`, `Invitacion`, `Ejercicio`, `PlanDeEntrenamiento`, `EjercicioPlan`, `AsignacionPlanEntrenamiento`, `RegistroDeEntrenamiento`, `RegistroDeEjercicio`.
 
 ### B0.2 Agregar enum y modelo nuevos
-- [ ] Agregar enum `TipoPlanEntrenamiento { HIPERTROFIA FUERZA RESISTENCIA }`.
-- [ ] Agregar campo `tipo TipoPlanEntrenamiento` en `PlanDeEntrenamiento` (no opcional, sin default).
-- [ ] Agregar modelo `Notificacion(id, clienteId, mensaje, leida, creadoEn)` con relación a `Cliente` (onDelete: Cascade) e índice `[clienteId, leida]`.
-- [ ] Agregar relación `notificaciones Notificacion[]` en `Cliente`.
+- [x] Agregar enum `TipoPlanEntrenamiento { HIPERTROFIA FUERZA RESISTENCIA }`.
+- [x] Agregar campo `tipo TipoPlanEntrenamiento` en `PlanDeEntrenamiento` (no opcional, sin default).
+- [x] Agregar modelo `Notificacion(id, clienteId, mensaje, leida, creadoEn)` con relación a `Cliente` (onDelete: Cascade) e índice `[clienteId, leida]`.
+- [x] Agregar relación `notificaciones Notificacion[]` en `Cliente`.
 
 ### B0.3 Migración baseline
-- [ ] Borrar carpeta `packages/database/prisma/migrations/` si existe (sin datos en prod).
-- [ ] Ejecutar `pnpm --filter @repo/database prisma migrate dev --name mvp_baseline`.
-- [ ] Verificar generación de `node_modules/.prisma/client`.
-- [ ] Verificar que `docker compose up -d` levanta Postgres y la migración corre limpia.
+- [x] Borrar carpeta `packages/database/prisma/migrations/` si existe (sin datos en prod).
+- [x] Ejecutar `pnpm --filter @repo/database prisma migrate dev --name mvp_baseline`.
+- [x] Verificar generación de `node_modules/.prisma/client`.
+- [x] Verificar que `docker compose up -d` levanta Postgres y la migración corre limpia.
 
 ### B0.4 Variables de entorno del API
 - [ ] Crear `apps/api/.env` con `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN=2h`, `MAILTRAP_HOST`, `MAILTRAP_PORT`, `MAILTRAP_USER`, `MAILTRAP_PASS`, `MAILTRAP_FROM`, `APP_URL`.
