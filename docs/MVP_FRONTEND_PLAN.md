@@ -8,75 +8,65 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 
 ## 0. Convenciones
 
-- Ruta raíz del frontend: `apps/web/`.
-- App Router de Next.js 16. Server Components solo para layouts; las páginas con datos son client components (`'use client'`).
-- Estilo: Tailwind + shadcn/ui. Iconos: `lucide-react`.
-- Estado servidor: TanStack Query. Estado cliente local: `useState`/`useReducer` (sin Zustand).
-- Formularios: `react-hook-form` + `zod` + `@hookform/resolvers/zod`.
-- Cliente HTTP: helper `apiFetch` propio que adjunta `Authorization: Bearer <token>` desde `localStorage`.
-- Notificaciones UI: `sonner` (toasts).
-- Cada fase termina con un commit independiente con mensaje `feat(web): <fase> — <resumen>`.
+- [ ] Trabajar todo bajo `apps/web/`.
+- [ ] Usar App Router de Next.js 16; layouts como Server Components, páginas de datos como `'use client'`.
+- [ ] Estilo con Tailwind + shadcn/ui; iconos con `lucide-react`.
+- [ ] Estado servidor: TanStack Query. Estado cliente local: `useState`/`useReducer` (sin Zustand).
+- [ ] Formularios con `react-hook-form` + `zod` + `@hookform/resolvers/zod`.
+- [ ] Cliente HTTP: helper `apiFetch` propio que adjunta `Authorization: Bearer <token>` desde `localStorage`.
+- [ ] Toasts con `sonner`.
+- [ ] Cerrar cada fase con commit `feat(web): <fase> — <resumen>`.
 
 ---
 
 ## Fase F0 — Setup base
 
-**Objetivo:** dejar el proyecto listo con todas las librerías, providers y primitivos UI.
+**Objetivo:** proyecto listo con todas las librerías, providers y primitivos UI.
 
 ### F0.1 Dependencias
-- `pnpm --filter web add @tanstack/react-query @tanstack/react-query-devtools`
-- `pnpm --filter web add react-hook-form zod @hookform/resolvers`
-- `pnpm --filter web add sonner lucide-react clsx tailwind-merge class-variance-authority`
-- `pnpm --filter web add date-fns`
+- [ ] `pnpm --filter web add @tanstack/react-query @tanstack/react-query-devtools`.
+- [ ] `pnpm --filter web add react-hook-form zod @hookform/resolvers`.
+- [ ] `pnpm --filter web add sonner lucide-react clsx tailwind-merge class-variance-authority`.
+- [ ] `pnpm --filter web add date-fns`.
 
 ### F0.2 Tailwind
-- Inicializar Tailwind si no está: `npx tailwindcss init -p`.
-- Configurar `tailwind.config.ts` apuntando a `./src/**/*.{ts,tsx}`.
-- Agregar `globals.css` con `@tailwind base; @tailwind components; @tailwind utilities;` e importarlo en `app/layout.tsx`.
+- [ ] Inicializar Tailwind: `npx tailwindcss init -p`.
+- [ ] Configurar `tailwind.config.ts` apuntando a `./src/**/*.{ts,tsx}`.
+- [ ] Crear/actualizar `globals.css` con `@tailwind base; @tailwind components; @tailwind utilities;`.
+- [ ] Importar `globals.css` en `app/layout.tsx`.
 
 ### F0.3 shadcn/ui
-- `npx shadcn@latest init` (estilo `default`, alias `@/components/ui`).
-- Generar primitivos iniciales: `button input label card dialog select tabs badge form textarea table toast skeleton dropdown-menu separator`.
+- [ ] Ejecutar `npx shadcn@latest init` (estilo `default`, alias `@/components/ui`).
+- [ ] Generar primitivos: `button`, `input`, `label`, `card`, `dialog`, `select`, `tabs`, `badge`, `form`, `textarea`, `table`, `toast`, `skeleton`, `dropdown-menu`, `separator`.
 
 ### F0.4 Providers globales
-- `apps/web/src/app/providers.tsx` (client component):
-  - `QueryClientProvider` con `defaultOptions: { queries: { staleTime: 60_000, retry: 1 } }`.
-  - `<Toaster richColors />` de sonner.
-  - `<AuthProvider>` (ver F0.5).
-- Importar en `app/layout.tsx`.
+- [ ] Crear `apps/web/src/app/providers.tsx` (client).
+- [ ] Configurar `QueryClientProvider` con `defaultOptions: { queries: { staleTime: 60_000, retry: 1 } }`.
+- [ ] Agregar `<Toaster richColors />` de sonner.
+- [ ] Envolver con `<AuthProvider>` (ver F0.5).
+- [ ] Importar `<Providers>` en `app/layout.tsx`.
 
 ### F0.5 AuthContext
-- `apps/web/src/lib/auth/auth-context.tsx` con:
-  - `user: { id, rol, workspaceId, nombre } | null`.
-  - `login(token, user)` → guarda en `localStorage` y en estado.
-  - `logout()` → limpia.
-  - Hidrata desde `localStorage` en `useEffect`.
-- Hook `useAuth()` y `useRequireAuth(rol?)` que redirige a `/login` si no hay sesión o rol no coincide.
+- [ ] Crear `apps/web/src/lib/auth/auth-context.tsx`.
+- [ ] Estado `user: { id, rol, workspaceId, nombre } | null`.
+- [ ] Implementar `login(token, user)` que guarda en `localStorage` y estado.
+- [ ] Implementar `logout()` que limpia ambos.
+- [ ] Hidratar desde `localStorage` en `useEffect`.
+- [ ] Hook `useAuth()`.
+- [ ] Hook `useRequireAuth(rol?)` que redirige a `/login` si no hay sesión o rol no coincide.
 
 ### F0.6 `apiFetch`
-- `apps/web/src/lib/api/api-fetch.ts`:
-  ```ts
-  export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-    const token = localStorage.getItem('jwt');
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
-      ...init,
-      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(init?.headers ?? {}) },
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new ApiError(err.mensaje ?? res.statusText, res.status);
-    }
-    return res.json();
-  }
-  ```
-- Clase `ApiError` con `status`.
+- [ ] Crear `apps/web/src/lib/api/api-fetch.ts`.
+- [ ] Adjuntar `Authorization` automáticamente si hay token.
+- [ ] Lanzar `ApiError` con `status` y `mensaje` en respuestas no-OK.
+- [ ] Exportar tipo `ApiError`.
 
 ### F0.7 Tipos compartidos
-- `apps/web/src/lib/types/api.ts` con tipos `Cliente`, `PlanDeEntrenamiento`, `Ejercicio`, `RegistroDeEntrenamiento`, etc., reflejando exactamente las respuestas del backend.
+- [ ] Crear `apps/web/src/lib/types/api.ts` con tipos `Cliente`, `PlanDeEntrenamiento`, `Ejercicio`, `EjercicioPlan`, `RegistroDeEntrenamiento`, `Notificacion`, `DashboardCliente`, `ProgresoResumen`.
 
 ### F0.8 Layout raíz
-- `app/layout.tsx`: HTML base con `<Providers>` y fuente sans-serif.
-- `app/page.tsx`: redirige según rol (`/workspace` si ENTRENADOR, `/cliente/plan` si CLIENTE, `/login` si no autenticado).
+- [ ] Configurar `app/layout.tsx` con HTML base, fuente sans-serif, `<Providers>`.
+- [ ] Crear `app/page.tsx` que redirige según rol: ENTRENADOR → `/workspace`, CLIENTE → `/cliente/plan`, sin sesión → `/login`.
 
 ---
 
@@ -85,31 +75,32 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** rutas `/login`, `/register`, `/invitacion/[token]` funcionales.
 
 ### F1.1 Esqueleto del segmento público
-- Crear `app/(public)/layout.tsx` con un `<main>` centrado y card.
+- [ ] Crear `app/(public)/layout.tsx` con `<main>` centrado + card.
 
 ### F1.2 `/login`
-- `app/(public)/login/page.tsx`:
-  - Form con `correo`, `contrasena` (validación zod).
-  - Mutation a `POST /auth/login`.
-  - En éxito: `login(token, usuario)` del contexto, redirige según rol.
-  - Link a `/register`.
+- [ ] Crear `app/(public)/login/page.tsx`.
+- [ ] Form con `correo` y `contrasena` (zod schema).
+- [ ] Mutation a `POST /auth/login`.
+- [ ] En éxito: `login(token, usuario)` y redirige según rol.
+- [ ] Link a `/register`.
 
 ### F1.3 `/register`
-- `app/(public)/register/page.tsx`:
-  - Form con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
-  - Mutation a `POST /auth/register`.
-  - En éxito: login automático y redirige a `/workspace`.
+- [ ] Crear `app/(public)/register/page.tsx`.
+- [ ] Form con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
+- [ ] Mutation a `POST /auth/register`.
+- [ ] En éxito: login automático → redirige a `/workspace`.
 
 ### F1.4 `/invitacion/[token]`
-- `app/(public)/invitacion/[token]/page.tsx`:
-  - `useQuery` a `GET /invitaciones/:token/verificar`.
-  - Si inválida/expirada/consumida → mensaje de error.
-  - Si válida → form con `correo` (prefilled, disabled), `contrasena`, `nombre`, `apellido` → `POST /auth/cliente/register`.
-  - En éxito: login automático y redirige a `/cliente/plan`.
+- [ ] Crear `app/(public)/invitacion/[token]/page.tsx`.
+- [ ] `useQuery` a `GET /invitaciones/:token/verificar`.
+- [ ] Mostrar error si inválida/expirada/consumida.
+- [ ] Si válida: form con `correo` (prefilled, disabled), `contrasena`, `nombre`, `apellido`.
+- [ ] Mutation a `POST /auth/cliente/register`.
+- [ ] En éxito: login automático → redirige a `/cliente/plan`.
 
 ### F1.5 Manejo de errores
-- Hook `useApiErrorToast(error)` que muestra `error.mensaje` en toast.
-- Aplicar en las 3 mutations.
+- [ ] Crear hook `useApiErrorToast(error)` que muestra `error.mensaje` en toast.
+- [ ] Aplicar en las 3 mutations.
 
 ---
 
@@ -118,30 +109,31 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** layout protegido con sidebar y pantalla de listado de clientes.
 
 ### F2.1 Layout protegido
-- `app/(entrenador)/layout.tsx` (client):
-  - `useRequireAuth('ENTRENADOR')`.
-  - Renderiza `<SidebarEntrenador />` + `<main>{children}</main>`.
+- [ ] Crear `app/(entrenador)/layout.tsx` (client).
+- [ ] Llamar `useRequireAuth('ENTRENADOR')`.
+- [ ] Renderizar `<SidebarEntrenador />` + `<main>{children}</main>`.
 
 ### F2.2 `<SidebarEntrenador />`
-- `apps/web/src/components/layout/sidebar-entrenador.tsx`.
-- Links: `Clientes` (`/workspace`), `Planes` (`/workspace/planes`), `Ejercicios` (`/workspace/ejercicios`).
-- Footer: nombre del entrenador + botón `Cerrar sesión`.
+- [ ] Crear `apps/web/src/components/layout/sidebar-entrenador.tsx`.
+- [ ] Links: `Clientes` (`/workspace`), `Planes` (`/workspace/planes`), `Ejercicios` (`/workspace/ejercicios`).
+- [ ] Footer con nombre del entrenador y botón `Cerrar sesión`.
 
 ### F2.3 Listado de clientes (`/workspace`)
-- `useQuery(['clientes'], () => apiFetch<{ clientes: Cliente[] }>('/clientes'))`.
-- Tabla shadcn (`<Table>`) con columnas: avatar (iniciales), nombre, correo, estado (badge), último entrenamiento (TBD: usar `ultimoRegistroEn` si lo expone el backend; si no, "—").
-- Click en fila → navega a `/workspace/clientes/<id>`.
+- [ ] Crear `app/(entrenador)/workspace/page.tsx`.
+- [ ] `useQuery(['clientes'], …)` → `GET /clientes`.
+- [ ] Tabla con columnas: avatar (iniciales), nombre, correo, estado (badge), último entrenamiento.
+- [ ] Click en fila → navega a `/workspace/clientes/<id>`.
 
 ### F2.4 Dialog "Invitar cliente"
-- Botón `Invitar cliente` en header de la tabla → abre `<DialogInvitarCliente />`.
-- Form con `correo` (zod email).
-- Mutation a `POST /clientes/invitar`.
-- En éxito: muestra el `tokenInvitacion` en un `<Code>` copiable + toast `"Invitación enviada por email. Link: ..."`.
-- Invalida `['invitaciones']`.
+- [ ] Botón `Invitar cliente` en header de la tabla.
+- [ ] Crear `<DialogInvitarCliente />` con form `correo` (zod email).
+- [ ] Mutation a `POST /clientes/invitar`.
+- [ ] En éxito: mostrar `tokenInvitacion` en `<Code>` copiable + toast.
+- [ ] Invalidar `['invitaciones']`.
 
 ### F2.5 Estados de carga y vacío
-- Skeleton de tabla durante `isLoading`.
-- Empty state cuando no hay clientes: ilustración + CTA "Invitar tu primer cliente".
+- [ ] Skeleton de tabla durante `isLoading`.
+- [ ] Empty state con CTA "Invitar tu primer cliente".
 
 ---
 
@@ -150,94 +142,91 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** `/workspace/clientes/[id]` consume un único endpoint y renderiza 4 tarjetas.
 
 ### F3.1 Ruta y query
-- `app/(entrenador)/workspace/clientes/[id]/page.tsx`.
-- `useQuery(['cliente-dashboard', id], () => apiFetch<DashboardCliente>('/clientes/' + id + '/dashboard'))`.
+- [ ] Crear `app/(entrenador)/workspace/clientes/[id]/page.tsx`.
+- [ ] `useQuery(['cliente-dashboard', id], …)` → `GET /clientes/:id/dashboard`.
 
 ### F3.2 Layout de tarjetas
-- Grid 2x2 de `<Card>`:
-  1. **Perfil**: nombre, correo, estado, fecha de alta.
-  2. **Plan activo**: nombre del plan, tipo (badge), nº de ejercicios, botón `Ver plan` → `/workspace/planes/<planId>`.
-  3. **Últimos 5 registros**: lista compacta con fecha, duración y nº de ejercicios.
-  4. **Progreso semanal**: tabla mini con `etiqueta`, `entrenamientos`, `volumenTotal`.
+- [ ] Grid 2x2 de `<Card>`.
+- [ ] Tarjeta `Perfil`: nombre, correo, estado, fecha de alta.
+- [ ] Tarjeta `Plan activo`: nombre, tipo (badge), nº ejercicios, botón `Ver plan` → `/workspace/planes/<planId>`.
+- [ ] Tarjeta `Últimos registros`: lista de 5 con fecha, duración, nº ejercicios.
+- [ ] Tarjeta `Progreso semanal`: tabla mini con `etiqueta`, `entrenamientos`, `volumenTotal`.
 
 ### F3.3 Acciones del cliente
-- Header con dropdown: `Editar`, `Desactivar`.
-- `Desactivar` → confirm dialog → `DELETE /clientes/:id` → toast con botón `Deshacer` (POST `/commands/undo`).
+- [ ] Header con dropdown: `Editar`, `Desactivar`.
+- [ ] `Desactivar` → confirm dialog → `DELETE /clientes/:id` → `toastConUndo` (ver F8).
 
 ### F3.4 Estado de carga
-- Skeleton de las 4 cards mientras `isLoading`.
+- [ ] Skeleton de las 4 cards mientras `isLoading`.
 
 ---
 
 ## Fase F4 — Planes (Factory + State + Prototype en UI)
 
-**Objetivo:** wizard de creación, listado, editor de plan con transiciones de estado y duplicación.
+**Objetivo:** wizard de creación, listado, editor con transiciones de estado y duplicación.
 
 ### F4.1 Listado `/workspace/planes`
-- `useQuery(['planes'])` → `GET /planes-entrenamiento`.
-- Cards en grid con: nombre, tipo (badge), estado (badge con color por estado), nº de ejercicios, fecha de creación.
-- Header: botón `Nuevo plan` → `/workspace/planes/nuevo`.
+- [ ] Crear `app/(entrenador)/workspace/planes/page.tsx`.
+- [ ] `useQuery(['planes'])` → `GET /planes-entrenamiento`.
+- [ ] Cards con nombre, tipo (badge), estado (badge), nº ejercicios, fecha de creación.
+- [ ] Botón `Nuevo plan` → `/workspace/planes/nuevo`.
 
 ### F4.2 Wizard `/workspace/planes/nuevo`
-- Componente `<WizardPlan />` con paso 1 y paso 2 en estado local.
-- **Paso 1 — Tipo (Factory):** 3 cards seleccionables con icono y bullet de defaults:
-  - **Hipertrofia** — 4×10, 60s descanso.
-  - **Fuerza** — 5×5, 180s descanso.
-  - **Resistencia** — 3×15, 30s descanso.
-  - Botón `Siguiente` deshabilitado hasta elegir.
-- **Paso 2 — Datos:** `nombre`, `descripcion`.
-- Mutation `POST /planes-entrenamiento` con `{ nombre, descripcion, tipo }`.
-- En éxito: navega a `/workspace/planes/<id>`.
+- [ ] Crear `app/(entrenador)/workspace/planes/nuevo/page.tsx`.
+- [ ] Crear componente `<WizardPlan />` con dos pasos en estado local.
+- [ ] Paso 1 (Factory): 3 cards seleccionables `Hipertrofia` (4×10, 60s), `Fuerza` (5×5, 180s), `Resistencia` (3×15, 30s).
+- [ ] Botón `Siguiente` deshabilitado hasta elegir tipo.
+- [ ] Paso 2: form con `nombre`, `descripcion`.
+- [ ] Mutation `POST /planes-entrenamiento` con `{ nombre, descripcion, tipo }`.
+- [ ] En éxito: navega a `/workspace/planes/<id>`.
 
 ### F4.3 Editor `/workspace/planes/[id]`
-- Layout: header con nombre, badge de tipo, badge de estado y botones de acción según estado.
-- Tabs: `Ejercicios`, `Información`.
+- [ ] Crear `app/(entrenador)/workspace/planes/[id]/page.tsx`.
+- [ ] Header con nombre, badge de tipo, badge de estado, botones según estado.
+- [ ] Tabs `Ejercicios` e `Información`.
 
 ### F4.4 Tab Ejercicios
-- Tabla de `EjercicioPlan` con columnas: orden, ejercicio, grupo, series, reps, descanso, notas, acciones (eliminar).
-- Botón `Agregar ejercicio` → dialog con:
-  - `<Select>` de ejercicios del catálogo (query `GET /ejercicios`).
-  - Inputs `series`, `repeticiones`, `segundosDeDescanso`, `orden`, `notas`.
-  - Mutation `POST /planes-entrenamiento/:id/ejercicios`.
-- Eliminar → `DELETE /planes-entrenamiento/:id/ejercicios/:ejercicioPlanId`.
-- Bloqueo: si plan ARCHIVADO, deshabilitar agregar/eliminar.
+- [ ] Tabla `EjercicioPlan` con columnas: orden, ejercicio, grupo, series, reps, descanso, notas, acciones.
+- [ ] Botón `Agregar ejercicio` → dialog con `<Select>` del catálogo (`GET /ejercicios`).
+- [ ] Inputs `series`, `repeticiones`, `segundosDeDescanso`, `orden`, `notas`.
+- [ ] Mutation `POST /planes-entrenamiento/:id/ejercicios`.
+- [ ] Eliminar → `DELETE /planes-entrenamiento/:id/ejercicios/:ejercicioPlanId`.
+- [ ] Deshabilitar acciones si plan ARCHIVADO.
 
 ### F4.5 Tab Información
-- Form de edición de `nombre`, `descripcion`. Mutation futura (no MVP) o solo lectura.
-- Muestra `creadoEn`, `actualizadoEn`.
+- [ ] Mostrar `nombre`, `descripcion`, `creadoEn`, `actualizadoEn`.
+- [ ] (Opcional MVP) Form de edición de `nombre/descripcion`.
 
 ### F4.6 Botones de transición de estado (State pattern visible)
-Layout condicional según `plan.estado`:
-- `BORRADOR` → botón `Activar` (deshabilitado si `ejercicios.length === 0`, con tooltip explicativo).
-- `ACTIVO` → botón `Archivar`.
-- `ARCHIVADO` → sin botones, solo badge.
-
-Cada acción:
-- Mutation `PATCH /planes-entrenamiento/:id/activar` o `/archivar`.
-- En éxito: invalidar `['planes']` y `['plan', id]`.
-- Si `Archivar`: toast con botón `Deshacer` (`POST /commands/undo`).
-- Captura `409`/`400` del backend (transición inválida) → toast de error.
+- [ ] Si `BORRADOR`: botón `Activar` (deshabilitado si `ejercicios.length === 0`, con tooltip explicativo).
+- [ ] Si `ACTIVO`: botón `Archivar`.
+- [ ] Si `ARCHIVADO`: sin botones, solo badge.
+- [ ] Mutation `PATCH /planes-entrenamiento/:id/activar`/`/archivar` con invalidación de `['planes']` y `['plan', id]`.
+- [ ] En `Archivar` mostrar `toastConUndo` (POST `/commands/undo`).
+- [ ] Capturar 400/409 del backend (transición inválida) y mostrar toast de error.
 
 ### F4.7 Botón "Duplicar" (Prototype)
-- En header del editor, siempre visible.
-- `POST /planes-entrenamiento/:id/duplicar` → navega al nuevo plan (`/workspace/planes/<nuevoId>`).
-- Toast `"Plan duplicado como '<nombre> (copia)'"`.
+- [ ] Botón visible siempre en header del editor.
+- [ ] Mutation `POST /planes-entrenamiento/:id/duplicar`.
+- [ ] Navegar al nuevo plan `/workspace/planes/<nuevoId>`.
+- [ ] Toast `"Plan duplicado como '<nombre> (copia)'"`.
 
 ---
 
 ## Fase F5 — Catálogo de ejercicios
 
-**Objetivo:** listar y crear ejercicios. Visualmente sencillo pero es el endpoint con Decorator activo.
+**Objetivo:** listar y crear ejercicios. Endpoint con Decorator activo en backend.
 
 ### F5.1 Listado `/workspace/ejercicios`
-- `useQuery(['ejercicios'])` → `GET /ejercicios`.
-- Filtro por grupo muscular con `<Select>` (refetch con clave `['ejercicios', grupo]` y endpoint `/ejercicios/por-grupo/:grupo`).
-- Cards con imagen, nombre, badge de grupo, link a video (si existe).
+- [ ] Crear `app/(entrenador)/workspace/ejercicios/page.tsx`.
+- [ ] `useQuery(['ejercicios'])` → `GET /ejercicios`.
+- [ ] Filtro por grupo muscular con `<Select>` que dispara `useQuery(['ejercicios', grupo])` a `/ejercicios/por-grupo/:grupo`.
+- [ ] Cards con imagen, nombre, badge de grupo, link al video si existe.
 
 ### F5.2 Dialog "Nuevo ejercicio"
-- Form: `nombre`, `grupoMuscular` (select del enum), `descripcion`, `instrucciones`, `imagenUrl`, `videoUrl`.
-- Mutation `POST /ejercicios`.
-- En éxito: invalida `['ejercicios']`. El backend internamente invalida su cache (Decorator).
+- [ ] Form con `nombre`, `grupoMuscular` (select del enum), `descripcion`, `instrucciones`, `imagenUrl`, `videoUrl`.
+- [ ] Mutation `POST /ejercicios`.
+- [ ] En éxito: invalidar `['ejercicios']`.
 
 ---
 
@@ -246,41 +235,44 @@ Cada acción:
 **Objetivo:** segmento `(cliente)` con plan asignado, registrar entrenamiento y progreso.
 
 ### F6.1 Layout `/cliente`
-- `app/(cliente)/layout.tsx` con `useRequireAuth('CLIENTE')`.
-- `<SidebarCliente />` con links: `Mi plan` (`/cliente/plan`), `Registrar` (`/cliente/registrar`), `Progreso` (`/cliente/progreso`).
-- En el header, componente `<NotificacionesBell />` (ver F7).
+- [ ] Crear `app/(cliente)/layout.tsx` (client) con `useRequireAuth('CLIENTE')`.
+- [ ] Crear `<SidebarCliente />` con links `Mi plan`, `Registrar`, `Progreso`.
+- [ ] Incluir `<NotificacionesBell />` en el header (ver F7).
 
 ### F6.2 `/cliente/plan`
-- `useQuery(['mi-plan'])` → `GET /clientes/<miClienteId>/asignaciones` filtrando activas. Para MVP: endpoint propio `GET /cliente/plan-activo` o reuso del dashboard si `clienteId === me`.
-- Renderiza el plan activo: nombre, tipo, lista de ejercicios con series/reps/descanso.
-- Si no hay plan asignado: empty state.
+- [ ] Crear `app/(cliente)/cliente/plan/page.tsx`.
+- [ ] `useQuery(['mi-plan'])` → `GET /clientes/<miClienteId>/asignaciones` filtrando activas (o endpoint dedicado).
+- [ ] Renderizar plan activo: nombre, tipo, lista de ejercicios con series/reps/descanso.
+- [ ] Empty state si no hay plan asignado.
 
 ### F6.3 `/cliente/registrar` — Wizard Builder
-- Componente `<WizardRegistro />` con 3 pasos en estado local. **Cada paso refleja un setter del builder.**
+- [ ] Crear `app/(cliente)/cliente/registrar/page.tsx`.
+- [ ] Crear `<WizardRegistro />` con 3 pasos en `useReducer` para conservar estado entre pasos.
 
 **Paso 1 — Datos generales:**
-- Inputs: `fecha` (date picker, default hoy), `duracionMin`, `notas`.
-- Botón `Siguiente`.
+- [ ] Input `fecha` (date picker, default hoy).
+- [ ] Input `duracionMin`.
+- [ ] Input `notas`.
+- [ ] Botón `Siguiente`.
 
 **Paso 2 — Ejercicios:**
-- Cargar plan activo y por cada `EjercicioPlan` mostrar una card editable con: `nombre` (readonly), `series`, `repeticiones`, `pesoKg`, `notas`.
-- Permitir agregar ejercicios libres con botón `+ Otro ejercicio` (form expandible).
-- `react-hook-form` con `useFieldArray` para la lista.
-- Botón `Siguiente`.
+- [ ] Cargar plan activo y mostrar card por `EjercicioPlan` con `series`, `repeticiones`, `pesoKg`, `notas` editables.
+- [ ] Permitir agregar ejercicios libres con botón `+ Otro ejercicio`.
+- [ ] Usar `useFieldArray` de `react-hook-form` para la lista.
+- [ ] Botón `Siguiente`.
 
 **Paso 3 — Confirmación:**
-- Muestra resumen (fecha, duración, lista de ejercicios).
-- Botón `Guardar registro`.
-- Mutation `POST /clientes/<miClienteId>/registros-entrenamiento` con el payload completo.
-- En éxito: toast, redirige a `/cliente/progreso`.
-
-Estado intermedio del wizard guardado en `useReducer` para poder retroceder sin perder datos.
+- [ ] Resumen de fecha, duración y lista de ejercicios.
+- [ ] Botón `Guardar registro`.
+- [ ] Mutation `POST /clientes/<miClienteId>/registros-entrenamiento`.
+- [ ] En éxito: toast y redirige a `/cliente/progreso`.
 
 ### F6.4 `/cliente/progreso` — Tabs Strategy
-- Tabs shadcn con valores `semanal`, `mensual`, `porPlan`.
-- Cambio de tab → cambia query key → `GET /clientes/<miClienteId>/progreso?vista=<valor>`.
-- Renderiza tabla con columnas `etiqueta`, `entrenamientos`, `volumenTotal`, `pesoPromedio`.
-- Opcional MVP: pequeño bar chart con Tailwind (sin Recharts).
+- [ ] Crear `app/(cliente)/cliente/progreso/page.tsx`.
+- [ ] Tabs con valores `semanal`, `mensual`, `porPlan`.
+- [ ] Cambio de tab cambia query key y dispara `GET /clientes/<miClienteId>/progreso?vista=<valor>`.
+- [ ] Tabla con columnas `etiqueta`, `entrenamientos`, `volumenTotal`, `pesoPromedio`.
+- [ ] (Opcional MVP) Bar chart simple con divs Tailwind, sin Recharts.
 
 ---
 
@@ -289,17 +281,17 @@ Estado intermedio del wizard guardado en `useReducer` para poder retroceder sin 
 **Objetivo:** el cliente ve en tiempo casi-real las notificaciones disparadas por el observer del backend.
 
 ### F7.1 `<NotificacionesBell />`
-- `apps/web/src/components/layout/notificaciones-bell.tsx`.
-- `useQuery(['notificaciones'], { refetchInterval: 30_000 })` → `GET /notificaciones`.
-- Icono campana con badge del conteo de no leídas.
-- Dropdown con la lista (últimas 10), cada fila muestra `mensaje`, `creadoEn` (relative time con date-fns).
+- [ ] Crear `apps/web/src/components/layout/notificaciones-bell.tsx`.
+- [ ] `useQuery(['notificaciones'], { refetchInterval: 30_000 })` → `GET /notificaciones`.
+- [ ] Icono campana + badge con conteo de no leídas.
+- [ ] Dropdown con últimas 10: `mensaje` + tiempo relativo (date-fns).
 
 ### F7.2 Marcar leída
-- Click en una notificación → mutation `PATCH /notificaciones/:id/leer`.
-- Invalida `['notificaciones']`.
+- [ ] Click en una notificación → mutation `PATCH /notificaciones/:id/leer`.
+- [ ] Invalidar `['notificaciones']`.
 
 ### F7.3 Botón "Marcar todas"
-- En el footer del dropdown.
+- [ ] Botón en el footer del dropdown que itera y marca todas como leídas.
 
 ---
 
@@ -308,23 +300,20 @@ Estado intermedio del wizard guardado en `useReducer` para poder retroceder sin 
 **Objetivo:** todo punto del frontend que dispara un Command muestra un toast con acción `Deshacer`.
 
 ### F8.1 Helper `toastConUndo`
-- `apps/web/src/lib/ui/toast-undo.ts`:
-  ```ts
-  export function toastConUndo(mensaje: string, onUndo: () => Promise<void>) {
-    toast.success(mensaje, {
-      action: { label: 'Deshacer', onClick: async () => { await onUndo(); toast.message('Acción deshecha'); } },
-      duration: 8000,
-    });
-  }
-  ```
+- [ ] Crear `apps/web/src/lib/ui/toast-undo.ts`.
+- [ ] Aceptar `mensaje` y `onUndo: () => Promise<void>`.
+- [ ] Mostrar toast con acción `Deshacer` y `duration: 8000`.
+- [ ] Tras `onUndo`, mostrar toast `Acción deshecha`.
 
-### F8.2 Aplicar en
-- `DELETE /clientes/:id` (F3.3): `onUndo = () => apiFetch('/commands/undo', { method: 'POST' })`.
-- `PATCH /planes-entrenamiento/:id/archivar` (F4.6).
-- `POST /clientes/invitar` (F2.4): aquí el undo cancela la invitación.
+### F8.2 Aplicar el helper
+- [ ] En `DELETE /clientes/:id` (F3.3): `onUndo` llama `POST /commands/undo`.
+- [ ] En `PATCH /planes-entrenamiento/:id/archivar` (F4.6): igual.
+- [ ] En `POST /clientes/invitar` (F2.4): `onUndo` cancela la invitación.
 
 ### F8.3 Re-fetch tras undo
-- Tras `onUndo`, invalidar las queries afectadas (`['clientes']`, `['planes']`, `['invitaciones']`).
+- [ ] Tras `onUndo`, invalidar `['clientes']` cuando aplique.
+- [ ] Tras `onUndo`, invalidar `['planes']` cuando aplique.
+- [ ] Tras `onUndo`, invalidar `['invitaciones']` cuando aplique.
 
 ---
 
@@ -333,16 +322,19 @@ Estado intermedio del wizard guardado en `useReducer` para poder retroceder sin 
 **Objetivo:** experiencia consistente en bordes.
 
 ### F9.1 `ErrorBoundary` y `error.tsx`
-- `app/error.tsx` y `app/(entrenador)/error.tsx`: muestran un `<Card>` con `Algo salió mal` + botón `Reintentar`.
+- [ ] Crear `app/error.tsx` con `<Card>` `Algo salió mal` + botón `Reintentar`.
+- [ ] Crear `app/(entrenador)/error.tsx`.
+- [ ] Crear `app/(cliente)/error.tsx`.
 
 ### F9.2 `not-found.tsx`
-- `app/not-found.tsx`: enlace a `/`.
+- [ ] Crear `app/not-found.tsx` con enlace a `/`.
 
 ### F9.3 Loaders coherentes
-- Audit pasada por todas las páginas → asegurar que toda `useQuery` tenga un skeleton equivalente.
+- [ ] Revisar cada página y asegurar que toda `useQuery` tenga un skeleton equivalente.
 
 ### F9.4 Interceptor de 401
-- En `apiFetch`, si `status === 401`: limpiar `localStorage`, redirigir a `/login`.
+- [ ] En `apiFetch`, si `status === 401`: limpiar `localStorage`.
+- [ ] Redirigir a `/login`.
 
 ---
 
@@ -350,19 +342,17 @@ Estado intermedio del wizard guardado en `useReducer` para poder retroceder sin 
 
 **Objetivo:** asegurar que un usuario que recorre la UI dispara todos los patrones del backend.
 
-Checklist manual (debe quedar como `docs/QA_CHECKLIST.md` aparte si se desea, no es obligatorio):
-
-1. Registrar entrenador → llegar a `/workspace`.
-2. Invitar cliente → tomar token del toast → registrar cliente en `/invitacion/<token>`.
-3. Crear 3 ejercicios → recargar → confirmar respuesta rápida (Decorator).
-4. Crear plan tipo `Hipertrofia` → confirmar que el editor muestra series/reps/descanso por defecto correctos (Factory).
-5. Activar plan → ver en otra pestaña con la sesión del cliente que aparece la notificación (Observer).
-6. Cliente registra entrenamiento via wizard (Builder).
-7. Cliente abre `/cliente/progreso` y cambia entre las 3 tabs (Strategy).
-8. Entrenador abre `/workspace/clientes/<id>` → ve dashboard (Facade).
-9. Entrenador duplica plan → confirma nuevo plan con sufijo `(copia)` (Prototype).
-10. Entrenador archiva plan → toast con `Deshacer` → click → plan vuelve a ACTIVO (State + Command).
-11. Entrenador desactiva cliente → `Deshacer` → cliente vuelve a activo (Command + Memento).
+- [ ] Registrar entrenador → llegar a `/workspace`.
+- [ ] Invitar cliente → tomar token del toast → registrar cliente en `/invitacion/<token>`.
+- [ ] Crear 3 ejercicios → recargar → confirmar respuesta rápida (Decorator).
+- [ ] Crear plan tipo `Hipertrofia` → editor muestra series/reps/descanso por defecto correctos (Factory).
+- [ ] Activar plan → en sesión del cliente aparece notificación (Observer).
+- [ ] Cliente registra entrenamiento via wizard (Builder).
+- [ ] Cliente abre `/cliente/progreso` y cambia entre las 3 tabs (Strategy).
+- [ ] Entrenador abre `/workspace/clientes/<id>` → ve dashboard (Facade).
+- [ ] Entrenador duplica plan → nuevo plan con sufijo `(copia)` (Prototype).
+- [ ] Entrenador archiva plan → toast con `Deshacer` → click → plan vuelve a ACTIVO (State + Command).
+- [ ] Entrenador desactiva cliente → `Deshacer` → cliente vuelve a activo (Command + Memento).
 
 ---
 
