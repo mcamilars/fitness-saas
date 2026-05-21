@@ -5,6 +5,7 @@ export interface UsuariosRepositoryInterface {
   findByCorreo(correo: string): Promise<Usuario | null>;
   findById(id: string): Promise<Usuario | null>;
   crear(data: Prisma.UsuarioCreateInput, tx?: Prisma.TransactionClient): Promise<Usuario>;
+  conTransaccion<T>(callback: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T>;
 }
 
 @Injectable()
@@ -22,5 +23,11 @@ export class UsuariosRepository implements UsuariosRepositoryInterface {
   crear(data: Prisma.UsuarioCreateInput, tx?: Prisma.TransactionClient): Promise<Usuario> {
     const client = tx ?? this.prisma;
     return client.usuario.create({ data });
+  }
+
+  conTransaccion<T>(
+    callback: (tx: Prisma.TransactionClient) => Promise<T>,
+  ): Promise<T> {
+    return this.prisma.$transaction(callback);
   }
 }

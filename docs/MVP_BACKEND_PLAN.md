@@ -137,10 +137,10 @@ modules/<nombre>/
 - [x] Confirmar que `PrismaService` se inyecta **solo** en estos repositorios.
 
 ### B1.3 Módulo `auth`
-- [ ] Crear `apps/api/src/modules/auth/`.
-- [ ] Crear `AuthService` con `registrarEntrenador`, `login`, `registrarCliente` que depende de `UsuariosRepository`, `EntrenadoresRepository`, `EspaciosDeTrabajoRepository`, `ClientesRepository`, `InvitacionesRepository`.
-- [ ] La transacción de registro se abre desde el servicio vía `prisma.$transaction` accedido **solo** a través de un método helper en `UsuariosRepository.conTransaccion(callback)` para no inyectar Prisma en el service.
-- [ ] Registrar `JwtModule.registerAsync` leyendo secret/expires del `ConfigService`.
+- [x] Crear `apps/api/src/modules/auth/`.
+- [x] Crear `AuthService` con `registrarEntrenador`, `login`, `registrarCliente` que depende de `UsuariosRepository`, `EntrenadoresRepository`, `EspaciosDeTrabajoRepository`, `ClientesRepository`, `InvitacionesRepository`.
+- [x] La transacción de registro se abre desde el servicio vía `prisma.$transaction` accedido **solo** a través de un método helper en `UsuariosRepository.conTransaccion(callback)` para no inyectar Prisma en el service.
+- [x] Registrar `JwtModule.registerAsync` leyendo secret/expires del `ConfigService`.
 
 ### B1.4 Guards y decoradores comunes
 - [ ] Crear `common/guards/jwt-auth.guard.ts` que valida `Authorization: Bearer` y adjunta `req.user = { id, rol, workspaceId }`.
