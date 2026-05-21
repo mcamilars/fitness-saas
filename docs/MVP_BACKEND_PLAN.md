@@ -177,8 +177,8 @@ modules/<nombre>/
 - [x] Devolver `{ token, cliente }`.
 
 ### B1.8 Validación con DTOs
-- [ ] Aplicar `@IsEmail`, `@MinLength`, `@IsString` en los tres DTOs.
-- [ ] Confirmar que envíos inválidos retornan 400 con detalle.
+- [x] Aplicar `@IsEmail`, `@MinLength`, `@IsString` en los tres DTOs.
+- [x] Confirmar que envíos inválidos retornan 400 con detalle.
 
 ---
 
