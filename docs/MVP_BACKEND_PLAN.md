@@ -227,10 +227,10 @@ modules/<nombre>/
 - [x] Fallback a DB y registrar si no estaba.
 
 ### B2.5 Tests
-- [ ] `workspace.registry.spec.ts`: `getInstance()` retorna misma referencia.
-- [ ] `workspace.registry.spec.ts`: registrar + buscar funcionan.
-- [ ] `ejercicios.catalog.spec.ts`: `getInstance()` retorna misma referencia.
-- [ ] `ejercicios.catalog.spec.ts`: `cargarDesde` puebla el mapa.
+- [x] `workspace.registry.spec.ts`: `getInstance()` retorna misma referencia.
+- [x] `workspace.registry.spec.ts`: registrar + buscar funcionan.
+- [x] `ejercicios.catalog.spec.ts`: `getInstance()` retorna misma referencia.
+- [x] `ejercicios.catalog.spec.ts`: `cargarDesde` puebla el mapa.
 
 ---
 
