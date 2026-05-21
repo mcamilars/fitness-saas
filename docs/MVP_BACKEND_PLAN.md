@@ -193,10 +193,10 @@ modules/<nombre>/
 - [x] Implementar `registrar(ws)`, `buscar(id)`, `listar()`.
 
 ### B2.2 `EjerciciosCatalog`
-- [ ] Crear `apps/api/src/modules/registry/ejercicios.catalog.ts`.
-- [ ] Aplicar mismo patrón Singleton.
-- [ ] Mantener `Map<string, Ejercicio>`.
-- [ ] Implementar `cargarDesde(ejerciciosRepository)`, `buscarPorGrupo(grupo)`, `obtenerTodos()` (sin tocar Prisma directamente).
+- [x] Crear `apps/api/src/modules/registry/ejercicios.catalog.ts`.
+- [x] Aplicar mismo patrón Singleton.
+- [x] Mantener `Map<string, Ejercicio>`.
+- [x] Implementar `cargarDesde(ejerciciosRepository)`, `buscarPorGrupo(grupo)`, `obtenerTodos()` (sin tocar Prisma directamente).
 
 ### B2.3 Bootstrap del catálogo
 - [ ] En `main.ts` antes de `app.listen`, resolver `EjerciciosRepository` del contenedor Nest y llamar `await EjerciciosCatalog.getInstance().cargarDesde(ejerciciosRepository)`.
