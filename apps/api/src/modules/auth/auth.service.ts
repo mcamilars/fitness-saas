@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotImplementedException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Rol, type Usuario } from '@repo/database';
@@ -37,6 +38,11 @@ export interface RegistrarClienteInput {
 export type UsuarioPublico = Omit<Usuario, 'contrasenaHash'>;
 
 export interface RegistroEntrenadorResultado {
+  token: string;
+  usuario: UsuarioPublico;
+}
+
+export interface LoginResultado {
   token: string;
   usuario: UsuarioPublico;
 }
@@ -107,8 +113,29 @@ export class AuthService {
     return { token, usuario: this.aPublico(usuario) };
   }
 
-  login(_input: LoginInput): Promise<unknown> {
-    throw new NotImplementedException('Pendiente B1.6');
+  async login(input: LoginInput): Promise<LoginResultado> {
+    const usuario = await this.usuariosRepository.findByCorreo(input.correo);
+    if (!usuario) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+
+    const contrasenaValida = await bcrypt.compare(
+      input.contrasena,
+      usuario.contrasenaHash,
+    );
+    if (!contrasenaValida) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+
+    const workspaceId = await this.resolverWorkspaceId(usuario);
+
+    const token = await this.jwtService.signAsync({
+      sub: usuario.id,
+      rol: usuario.rol,
+      workspaceId,
+    });
+
+    return { token, usuario: this.aPublico(usuario) };
   }
 
   registrarCliente(_input: RegistrarClienteInput): Promise<unknown> {
@@ -128,6 +155,28 @@ export class AuthService {
       candidato = `${base}-${sufijo}`;
     }
     return candidato;
+  }
+
+  private async resolverWorkspaceId(usuario: Usuario): Promise<string> {
+    if (usuario.rol === Rol.ENTRENADOR) {
+      const entrenador = await this.entrenadoresRepository.findByUsuarioId(
+        usuario.id,
+      );
+      if (!entrenador) {
+        throw new UnauthorizedException(
+          'El entrenador no tiene un workspace asociado',
+        );
+      }
+      return entrenador.espacioDeTrabajoId;
+    }
+
+    const cliente = await this.clientesRepository.findByUsuarioId(usuario.id);
+    if (!cliente) {
+      throw new UnauthorizedException(
+        'El cliente no tiene un workspace asociado',
+      );
+    }
+    return cliente.espacioDeTrabajoId;
   }
 
   private aPublico(usuario: Usuario): UsuarioPublico {

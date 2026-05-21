@@ -164,11 +164,11 @@ modules/<nombre>/
 - [x] Probar con `curl` o REST client.
 
 ### B1.6 Endpoint login
-- [ ] DTO `LoginDto` con `correo`, `contrasena`.
-- [ ] Resolver usuario con `usuariosRepository.findByCorreo`.
-- [ ] Validar con `bcrypt.compare`.
-- [ ] Resolver `workspaceId` según rol (ENTRENADOR vía `entrenadoresRepository.findByUsuarioId`, CLIENTE vía `clientesRepository.findByUsuarioId`).
-- [ ] Firmar JWT y devolver `{ token, usuario }`.
+- [x] DTO `LoginDto` con `correo`, `contrasena`.
+- [x] Resolver usuario con `usuariosRepository.findByCorreo`.
+- [x] Validar con `bcrypt.compare`.
+- [x] Resolver `workspaceId` según rol (ENTRENADOR vía `entrenadoresRepository.findByUsuarioId`, CLIENTE vía `clientesRepository.findByUsuarioId`).
+- [x] Firmar JWT y devolver `{ token, usuario }`.
 
 ### B1.7 Endpoint registro cliente vía invitación
 - [ ] DTO `RegistrarClienteDto` con `tokenInvitacion`, `correo`, `contrasena`, `nombre`, `apellido`.
