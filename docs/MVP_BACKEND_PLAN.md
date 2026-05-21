@@ -186,6 +186,16 @@ modules/<nombre>/
 
 **Objetivo:** dos clases con `getInstance()` explícito (no NestJS singleton implícito) consumidas por el resto del sistema.
 
+**Decisiones técnicas B2.1-B2.2:**
+
+- Se implementan como clases puras con constructor `private` y `static getInstance()` para representar explícitamente el patrón Singleton del MVP. No se usan providers singleton de NestJS porque el objetivo académico/técnico de esta fase es que el patrón sea visible en código y no dependa del ciclo de vida del contenedor.
+- Ambos singletons mantienen estado en memoria con `Map` indexado por `id`. Esta estructura da búsquedas directas O(1), encaja con el uso esperado de catálogos/registries y evita recorrer listas para operaciones frecuentes como validar un workspace o filtrar datos ya cargados.
+- Los métodos devuelven copias superficiales (`{ ...entidad }`) para no exponer referencias mutables al estado interno. Así, controllers, guards o servicios futuros no podrán modificar accidentalmente el contenido del registry/catalog sin pasar por los métodos definidos.
+- `WorkspaceRegistry` guarda solo `{ id, slug, nombre }` porque su uso futuro está enfocado en identificación y validación de tenancy, no en reemplazar el repositorio de `EspacioDeTrabajo`. En B2.4, `WorkspaceGuard` lo consultará primero para validar el `workspaceId` del JWT; si no existe en memoria, hará fallback al repositorio y registrará el workspace encontrado.
+- `EjerciciosCatalog` depende de una interfaz mínima `EjerciciosCatalogSource` con `findAll()`. Esto permite cargar datos desde `EjerciciosRepository` en B2.3/B3 sin importar `PrismaService` ni hacer queries dentro del Singleton, preservando la regla transversal del Repository Pattern.
+- `EjerciciosCatalog` se usará como catálogo global de ejercicios para bootstrap y consultas por `GrupoMuscular`. En B2.3 se cargará al iniciar la API; en B3 convivirá con `EjerciciosRepository`, `EjerciciosServiceImpl` y `CacheEjerciciosDecorator`: el catálogo sirve como lectura global precargada, mientras el decorador cachea respuestas del servicio y se invalida cuando se creen ejercicios nuevos.
+- Estos singletons no son fuente permanente de verdad. La base de datos sigue siendo la autoridad; los registries son optimizaciones y puntos de integración para guards, bootstrap y consultas repetidas. Si se actualizan workspaces o ejercicios en runtime, el módulo responsable deberá registrar/recargar explícitamente el dato afectado.
+
 ### B2.1 `WorkspaceRegistry`
 - [x] Crear `apps/api/src/modules/registry/workspace.registry.ts`.
 - [x] Definir `private static instance` y `static getInstance()`.
