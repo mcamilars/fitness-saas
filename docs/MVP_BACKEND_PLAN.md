@@ -124,17 +124,17 @@ modules/<nombre>/
 **Objetivo:** registro y login funcionando; JWT con `{ sub, rol, workspaceId }`; guards listos.
 
 ### B1.1 Dependencias
-- [ ] `pnpm --filter api add bcryptjs @nestjs/jwt`.
-- [ ] `pnpm --filter api add -D @types/bcryptjs`.
+- [x] `pnpm --filter api add bcryptjs @nestjs/jwt`.
+- [x] `pnpm --filter api add -D @types/bcryptjs`.
 
 ### B1.2 Repositorios base (regla §0.1)
-- [ ] Crear `modules/usuarios/repositories/usuarios.repository.ts` con `findByCorreo`, `findById`, `crear(tx?)`.
-- [ ] Crear `modules/entrenadores/repositories/entrenadores.repository.ts` con `findByUsuarioId`, `crear(tx?)`.
-- [ ] Crear `modules/espacios-de-trabajo/repositories/espacios-de-trabajo.repository.ts` con `findById`, `findBySlug`, `crear(tx?)`.
-- [ ] Crear `modules/clientes/repositories/clientes.repository.ts` con `findByUsuarioId`, `crear(tx?)` (resto en §B5).
-- [ ] Crear `modules/invitaciones/repositories/invitaciones.repository.ts` con `findByToken`, `marcarConsumida(tx?)`.
-- [ ] Cada repositorio acepta opcionalmente un `Prisma.TransactionClient` en métodos de escritura (`withTx`).
-- [ ] Confirmar que `PrismaService` se inyecta **solo** en estos repositorios.
+- [x] Crear `modules/usuarios/repositories/usuarios.repository.ts` con `findByCorreo`, `findById`, `crear(tx?)`.
+- [x] Crear `modules/entrenadores/repositories/entrenadores.repository.ts` con `findByUsuarioId`, `crear(tx?)`.
+- [x] Crear `modules/espacios-de-trabajo/repositories/espacios-de-trabajo.repository.ts` con `findById`, `findBySlug`, `crear(tx?)`.
+- [x] Crear `modules/clientes/repositories/clientes.repository.ts` con `findByUsuarioId`, `crear(tx?)` (resto en §B5).
+- [x] Crear `modules/invitaciones/repositories/invitaciones.repository.ts` con `findByToken`, `marcarConsumida(tx?)`.
+- [x] Cada repositorio acepta opcionalmente un `Prisma.TransactionClient` en métodos de escritura (`withTx`).
+- [x] Confirmar que `PrismaService` se inyecta **solo** en estos repositorios.
 
 ### B1.3 Módulo `auth`
 - [ ] Crear `apps/api/src/modules/auth/`.
