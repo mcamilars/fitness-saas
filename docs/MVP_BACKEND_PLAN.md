@@ -187,10 +187,10 @@ modules/<nombre>/
 **Objetivo:** dos clases con `getInstance()` explícito (no NestJS singleton implícito) consumidas por el resto del sistema.
 
 ### B2.1 `WorkspaceRegistry`
-- [ ] Crear `apps/api/src/modules/registry/workspace.registry.ts`.
-- [ ] Definir `private static instance` y `static getInstance()`.
-- [ ] Mantener `Map<string, { id, slug, nombre }>`.
-- [ ] Implementar `registrar(ws)`, `buscar(id)`, `listar()`.
+- [x] Crear `apps/api/src/modules/registry/workspace.registry.ts`.
+- [x] Definir `private static instance` y `static getInstance()`.
+- [x] Mantener `Map<string, { id, slug, nombre }>`.
+- [x] Implementar `registrar(ws)`, `buscar(id)`, `listar()`.
 
 ### B2.2 `EjerciciosCatalog`
 - [ ] Crear `apps/api/src/modules/registry/ejercicios.catalog.ts`.
