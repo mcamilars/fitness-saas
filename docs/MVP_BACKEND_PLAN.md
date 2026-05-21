@@ -171,10 +171,10 @@ modules/<nombre>/
 - [x] Firmar JWT y devolver `{ token, usuario }`.
 
 ### B1.7 Endpoint registro cliente vía invitación
-- [ ] DTO `RegistrarClienteDto` con `tokenInvitacion`, `correo`, `contrasena`, `nombre`, `apellido`.
-- [ ] Validar invitación con `invitacionesRepository.findByToken`: existe, no consumida, no expirada, correo coincide.
-- [ ] Transacción: `usuariosRepository.crear(tx)` (rol=CLIENTE), `clientesRepository.crear(tx)`, `invitacionesRepository.marcarConsumida(tx, token)`.
-- [ ] Devolver `{ token, cliente }`.
+- [x] DTO `RegistrarClienteDto` con `tokenInvitacion`, `correo`, `contrasena`, `nombre`, `apellido`.
+- [x] Validar invitación con `invitacionesRepository.findByToken`: existe, no consumida, no expirada, correo coincide.
+- [x] Transacción: `usuariosRepository.crear(tx)` (rol=CLIENTE), `clientesRepository.crear(tx)`, `invitacionesRepository.marcarConsumida(tx, token)`.
+- [x] Devolver `{ token, cliente }`.
 
 ### B1.8 Validación con DTOs
 - [ ] Aplicar `@IsEmail`, `@MinLength`, `@IsString` en los tres DTOs.

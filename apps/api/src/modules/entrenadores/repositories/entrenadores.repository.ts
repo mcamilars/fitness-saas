@@ -3,6 +3,7 @@ import { type Entrenador, Prisma, PrismaService } from '@repo/database';
 
 export interface EntrenadoresRepositoryInterface {
   findByUsuarioId(usuarioId: string): Promise<Entrenador | null>;
+  findByEspacioDeTrabajoId(espacioDeTrabajoId: string): Promise<Entrenador | null>;
   crear(
     data: Prisma.EntrenadorCreateInput,
     tx?: Prisma.TransactionClient,
@@ -15,6 +16,10 @@ export class EntrenadoresRepository implements EntrenadoresRepositoryInterface {
 
   findByUsuarioId(usuarioId: string): Promise<Entrenador | null> {
     return this.prisma.entrenador.findUnique({ where: { usuarioId } });
+  }
+
+  findByEspacioDeTrabajoId(espacioDeTrabajoId: string): Promise<Entrenador | null> {
+    return this.prisma.entrenador.findUnique({ where: { espacioDeTrabajoId } });
   }
 
   crear(

@@ -1,11 +1,12 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
-  NotImplementedException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Rol, type Usuario } from '@repo/database';
+import { type Cliente, Rol, type Usuario } from '@repo/database';
 import * as bcrypt from 'bcryptjs';
 import { slugify } from '../../common/utils/slugify';
 import { ClientesRepository } from '../clientes/repositories/clientes.repository';
@@ -45,6 +46,11 @@ export interface RegistroEntrenadorResultado {
 export interface LoginResultado {
   token: string;
   usuario: UsuarioPublico;
+}
+
+export interface RegistroClienteResultado {
+  token: string;
+  cliente: Cliente;
 }
 
 const BCRYPT_ROUNDS = 10;
@@ -138,8 +144,76 @@ export class AuthService {
     return { token, usuario: this.aPublico(usuario) };
   }
 
-  registrarCliente(_input: RegistrarClienteInput): Promise<unknown> {
-    throw new NotImplementedException('Pendiente B1.7');
+  async registrarCliente(
+    input: RegistrarClienteInput,
+  ): Promise<RegistroClienteResultado> {
+    const invitacion = await this.invitacionesRepository.findByToken(
+      input.tokenInvitacion,
+    );
+    if (!invitacion) {
+      throw new NotFoundException('Invitación no encontrada');
+    }
+    if (invitacion.consumida) {
+      throw new BadRequestException('La invitación ya fue consumida');
+    }
+    if (invitacion.expiraEn.getTime() <= Date.now()) {
+      throw new BadRequestException('La invitación ha expirado');
+    }
+    if (invitacion.correo !== input.correo) {
+      throw new BadRequestException('El correo no coincide con la invitación');
+    }
+
+    const correoExistente = await this.usuariosRepository.findByCorreo(input.correo);
+    if (correoExistente) {
+      throw new ConflictException('El correo ya está registrado');
+    }
+
+    const entrenador = await this.entrenadoresRepository.findByEspacioDeTrabajoId(
+      invitacion.espacioDeTrabajoId,
+    );
+    if (!entrenador) {
+      throw new NotFoundException(
+        'El workspace de la invitación no tiene un entrenador asociado',
+      );
+    }
+
+    const contrasenaHash = await bcrypt.hash(input.contrasena, BCRYPT_ROUNDS);
+
+    const { usuario, cliente } = await this.usuariosRepository.conTransaccion(
+      async (tx) => {
+        const nuevoUsuario = await this.usuariosRepository.crear(
+          {
+            correo: input.correo,
+            contrasenaHash,
+            nombre: input.nombre,
+            apellido: input.apellido,
+            rol: Rol.CLIENTE,
+          },
+          tx,
+        );
+
+        const nuevoCliente = await this.clientesRepository.crear(
+          {
+            usuario: { connect: { id: nuevoUsuario.id } },
+            entrenador: { connect: { id: entrenador.id } },
+            espacioDeTrabajo: { connect: { id: invitacion.espacioDeTrabajoId } },
+          },
+          tx,
+        );
+
+        await this.invitacionesRepository.marcarConsumida(invitacion.token, tx);
+
+        return { usuario: nuevoUsuario, cliente: nuevoCliente };
+      },
+    );
+
+    const token = await this.jwtService.signAsync({
+      sub: usuario.id,
+      rol: usuario.rol,
+      workspaceId: invitacion.espacioDeTrabajoId,
+    });
+
+    return { token, cliente };
   }
 
   private async generarSlugUnico(nombre: string): Promise<string> {
