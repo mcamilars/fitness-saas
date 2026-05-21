@@ -196,6 +196,17 @@ modules/<nombre>/
 - `EjerciciosCatalog` se usará como catálogo global de ejercicios para bootstrap y consultas por `GrupoMuscular`. En B2.3 se cargará al iniciar la API; en B3 convivirá con `EjerciciosRepository`, `EjerciciosServiceImpl` y `CacheEjerciciosDecorator`: el catálogo sirve como lectura global precargada, mientras el decorador cachea respuestas del servicio y se invalida cuando se creen ejercicios nuevos.
 - Estos singletons no son fuente permanente de verdad. La base de datos sigue siendo la autoridad; los registries son optimizaciones y puntos de integración para guards, bootstrap y consultas repetidas. Si se actualizan workspaces o ejercicios en runtime, el módulo responsable deberá registrar/recargar explícitamente el dato afectado.
 
+**Decisiones técnicas B2.3-B2.4:**
+
+- `EjerciciosModule` y `EjerciciosRepository.findAll()` se crean en B2.3 con alcance mínimo para que `main.ts` pueda resolver un provider real desde Nest y cargar `EjerciciosCatalog` antes de `app.listen`. No se adelantan endpoints, servicios ni decoradores de B3; esos quedan para la fase de ejercicios.
+- La carga inicial del catálogo ocurre en `bootstrap()` porque depende del contenedor de Nest ya inicializado y debe completarse antes de aceptar tráfico. Así, las futuras lecturas del catálogo parten de un estado precargado desde la base de datos.
+- `EjerciciosRepository` encapsula la query a Prisma y `EjerciciosCatalog` recibe solo una fuente con `findAll()`. De esa forma, el Singleton no conoce Prisma, se mantiene la regla del Repository Pattern y el catálogo puede probarse con un mock simple en B2.5.
+- En `WorkspaceGuard`, `WorkspaceRegistry` se consulta apenas se extrae `workspaceId` del JWT. Si el workspace ya está en memoria, el guard evita una consulta repetida a base de datos; si no está, usa `EspaciosDeTrabajoRepository.findById()` como fallback y registra `{ id, slug, nombre }`.
+- La integración del registry se ubica antes de resolver ownership del recurso. Esto valida primero que el workspace del usuario exista y deja el registry caliente para el resto de validaciones y solicitudes posteriores.
+- El acceso a `EspaciosDeTrabajoRepository` usa `ModuleRef`, consistente con el diseño actual del guard para resolver dependencias dinámicas (`WorkspaceOwnershipResolver`). Esto evita acoplar el constructor del guard a cada repositorio y mantiene extensible el mecanismo de ownership por recurso.
+- Si el `workspaceId` del JWT no existe en DB, el guard responde `ForbiddenException`. Ese caso representa un token válido en forma pero inválido respecto al estado actual del sistema, por ejemplo un workspace eliminado o inconsistente.
+- A futuro, los módulos que creen o modifiquen workspaces deberán registrar o refrescar `WorkspaceRegistry`. Los módulos que creen ejercicios deberán recargar `EjerciciosCatalog` o coordinar la invalidación con `CacheEjerciciosDecorator`, para mantener coherencia entre DB, catálogo y cache.
+
 ### B2.1 `WorkspaceRegistry`
 - [x] Crear `apps/api/src/modules/registry/workspace.registry.ts`.
 - [x] Definir `private static instance` y `static getInstance()`.
@@ -209,11 +220,11 @@ modules/<nombre>/
 - [x] Implementar `cargarDesde(ejerciciosRepository)`, `buscarPorGrupo(grupo)`, `obtenerTodos()` (sin tocar Prisma directamente).
 
 ### B2.3 Bootstrap del catálogo
-- [ ] En `main.ts` antes de `app.listen`, resolver `EjerciciosRepository` del contenedor Nest y llamar `await EjerciciosCatalog.getInstance().cargarDesde(ejerciciosRepository)`.
+- [x] En `main.ts` antes de `app.listen`, resolver `EjerciciosRepository` del contenedor Nest y llamar `await EjerciciosCatalog.getInstance().cargarDesde(ejerciciosRepository)`.
 
 ### B2.4 Integración con `WorkspaceGuard`
-- [ ] En el guard, consultar primero `WorkspaceRegistry.getInstance().buscar(workspaceId)`.
-- [ ] Fallback a DB y registrar si no estaba.
+- [x] En el guard, consultar primero `WorkspaceRegistry.getInstance().buscar(workspaceId)`.
+- [x] Fallback a DB y registrar si no estaba.
 
 ### B2.5 Tests
 - [ ] `workspace.registry.spec.ts`: `getInstance()` retorna misma referencia.
