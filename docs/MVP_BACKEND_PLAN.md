@@ -10,11 +10,60 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 
 - [ ] Trabajar todo bajo `apps/api/`.
 - [ ] Cada módulo cuelga de `apps/api/src/modules/<nombre>/`.
-- [ ] Estructura por módulo: `controllers/`, `services/`, `dtos/`, y subcarpeta del patrón (`factories/`, `builders/`, `states/`, `strategies/`, `observers/`, `decorators/`, `prototypes/`, `memento/`, `commands/`).
+- [ ] Estructura por módulo: `controllers/`, `services/`, `repositories/`, `dtos/`, y subcarpeta del patrón (`factories/`, `builders/`, `states/`, `strategies/`, `observers/`, `decorators/`, `prototypes/`, `memento/`, `commands/`).
 - [ ] Validación con `class-validator` + `class-transformer` y `ValidationPipe` global.
 - [ ] Shape de respuestas: `{ data: ... }` para éxito; filtro global de excepciones para `{ statusCode, mensaje, error }`.
 - [ ] Prefijo global de rutas: `/api`.
+- [ ] **Repository Pattern obligatorio**: el `PrismaService` solo se inyecta en repositorios. Servicios, commands, observers, facades, strategies, factories y states consumen repositorios, nunca Prisma directo.
 - [ ] Cerrar cada fase con commit `feat(api): <fase> — <resumen>`.
+
+---
+
+## 0.1 Repository Pattern (regla transversal)
+
+**Regla:** ninguna capa del backend, excepto los repositorios, puede importar `PrismaService` ni `@prisma/client` para hacer queries. Los repositorios son la **única** frontera con la base de datos.
+
+### Responsabilidades
+
+- [ ] **Repositorio:** encapsula todas las operaciones de persistencia de una entidad (queries, inserts, updates, deletes, transacciones que sólo tocan esa entidad). Devuelve entidades de dominio tipadas, no objetos `Prisma.*`.
+- [ ] **Servicio:** orquesta lógica de negocio, valida invariantes y compone llamadas a uno o varios repositorios. No conoce Prisma.
+- [ ] **Command / Observer / Facade / Strategy / Factory / State:** dependen de servicios o repositorios, nunca de Prisma.
+- [ ] **Transacciones cross-entidad:** se encapsulan en un método de servicio que delega a un repositorio "coordinador" (ej. `UsuariosRepository.crearConEntrenadorYWorkspace`) que recibe la transacción Prisma y la pasa a los demás repos a través de `withTx(tx)`. Solo el repositorio acepta `tx` como parámetro.
+
+### Estructura por módulo
+
+```
+modules/<nombre>/
+├── repositories/
+│   └── <entidad>.repository.ts        # @Injectable, depende de PrismaService
+├── services/
+│   └── <entidad>.service.ts           # @Injectable, depende del Repository
+├── controllers/
+└── (subcarpetas de patrones)
+```
+
+### Convención de interfaces
+
+- [ ] Por cada repositorio crear interfaz `<Entidad>RepositoryInterface` en el mismo archivo o en `repositories/<entidad>.repository.interface.ts`.
+- [ ] Registrar el repositorio con `provide: '<ENTIDAD>_REPOSITORY'` cuando otro módulo necesite inyectarlo a través de la interfaz (facilita mockeo en tests).
+
+### Repositorios del MVP (uno por entidad)
+
+- [ ] `UsuariosRepository`
+- [ ] `EntrenadoresRepository`
+- [ ] `EspaciosDeTrabajoRepository`
+- [ ] `ClientesRepository`
+- [ ] `InvitacionesRepository`
+- [ ] `EjerciciosRepository`
+- [ ] `PlanesEntrenamientoRepository` (incluye operaciones sobre `EjercicioPlan`)
+- [ ] `AsignacionesEntrenamientoRepository`
+- [ ] `RegistrosEntrenamientoRepository` (incluye `RegistroDeEjercicio`)
+- [ ] `NotificacionesRepository`
+
+### Tests
+
+- [ ] Los tests unitarios de servicios/commands/observers mockean **repositorios**, no Prisma.
+- [ ] Los tests de repositorios pueden mockear `PrismaService` o usar una DB de test.
 
 ---
 
@@ -78,37 +127,48 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 - [ ] `pnpm --filter api add bcryptjs @nestjs/jwt`.
 - [ ] `pnpm --filter api add -D @types/bcryptjs`.
 
-### B1.2 Módulo `auth`
+### B1.2 Repositorios base (regla §0.1)
+- [ ] Crear `modules/usuarios/repositories/usuarios.repository.ts` con `findByCorreo`, `findById`, `crear(tx?)`.
+- [ ] Crear `modules/entrenadores/repositories/entrenadores.repository.ts` con `findByUsuarioId`, `crear(tx?)`.
+- [ ] Crear `modules/espacios-de-trabajo/repositories/espacios-de-trabajo.repository.ts` con `findById`, `findBySlug`, `crear(tx?)`.
+- [ ] Crear `modules/clientes/repositories/clientes.repository.ts` con `findByUsuarioId`, `crear(tx?)` (resto en §B5).
+- [ ] Crear `modules/invitaciones/repositories/invitaciones.repository.ts` con `findByToken`, `marcarConsumida(tx?)`.
+- [ ] Cada repositorio acepta opcionalmente un `Prisma.TransactionClient` en métodos de escritura (`withTx`).
+- [ ] Confirmar que `PrismaService` se inyecta **solo** en estos repositorios.
+
+### B1.3 Módulo `auth`
 - [ ] Crear `apps/api/src/modules/auth/`.
-- [ ] Crear `AuthService` con `registrarEntrenador`, `login`, `registrarCliente`.
+- [ ] Crear `AuthService` con `registrarEntrenador`, `login`, `registrarCliente` que depende de `UsuariosRepository`, `EntrenadoresRepository`, `EspaciosDeTrabajoRepository`, `ClientesRepository`, `InvitacionesRepository`.
+- [ ] La transacción de registro se abre desde el servicio vía `prisma.$transaction` accedido **solo** a través de un método helper en `UsuariosRepository.conTransaccion(callback)` para no inyectar Prisma en el service.
 - [ ] Registrar `JwtModule.registerAsync` leyendo secret/expires del `ConfigService`.
 
-### B1.3 Guards y decoradores comunes
+### B1.4 Guards y decoradores comunes
 - [ ] Crear `common/guards/jwt-auth.guard.ts` que valida `Authorization: Bearer` y adjunta `req.user = { id, rol, workspaceId }`.
 - [ ] Crear `common/guards/workspace.guard.ts` que valida ownership del recurso vs `req.user.workspaceId`.
 - [ ] Crear decorador `common/decorators/current-user.decorator.ts`.
 - [ ] Crear decorador `common/decorators/current-workspace.decorator.ts`.
 - [ ] Crear `common/decorators/roles.decorator.ts` + `common/guards/roles.guard.ts`.
 
-### B1.4 Endpoint registro entrenador
+### B1.5 Endpoint registro entrenador
 - [ ] DTO `RegisterEntrenadorDto` con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
-- [ ] Implementar transacción Prisma: crea `Usuario(rol=ENTRENADOR)`, `EspacioDeTrabajo` (slug = slugify), `Entrenador`.
+- [ ] Abrir transacción vía `UsuariosRepository.conTransaccion(tx => ...)`; dentro: `usuariosRepository.crear(tx, ...)`, `espaciosDeTrabajoRepository.crear(tx, ...)` (slug = slugify), `entrenadoresRepository.crear(tx, ...)`.
 - [ ] Devolver `{ token, usuario }`.
 - [ ] Probar con `curl` o REST client.
 
-### B1.5 Endpoint login
+### B1.6 Endpoint login
 - [ ] DTO `LoginDto` con `correo`, `contrasena`.
+- [ ] Resolver usuario con `usuariosRepository.findByCorreo`.
 - [ ] Validar con `bcrypt.compare`.
-- [ ] Resolver `workspaceId` según rol (ENTRENADOR vía `Entrenador.espacioDeTrabajoId`, CLIENTE vía `Cliente.espacioDeTrabajoId`).
+- [ ] Resolver `workspaceId` según rol (ENTRENADOR vía `entrenadoresRepository.findByUsuarioId`, CLIENTE vía `clientesRepository.findByUsuarioId`).
 - [ ] Firmar JWT y devolver `{ token, usuario }`.
 
-### B1.6 Endpoint registro cliente vía invitación
+### B1.7 Endpoint registro cliente vía invitación
 - [ ] DTO `RegistrarClienteDto` con `tokenInvitacion`, `correo`, `contrasena`, `nombre`, `apellido`.
-- [ ] Validar invitación: existe, no consumida, no expirada, correo coincide.
-- [ ] Transacción: crea `Usuario(rol=CLIENTE)` y `Cliente`; marca `Invitacion.consumida=true`.
+- [ ] Validar invitación con `invitacionesRepository.findByToken`: existe, no consumida, no expirada, correo coincide.
+- [ ] Transacción: `usuariosRepository.crear(tx)` (rol=CLIENTE), `clientesRepository.crear(tx)`, `invitacionesRepository.marcarConsumida(tx, token)`.
 - [ ] Devolver `{ token, cliente }`.
 
-### B1.7 Validación con DTOs
+### B1.8 Validación con DTOs
 - [ ] Aplicar `@IsEmail`, `@MinLength`, `@IsString` en los tres DTOs.
 - [ ] Confirmar que envíos inválidos retornan 400 con detalle.
 
@@ -128,10 +188,10 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 - [ ] Crear `apps/api/src/modules/registry/ejercicios.catalog.ts`.
 - [ ] Aplicar mismo patrón Singleton.
 - [ ] Mantener `Map<string, Ejercicio>`.
-- [ ] Implementar `cargarDesde(prisma)`, `buscarPorGrupo(grupo)`, `obtenerTodos()`.
+- [ ] Implementar `cargarDesde(ejerciciosRepository)`, `buscarPorGrupo(grupo)`, `obtenerTodos()` (sin tocar Prisma directamente).
 
 ### B2.3 Bootstrap del catálogo
-- [ ] En `main.ts` antes de `app.listen`, llamar `await EjerciciosCatalog.getInstance().cargarDesde(prismaService)`.
+- [ ] En `main.ts` antes de `app.listen`, resolver `EjerciciosRepository` del contenedor Nest y llamar `await EjerciciosCatalog.getInstance().cargarDesde(ejerciciosRepository)`.
 
 ### B2.4 Integración con `WorkspaceGuard`
 - [ ] En el guard, consultar primero `WorkspaceRegistry.getInstance().buscar(workspaceId)`.
@@ -149,17 +209,21 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 
 **Objetivo:** módulo con `CacheEjerciciosDecorator` envolviendo al impl base, transparente para los controllers.
 
-### B3.1 Interfaz y DTOs
+### B3.1 Repositorio
+- [ ] Crear `ejercicios/repositories/ejercicios.repository.ts` con `findAll()`, `findById(id)`, `findByGrupo(grupo)`, `crear(dto)`.
+- [ ] `PrismaService` inyectado **solo aquí** para el dominio de ejercicios.
+
+### B3.2 Interfaz de servicio y DTOs
 - [ ] Crear `ejercicios/interfaces/ejercicios-service.interface.ts` con `findAll`, `findById`, `findByGrupo`, `create`.
 - [ ] DTO `CrearEjercicioDto` con `@IsEnum(GrupoMuscular)`.
 
-### B3.2 `EjerciciosServiceImpl`
-- [ ] Implementar la interfaz consultando Prisma.
+### B3.3 `EjerciciosServiceImpl`
+- [ ] Implementar la interfaz consumiendo `EjerciciosRepository` (no Prisma).
 
-### B3.3 `BaseDecorator`
+### B3.4 `BaseDecorator`
 - [ ] Crear `ejercicios/decorators/base.decorator.ts` que recibe `service: EjerciciosServiceInterface` y delega cada método.
 
-### B3.4 `CacheEjerciciosDecorator`
+### B3.5 `CacheEjerciciosDecorator`
 - [ ] Extender `BaseDecorator`.
 - [ ] Mantener `private cache = new Map<string, any>()`.
 - [ ] Cachear `findAll` con clave `'all'`.
@@ -168,18 +232,19 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 - [ ] Implementar `invalidate(key)` y `flush()`.
 - [ ] En `create(dto)`: delegar al inner service y luego `this.flush()`.
 
-### B3.5 Provider compuesto
-- [ ] En `EjerciciosModule`, registrar `EjerciciosServiceImpl` como provider.
+### B3.6 Provider compuesto
+- [ ] En `EjerciciosModule`, registrar `EjerciciosRepository` y `EjerciciosServiceImpl` como providers.
 - [ ] Registrar `{ provide: 'EJERCICIOS_SERVICE', useFactory: (impl) => new CacheEjerciciosDecorator(impl), inject: [EjerciciosServiceImpl] }`.
 - [ ] Inyectar `@Inject('EJERCICIOS_SERVICE')` en el controller.
 
-### B3.6 Endpoints
+### B3.7 Endpoints
 - [ ] `GET /api/ejercicios`.
 - [ ] `GET /api/ejercicios/:id`.
 - [ ] `GET /api/ejercicios/por-grupo/:grupoMuscular`.
 - [ ] `POST /api/ejercicios` (solo ENTRENADOR).
 
-### B3.7 Tests
+### B3.8 Tests
+- [ ] `ejercicios.repository.spec.ts` con `PrismaService` mockeado: cada método llama al modelo correcto.
 - [ ] `cache-ejercicios.decorator.spec.ts`: dos llamadas a `findAll()` invocan al impl una sola vez.
 - [ ] `cache-ejercicios.decorator.spec.ts`: `create()` invalida cache.
 
@@ -208,10 +273,11 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 - [ ] Implementar `ejecutar(cmd)`, `deshacerUltimo()`, `getHistorial()`.
 
 ### B4.5 `InvitarClienteCommand`
-- [ ] Constructor recibe `prisma`, `mailer`, `workspaceId`, `correo`.
-- [ ] `execute()`: genera token uuid, persiste `Invitacion` con `expiraEn = now + 24h`, envía email.
+- [ ] Extender `InvitacionesRepository` con `crear(dto)` y `marcarConsumidaPorId(id)`.
+- [ ] Constructor del command recibe `invitacionesRepository`, `mailer`, `workspaceId`, `correo` (sin Prisma).
+- [ ] `execute()`: genera token uuid, llama `invitacionesRepository.crear({ ... expiraEn = now + 24h })`, envía email.
 - [ ] Guardar `this.invitacionId` para el undo.
-- [ ] `undo()`: marcar la invitación como `consumida=true`.
+- [ ] `undo()`: `invitacionesRepository.marcarConsumidaPorId(this.invitacionId)`.
 
 ### B4.6 Endpoints
 - [ ] `POST /api/clientes/invitar` body `{ correo }`.
@@ -235,35 +301,47 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 - [ ] Crear `clientes/memento/cliente-container.ts` con `mementos: Map<string, ClienteMemento[]>`.
 - [ ] Implementar `guardar(clienteId, snapshot)`, `restaurarUltimo(clienteId)`.
 
-### B5.2 `ClientesService`
-- [ ] Implementar `findAllPorWorkspace(workspaceId)`.
-- [ ] Implementar `findById(id, workspaceId)`.
-- [ ] Implementar `update(id, dto, workspaceId)`.
-- [ ] Implementar `softDelete(id, workspaceId)` con snapshot → `container.guardar` → update `estaActivo=false`.
-- [ ] Implementar `restaurar(id, workspaceId)` con `container.restaurarUltimo` → update `estaActivo=true`.
+### B5.2 Extender `ClientesRepository`
+- [ ] Añadir métodos `findAllPorWorkspace(workspaceId)`, `findByIdConPerfil(id)`, `update(id, dto)`, `setActivo(id, valor)`.
+- [ ] Garantizar que todas las queries filtren por `espacioDeTrabajoId` cuando se reciba.
 
-### B5.3 `DesactivarClienteCommand`
+### B5.3 `ClientesService`
+- [ ] Inyectar `ClientesRepository` y `ClienteContainer`.
+- [ ] Implementar `findAllPorWorkspace(workspaceId)` → `repo.findAllPorWorkspace`.
+- [ ] Implementar `findById(id, workspaceId)` → `repo.findByIdConPerfil` + check de workspace.
+- [ ] Implementar `update(id, dto, workspaceId)` → `repo.update`.
+- [ ] Implementar `softDelete(id, workspaceId)`: snapshot → `container.guardar` → `repo.setActivo(id, false)`.
+- [ ] Implementar `restaurar(id, workspaceId)`: `container.restaurarUltimo` → `repo.setActivo(id, true)`.
+
+### B5.4 `DesactivarClienteCommand`
 - [ ] Constructor recibe `clientesService`, `clienteId`, `workspaceId`.
-- [ ] `execute()`: llama `softDelete` y guarda `this.clienteId`.
-- [ ] `undo()`: llama `restaurar`.
+- [ ] `execute()`: llama `clientesService.softDelete` y guarda `this.clienteId`.
+- [ ] `undo()`: llama `clientesService.restaurar`.
 
-### B5.4 Controller
+### B5.5 Controller
 - [ ] `GET /api/clientes` (ENTRENADOR).
 - [ ] `GET /api/clientes/:id`.
 - [ ] `PUT /api/clientes/:id`.
 - [ ] `DELETE /api/clientes/:id` → pasa por `CommandInvoker`.
 - [ ] `POST /api/clientes/:id/restaurar` (atajo directo).
 
-### B5.5 Tests
+### B5.6 Tests
+- [ ] `clientes.repository.spec.ts` con `PrismaService` mockeado.
 - [ ] `cliente.memento.spec.ts`: snapshot inmutable, timestamp correcto.
 - [ ] `cliente-container.spec.ts`: guardar 2 mementos → restaurar último.
-- [ ] `desactivar-cliente.command.spec.ts`: execute desactiva; undo reactiva.
+- [ ] `desactivar-cliente.command.spec.ts` mockeando `ClientesService`: execute desactiva; undo reactiva.
 
 ---
 
 ## Fase B6 — Planes: Factory + State + Prototype
 
 **Objetivo:** módulo más cargado de patrones del MVP. Tres patrones colaborando en la misma entidad.
+
+### B6.0 `PlanesEntrenamientoRepository`
+- [ ] Crear `planes-entrenamiento/repositories/planes-entrenamiento.repository.ts`.
+- [ ] Métodos: `crear(plan)`, `findAllPorWorkspace(workspaceId)`, `findByIdConEjercicios(id)`, `updateEstado(id, estado)`, `agregarEjercicioPlan(planId, dto)`, `quitarEjercicioPlan(ejercicioPlanId)`, `contarEjercicios(planId)`, `crearDesdeClone(snapshot)`.
+- [ ] `PrismaService` inyectado **solo aquí** para este dominio.
+- [ ] States y prototype reciben este repositorio cuando necesiten persistir.
 
 ### B6.1 Factories
 - [ ] Crear `planes-entrenamiento/factories/plan.factory.ts` (clase abstracta con `crear(dto): PlanDraft`).
@@ -273,26 +351,28 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 - [ ] Crear `plan-factory.provider.ts` con mapa `Record<TipoPlanEntrenamiento, PlanFactory>` inyectable.
 
 ### B6.2 States
-- [ ] Crear `planes-entrenamiento/states/plan-state.interface.ts` con `activar(plan)` y `archivar(plan)`.
-- [ ] Crear `borrador.state.ts`: `activar` valida ≥1 ejercicio, persiste ACTIVO, dispara observers, retorna `ActivoState`.
+- [ ] Crear `planes-entrenamiento/states/plan-state.interface.ts` con `activar(plan, ctx)` y `archivar(plan, ctx)` donde `ctx = { repository, subject }`.
+- [ ] Crear `borrador.state.ts`: `activar` valida `repository.contarEjercicios(plan.id) >= 1`, llama `repository.updateEstado(plan.id, 'ACTIVO')`, dispara observers, retorna `ActivoState`.
 - [ ] `borrador.state.ts`: `archivar` lanza BadRequest.
-- [ ] Crear `activo.state.ts`: `archivar` persiste ARCHIVADO; `activar` lanza BadRequest.
+- [ ] Crear `activo.state.ts`: `archivar` llama `repository.updateEstado(plan.id, 'ARCHIVADO')`; `activar` lanza BadRequest.
 - [ ] Crear `archivado.state.ts`: ambos lanzan BadRequest.
 - [ ] Crear `state.factory.ts` con `fromEstado(estado): PlanState`.
+- [ ] Confirmar que ningún state importa `PrismaService`.
 
 ### B6.3 Prototype
 - [ ] Crear `planes-entrenamiento/prototypes/plan.prototype.ts` con interfaz `Cloneable<T>`.
 - [ ] Implementar `PlanDeEntrenamientoPrototype.clone()` con ids `undefined` y nombre `<original> (copia)`.
 
 ### B6.4 `PlanesEntrenamientoService`
-- [ ] Implementar `crear(tipo, dto, entrenadorId)` que elige factory y persiste BORRADOR.
-- [ ] Implementar `findAll(workspaceId)`.
-- [ ] Implementar `findById(id, workspaceId)` con `include: { ejercicios: { include: { ejercicio: true } } }`.
-- [ ] Implementar `activar(id, workspaceId)` que delega al state actual.
-- [ ] Implementar `archivar(id, workspaceId)`.
-- [ ] Implementar `duplicar(id, workspaceId)` que invoca el prototype.
-- [ ] Implementar `agregarEjercicio(planId, dto)` (dispara observers si plan ACTIVO).
-- [ ] Implementar `quitarEjercicio(planId, ejercicioPlanId)` (dispara observers si plan ACTIVO).
+- [ ] Inyectar `PlanesEntrenamientoRepository`, `PlanFactoriesProvider`, `PlanStateFactory`, `PlanSubject`.
+- [ ] Implementar `crear(tipo, dto, entrenadorId)`: elige factory y persiste con `repository.crear(...)` en estado BORRADOR.
+- [ ] Implementar `findAll(workspaceId)` → `repository.findAllPorWorkspace`.
+- [ ] Implementar `findById(id, workspaceId)` → `repository.findByIdConEjercicios`.
+- [ ] Implementar `activar(id, workspaceId)`: carga plan, instancia state, delega `state.activar(plan, { repository, subject })`.
+- [ ] Implementar `archivar(id, workspaceId)`: análogo a `activar`.
+- [ ] Implementar `duplicar(id, workspaceId)`: carga plan, `prototype.clone()`, `repository.crearDesdeClone(snapshot)`.
+- [ ] Implementar `agregarEjercicio(planId, dto)` → `repository.agregarEjercicioPlan` + notificar si plan ACTIVO.
+- [ ] Implementar `quitarEjercicio(planId, ejercicioPlanId)` → `repository.quitarEjercicioPlan` + notificar si plan ACTIVO.
 
 ### B6.5 Controller
 - [ ] `POST /api/planes-entrenamiento` body `{ nombre, descripcion, tipo }`.
@@ -305,12 +385,13 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 - [ ] `DELETE /api/planes-entrenamiento/:id/ejercicios/:ejercicioPlanId`.
 
 ### B6.6 Tests
+- [ ] `planes-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
 - [ ] `hipertrofia.factory.spec.ts`: defaults correctos.
 - [ ] `fuerza.factory.spec.ts`: defaults correctos.
 - [ ] `resistencia.factory.spec.ts`: defaults correctos.
-- [ ] `borrador.state.spec.ts`: activar sin ejercicios lanza error; con ejercicios transiciona.
-- [ ] `activo.state.spec.ts`: archivar transiciona; activar lanza error.
-- [ ] `archivado.state.spec.ts`: ambos transitions lanzan error.
+- [ ] `borrador.state.spec.ts` mockeando repositorio: activar sin ejercicios lanza error; con ejercicios transiciona.
+- [ ] `activo.state.spec.ts` mockeando repositorio: archivar transiciona; activar lanza error.
+- [ ] `archivado.state.spec.ts`: ambas transiciones lanzan error.
 - [ ] `plan.prototype.spec.ts`: clone genera nuevo objeto con ids vacíos y suffijo `(copia)`.
 
 ---
@@ -327,36 +408,43 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 - [ ] Crear servicio `plan-subject.service.ts` (singleton NestJS) con `Map<planId, Set<Observer>>`.
 - [ ] Implementar `notify(planId, evento)` que itera observers.
 
-### B7.3 Observers concretos
-- [ ] Crear `cliente.observer.ts` que recibe `prisma` y persiste fila en `Notificacion`.
+### B7.3 Repositorios involucrados
+- [ ] Crear `notificaciones/repositories/notificaciones.repository.ts` con `crear(dto)`, `findNoLeidasPorCliente(clienteId)`, `marcarLeida(id)`.
+- [ ] Crear `asignaciones/repositories/asignaciones-entrenamiento.repository.ts` con `crear(dto)`, `findPorCliente(clienteId)`, `findPorPlan(planId)`, `updateEstado(id, estado)`, `findActivaPorCliente(clienteId)`.
+
+### B7.4 Observers concretos
+- [ ] Crear `cliente.observer.ts` que recibe `NotificacionesRepository` (no Prisma) y persiste fila en `Notificacion`.
 - [ ] Crear `email-notification.observer.ts` que recibe `mailer` y envía email con `cambio-plan.hbs`.
 - [ ] Crear template `mailer/templates/cambio-plan.hbs`.
 
-### B7.4 `AsignacionesService`
+### B7.5 `AsignacionesService`
+- [ ] Inyectar `AsignacionesEntrenamientoRepository`, `PlanesEntrenamientoRepository`, `ClientesRepository`, `NotificacionesRepository`, `PlanSubject`, `MailerService`.
 - [ ] Implementar `asignarEntrenamiento({ clienteId, planEntrenamientoId })`.
-- [ ] Validar cliente y plan en mismo workspace.
+- [ ] Validar cliente y plan en mismo workspace usando los repositorios.
 - [ ] Validar plan estado = ACTIVO.
-- [ ] Crear `AsignacionPlanEntrenamiento(estado=ACTIVO)`.
-- [ ] Suscribir `ClienteObserver(clienteId)` y `EmailObserver(correoCliente)` al `PlanSubject` para ese `planId`.
-- [ ] Implementar `cambiarEstado(asignacionId, estado)`.
+- [ ] `asignacionesRepository.crear({ ..., estado: 'ACTIVO' })`.
+- [ ] Suscribir `ClienteObserver(notificacionesRepository, clienteId)` y `EmailObserver(mailer, correoCliente)` al `PlanSubject` para ese `planId`.
+- [ ] Implementar `cambiarEstado(asignacionId, estado)` → `asignacionesRepository.updateEstado`.
 
-### B7.5 Disparo desde §B6
+### B7.6 Disparo desde §B6
 - [ ] En `activar()`: tras persistir, `subject.notify({ tipo: 'PLAN_ACTIVADO' })`.
 - [ ] En `agregarEjercicio`/`quitarEjercicio` con plan ACTIVO: `subject.notify({ tipo: 'PLAN_MODIFICADO' })`.
 - [ ] En `archivar()`: `subject.notify({ tipo: 'PLAN_ARCHIVADO' })`.
 
-### B7.6 Controller asignaciones
+### B7.7 Controller asignaciones
 - [ ] `POST /api/asignaciones/entrenamiento`.
 - [ ] `GET /api/clientes/:id/asignaciones`.
 - [ ] `PUT /api/asignaciones/:id` body `{ estado }`.
 
-### B7.7 Endpoint notificaciones
+### B7.8 Notificaciones (servicio + endpoints)
+- [ ] Crear `NotificacionesService` que consume `NotificacionesRepository`.
 - [ ] `GET /api/notificaciones` (CLIENTE) — lista no leídas.
 - [ ] `PATCH /api/notificaciones/:id/leer`.
 
-### B7.8 Tests
+### B7.9 Tests
+- [ ] `notificaciones.repository.spec.ts` y `asignaciones-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
 - [ ] `plan-subject.spec.ts`: subscribe/unsubscribe/notify llaman a observers correctos.
-- [ ] `cliente.observer.spec.ts`: persiste notificación con mensaje según evento.
+- [ ] `cliente.observer.spec.ts` mockeando `NotificacionesRepository`: persiste notificación con mensaje según evento.
 - [ ] `email-notification.observer.spec.ts`: invoca mailer con el template correcto.
 
 ---
@@ -371,25 +459,31 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 - [ ] `build()` valida que haya `fecha`, `clienteId` y al menos 1 ejercicio; si no, lanza error.
 - [ ] `build()` devuelve copia inmutable.
 
-### B8.2 `RegistrosService`
-- [ ] Validar que cliente pertenece al workspace.
-- [ ] Instanciar builder y aplicar setters iterando el DTO.
-- [ ] `build()` y persistir `RegistroDeEntrenamiento` + `RegistroDeEjercicio[]` en transacción.
-- [ ] Implementar `listar(clienteId, { page, limit, desde, hasta })`.
+### B8.2 `RegistrosEntrenamientoRepository`
+- [ ] Crear `registros/repositories/registros-entrenamiento.repository.ts`.
+- [ ] Métodos: `crearConEjercicios(payload)` (transacción interna con `RegistroDeEntrenamiento` + `RegistroDeEjercicio[]`), `listarPorCliente(clienteId, filtros)`, `findPorClienteConDetalle(clienteId)` (para progreso §B9).
 
-### B8.3 Controller
+### B8.3 `RegistrosService`
+- [ ] Inyectar `RegistrosEntrenamientoRepository` y `ClientesRepository`.
+- [ ] Validar que cliente pertenece al workspace vía `ClientesRepository`.
+- [ ] Instanciar builder y aplicar setters iterando el DTO.
+- [ ] Llamar `build()` y persistir vía `registrosRepository.crearConEjercicios(payload)`.
+- [ ] Implementar `listar(clienteId, { page, limit, desde, hasta })` → `registrosRepository.listarPorCliente`.
+
+### B8.4 Controller
 - [ ] `POST /api/clientes/:id/registros-entrenamiento`.
 - [ ] `GET /api/clientes/:id/registros-entrenamiento` con paginación.
 
-### B8.4 `ArchivarPlanCommand`
+### B8.5 `ArchivarPlanCommand`
 - [ ] Constructor recibe `planesService`, `planId`, `workspaceId`.
-- [ ] `execute()`: guarda `estadoPrevio` y llama `archivar()`.
-- [ ] `undo()`: si `estadoPrevio === ACTIVO`, llama `activar()`.
+- [ ] `execute()`: guarda `estadoPrevio` y llama `planesService.archivar()`.
+- [ ] `undo()`: si `estadoPrevio === ACTIVO`, llama `planesService.activar()`.
 
-### B8.5 Endpoint
+### B8.6 Endpoint
 - [ ] `PATCH /api/planes-entrenamiento/:id/archivar` pasa por `CommandInvoker`.
 
-### B8.6 Tests
+### B8.7 Tests
+- [ ] `registros-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
 - [ ] `registro-entrenamiento.builder.spec.ts`: build sin ejercicios falla.
 - [ ] `registro-entrenamiento.builder.spec.ts`: build con ejercicios construye objeto correcto.
 - [ ] `archivar-plan.command.spec.ts`: execute archiva; undo restaura estado previo.
@@ -411,8 +505,9 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 
 ### B9.3 `ProgresoContext` / Service
 - [ ] Crear `progreso/progreso.service.ts`.
+- [ ] Inyectar `RegistrosEntrenamientoRepository` (reuso del de §B8.2; no inyectar Prisma).
 - [ ] Implementar `setEstrategia(s)`.
-- [ ] Implementar `calcularProgreso(clienteId, workspaceId, vista)` que carga registros con detalle y delega.
+- [ ] Implementar `calcularProgreso(clienteId, workspaceId, vista)` que llama `registrosRepository.findPorClienteConDetalle(clienteId)` y delega a la strategy.
 
 ### B9.4 Endpoint
 - [ ] `GET /api/clientes/:id/progreso?vista=semanal|mensual|porPlan` (default `semanal`).
@@ -432,7 +527,7 @@ Referencias cruzadas: `MVP_FRONTEND_PLAN.md`, `deep-dive-patterns.md`, `design-p
 
 ### B10.1 `ClienteDashboardFacade`
 - [ ] Crear `dashboard/cliente-dashboard.facade.ts`.
-- [ ] Inyectar `ClientesService`, `PlanesEntrenamientoService`, `RegistrosService`, `ProgresoService`.
+- [ ] Inyectar **únicamente servicios** (`ClientesService`, `PlanesEntrenamientoService`, `RegistrosService`, `ProgresoService`); el facade no toca repositorios ni Prisma.
 - [ ] Implementar `getDashboardCliente(clienteId, workspaceId)`.
 - [ ] Componer: cliente + plan activo + últimos 5 registros + resumen semanal.
 
@@ -496,10 +591,17 @@ apps/api/src/
 │   └── guards/
 └── modules/
     ├── auth/
+    ├── usuarios/
+    │   └── repositories/usuarios.repository.ts
+    ├── entrenadores/
+    │   └── repositories/entrenadores.repository.ts
+    ├── espacios-de-trabajo/
+    │   └── repositories/espacios-de-trabajo.repository.ts
     ├── registry/
     │   ├── workspace.registry.ts
     │   └── ejercicios.catalog.ts
     ├── ejercicios/
+    │   ├── repositories/ejercicios.repository.ts
     │   ├── decorators/
     │   ├── interfaces/
     │   └── ejercicios.service.ts (impl)
@@ -508,19 +610,28 @@ apps/api/src/
     ├── commands/
     │   ├── command.interface.ts
     │   └── command-invoker.service.ts
+    ├── invitaciones/
+    │   └── repositories/invitaciones.repository.ts
     ├── clientes/
+    │   ├── repositories/clientes.repository.ts
     │   └── memento/
     ├── planes-entrenamiento/
+    │   ├── repositories/planes-entrenamiento.repository.ts
     │   ├── factories/
     │   ├── states/
     │   ├── prototypes/
     │   └── observers/
     ├── asignaciones/
+    │   └── repositories/asignaciones-entrenamiento.repository.ts
     ├── registros/
+    │   ├── repositories/registros-entrenamiento.repository.ts
     │   └── builders/
     ├── progreso/
     │   └── strategies/
     ├── dashboard/
     │   └── cliente-dashboard.facade.ts
     └── notificaciones/
+        └── repositories/notificaciones.repository.ts
 ```
+
+**Regla recordatoria:** el único directorio donde se importa `PrismaService` o `@prisma/client` para queries es `repositories/`. Cualquier otro archivo que lo haga es un bug del patrón.
