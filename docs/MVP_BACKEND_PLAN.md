@@ -158,10 +158,10 @@ modules/<nombre>/
 - [x] Registrar `PassportModule.register({ defaultStrategy: 'jwt' })` y `JwtStrategy` como provider en `AuthModule`.
 
 ### B1.5 Endpoint registro entrenador
-- [ ] DTO `RegisterEntrenadorDto` con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
-- [ ] Abrir transacción vía `UsuariosRepository.conTransaccion(tx => ...)`; dentro: `usuariosRepository.crear(tx, ...)`, `espaciosDeTrabajoRepository.crear(tx, ...)` (slug = slugify), `entrenadoresRepository.crear(tx, ...)`.
-- [ ] Devolver `{ token, usuario }`.
-- [ ] Probar con `curl` o REST client.
+- [x] DTO `RegisterEntrenadorDto` con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
+- [x] Abrir transacción vía `UsuariosRepository.conTransaccion(tx => ...)`; dentro: `usuariosRepository.crear(tx, ...)`, `espaciosDeTrabajoRepository.crear(tx, ...)` (slug = slugify), `entrenadoresRepository.crear(tx, ...)`.
+- [x] Devolver `{ token, usuario }`.
+- [x] Probar con `curl` o REST client.
 
 ### B1.6 Endpoint login
 - [ ] DTO `LoginDto` con `correo`, `contrasena`.

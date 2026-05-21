@@ -11,6 +11,7 @@ import { EntrenadoresModule } from '../entrenadores/entrenadores.module';
 import { EspaciosDeTrabajoModule } from '../espacios-de-trabajo/espacios-de-trabajo.module';
 import { InvitacionesModule } from '../invitaciones/invitaciones.module';
 import { UsuariosModule } from '../usuarios/usuarios.module';
+import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
@@ -33,6 +34,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       }),
     }),
   ],
+  controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtAuthGuard, WorkspaceGuard, RolesGuard],
   exports: [
     AuthService,
