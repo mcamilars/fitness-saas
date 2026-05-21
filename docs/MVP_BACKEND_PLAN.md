@@ -95,27 +95,27 @@ modules/<nombre>/
 - [x] Verificar que `docker compose up -d` levanta Postgres y la migración corre limpia.
 
 ### B0.4 Variables de entorno del API
-- [ ] Crear `apps/api/.env` con `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN=2h`, `MAILTRAP_HOST`, `MAILTRAP_PORT`, `MAILTRAP_USER`, `MAILTRAP_PASS`, `MAILTRAP_FROM`, `APP_URL`.
-- [ ] Crear `apps/api/.env.example` con las mismas claves vacías.
+- [x] Crear `apps/api/.env` con `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN=2h`, `MAILTRAP_HOST`, `MAILTRAP_PORT`, `MAILTRAP_USER`, `MAILTRAP_PASS`, `MAILTRAP_FROM`, `APP_URL`.
+- [x] Crear `apps/api/.env.example` con las mismas claves vacías.
 - [ ] Commitear `.env.example`.
-- [ ] Confirmar que `.env` está en `.gitignore`.
+- [x] Confirmar que `.env` está en `.gitignore`.
 
 ### B0.5 ConfigModule
-- [ ] Instalar `@nestjs/config`.
-- [ ] Registrar `ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' })` en `AppModule`.
-- [ ] Crear `apps/api/src/config/env.validation.ts` validando variables con `class-validator`.
-- [ ] Conectar `validate` del `ConfigModule` al validador.
+- [x] Instalar `@nestjs/config`.
+- [x] Registrar `ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' })` en `AppModule`.
+- [x] Crear `apps/api/src/config/env.validation.ts` validando variables con `class-validator`.
+- [x] Conectar `validate` del `ConfigModule` al validador.
 
 ### B0.6 Pipes, filtros y prefix global
-- [ ] En `main.ts`: `app.setGlobalPrefix('api')`.
-- [ ] En `main.ts`: `app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }))`.
-- [ ] Crear `apps/api/src/common/filters/http-exception.filter.ts` y registrarlo global.
-- [ ] Habilitar CORS limitado a `APP_URL`.
+- [x] En `main.ts`: `app.setGlobalPrefix('api')`.
+- [x] En `main.ts`: `app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }))`.
+- [x] Crear `apps/api/src/common/filters/http-exception.filter.ts` y registrarlo global.
+- [x] Habilitar CORS limitado a `APP_URL`.
 
 ### B0.7 Smoke test
-- [ ] Crear `HealthController` con `GET /api/health` → `{ ok: true }`.
-- [ ] Levantar con `pnpm --filter api dev`.
-- [ ] Probar `curl localhost:4000/api/health` y confirmar 200.
+- [x] Crear `HealthController` con `GET /api/health` → `{ ok: true }`.
+- [x] Levantar con `pnpm --filter api dev`.
+- [x] Probar `curl localhost:4000/api/health` y confirmar 200.
 
 ---
 
