@@ -124,53 +124,61 @@ modules/<nombre>/
 **Objetivo:** registro y login funcionando; JWT con `{ sub, rol, workspaceId }`; guards listos.
 
 ### B1.1 Dependencias
-- [ ] `pnpm --filter api add bcryptjs @nestjs/jwt`.
-- [ ] `pnpm --filter api add -D @types/bcryptjs`.
+- [x] `pnpm --filter api add bcryptjs @nestjs/jwt`.
+- [x] `pnpm --filter api add -D @types/bcryptjs`.
+- [x] `pnpm --filter api add @nestjs/passport passport passport-jwt` (decisión técnica — ver B1.4).
+- [x] `pnpm --filter api add -D @types/passport-jwt`.
 
 ### B1.2 Repositorios base (regla §0.1)
-- [ ] Crear `modules/usuarios/repositories/usuarios.repository.ts` con `findByCorreo`, `findById`, `crear(tx?)`.
-- [ ] Crear `modules/entrenadores/repositories/entrenadores.repository.ts` con `findByUsuarioId`, `crear(tx?)`.
-- [ ] Crear `modules/espacios-de-trabajo/repositories/espacios-de-trabajo.repository.ts` con `findById`, `findBySlug`, `crear(tx?)`.
-- [ ] Crear `modules/clientes/repositories/clientes.repository.ts` con `findByUsuarioId`, `crear(tx?)` (resto en §B5).
-- [ ] Crear `modules/invitaciones/repositories/invitaciones.repository.ts` con `findByToken`, `marcarConsumida(tx?)`.
-- [ ] Cada repositorio acepta opcionalmente un `Prisma.TransactionClient` en métodos de escritura (`withTx`).
-- [ ] Confirmar que `PrismaService` se inyecta **solo** en estos repositorios.
+- [x] Crear `modules/usuarios/repositories/usuarios.repository.ts` con `findByCorreo`, `findById`, `crear(tx?)`.
+- [x] Crear `modules/entrenadores/repositories/entrenadores.repository.ts` con `findByUsuarioId`, `crear(tx?)`.
+- [x] Crear `modules/espacios-de-trabajo/repositories/espacios-de-trabajo.repository.ts` con `findById`, `findBySlug`, `crear(tx?)`.
+- [x] Crear `modules/clientes/repositories/clientes.repository.ts` con `findByUsuarioId`, `crear(tx?)` (resto en §B5).
+- [x] Crear `modules/invitaciones/repositories/invitaciones.repository.ts` con `findByToken`, `marcarConsumida(tx?)`.
+- [x] Cada repositorio acepta opcionalmente un `Prisma.TransactionClient` en métodos de escritura (`withTx`).
+- [x] Confirmar que `PrismaService` se inyecta **solo** en estos repositorios.
 
 ### B1.3 Módulo `auth`
-- [ ] Crear `apps/api/src/modules/auth/`.
-- [ ] Crear `AuthService` con `registrarEntrenador`, `login`, `registrarCliente` que depende de `UsuariosRepository`, `EntrenadoresRepository`, `EspaciosDeTrabajoRepository`, `ClientesRepository`, `InvitacionesRepository`.
-- [ ] La transacción de registro se abre desde el servicio vía `prisma.$transaction` accedido **solo** a través de un método helper en `UsuariosRepository.conTransaccion(callback)` para no inyectar Prisma en el service.
-- [ ] Registrar `JwtModule.registerAsync` leyendo secret/expires del `ConfigService`.
+- [x] Crear `apps/api/src/modules/auth/`.
+- [x] Crear `AuthService` con `registrarEntrenador`, `login`, `registrarCliente` que depende de `UsuariosRepository`, `EntrenadoresRepository`, `EspaciosDeTrabajoRepository`, `ClientesRepository`, `InvitacionesRepository`.
+- [x] La transacción de registro se abre desde el servicio vía `prisma.$transaction` accedido **solo** a través de un método helper en `UsuariosRepository.conTransaccion(callback)` para no inyectar Prisma en el service.
+- [x] Registrar `JwtModule.registerAsync` leyendo secret/expires del `ConfigService`.
 
 ### B1.4 Guards y decoradores comunes
-- [ ] Crear `common/guards/jwt-auth.guard.ts` que valida `Authorization: Bearer` y adjunta `req.user = { id, rol, workspaceId }`.
-- [ ] Crear `common/guards/workspace.guard.ts` que valida ownership del recurso vs `req.user.workspaceId`.
-- [ ] Crear decorador `common/decorators/current-user.decorator.ts`.
-- [ ] Crear decorador `common/decorators/current-workspace.decorator.ts`.
-- [ ] Crear `common/decorators/roles.decorator.ts` + `common/guards/roles.guard.ts`.
+- [x] Crear `common/guards/jwt-auth.guard.ts` que valida `Authorization: Bearer` y adjunta `req.user = { id, rol, workspaceId }`.
+- [x] Crear `common/guards/workspace.guard.ts` que valida ownership del recurso vs `req.user.workspaceId`.
+- [x] Crear decorador `common/decorators/current-user.decorator.ts`.
+- [x] Crear decorador `common/decorators/current-workspace.decorator.ts`.
+- [x] Crear `common/decorators/roles.decorator.ts` + `common/guards/roles.guard.ts`.
+
+**Decisión técnica — flujo JWT con `passport-jwt`:** la extracción y verificación del Bearer token se delega a `@nestjs/passport` + `passport-jwt`. El payload del JWT (`{ sub, rol, workspaceId }`) se mapea en `JwtStrategy.validate()` al objeto `AuthenticatedUser` que Passport pega automáticamente en `req.user`. `JwtAuthGuard` queda reducido a `extends AuthGuard('jwt')`. Motivación: reusar una implementación probada (manejo de expiración, errores estándar, integración con el ecosistema) en vez de mantener la extracción/verificación manualmente.
+
+- [x] Crear `modules/auth/strategies/jwt.strategy.ts` extendiendo `PassportStrategy(Strategy, 'jwt')` con `ExtractJwt.fromAuthHeaderAsBearerToken()` y secret del `ConfigService`.
+- [x] Reducir `JwtAuthGuard` a `extends AuthGuard('jwt')`.
+- [x] Registrar `PassportModule.register({ defaultStrategy: 'jwt' })` y `JwtStrategy` como provider en `AuthModule`.
 
 ### B1.5 Endpoint registro entrenador
-- [ ] DTO `RegisterEntrenadorDto` con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
-- [ ] Abrir transacción vía `UsuariosRepository.conTransaccion(tx => ...)`; dentro: `usuariosRepository.crear(tx, ...)`, `espaciosDeTrabajoRepository.crear(tx, ...)` (slug = slugify), `entrenadoresRepository.crear(tx, ...)`.
-- [ ] Devolver `{ token, usuario }`.
-- [ ] Probar con `curl` o REST client.
+- [x] DTO `RegisterEntrenadorDto` con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
+- [x] Abrir transacción vía `UsuariosRepository.conTransaccion(tx => ...)`; dentro: `usuariosRepository.crear(tx, ...)`, `espaciosDeTrabajoRepository.crear(tx, ...)` (slug = slugify), `entrenadoresRepository.crear(tx, ...)`.
+- [x] Devolver `{ token, usuario }`.
+- [x] Probar con `curl` o REST client.
 
 ### B1.6 Endpoint login
-- [ ] DTO `LoginDto` con `correo`, `contrasena`.
-- [ ] Resolver usuario con `usuariosRepository.findByCorreo`.
-- [ ] Validar con `bcrypt.compare`.
-- [ ] Resolver `workspaceId` según rol (ENTRENADOR vía `entrenadoresRepository.findByUsuarioId`, CLIENTE vía `clientesRepository.findByUsuarioId`).
-- [ ] Firmar JWT y devolver `{ token, usuario }`.
+- [x] DTO `LoginDto` con `correo`, `contrasena`.
+- [x] Resolver usuario con `usuariosRepository.findByCorreo`.
+- [x] Validar con `bcrypt.compare`.
+- [x] Resolver `workspaceId` según rol (ENTRENADOR vía `entrenadoresRepository.findByUsuarioId`, CLIENTE vía `clientesRepository.findByUsuarioId`).
+- [x] Firmar JWT y devolver `{ token, usuario }`.
 
 ### B1.7 Endpoint registro cliente vía invitación
-- [ ] DTO `RegistrarClienteDto` con `tokenInvitacion`, `correo`, `contrasena`, `nombre`, `apellido`.
-- [ ] Validar invitación con `invitacionesRepository.findByToken`: existe, no consumida, no expirada, correo coincide.
-- [ ] Transacción: `usuariosRepository.crear(tx)` (rol=CLIENTE), `clientesRepository.crear(tx)`, `invitacionesRepository.marcarConsumida(tx, token)`.
-- [ ] Devolver `{ token, cliente }`.
+- [x] DTO `RegistrarClienteDto` con `tokenInvitacion`, `correo`, `contrasena`, `nombre`, `apellido`.
+- [x] Validar invitación con `invitacionesRepository.findByToken`: existe, no consumida, no expirada, correo coincide.
+- [x] Transacción: `usuariosRepository.crear(tx)` (rol=CLIENTE), `clientesRepository.crear(tx)`, `invitacionesRepository.marcarConsumida(tx, token)`.
+- [x] Devolver `{ token, cliente }`.
 
 ### B1.8 Validación con DTOs
-- [ ] Aplicar `@IsEmail`, `@MinLength`, `@IsString` en los tres DTOs.
-- [ ] Confirmar que envíos inválidos retornan 400 con detalle.
+- [x] Aplicar `@IsEmail`, `@MinLength`, `@IsString` en los tres DTOs.
+- [x] Confirmar que envíos inválidos retornan 400 con detalle.
 
 ---
 

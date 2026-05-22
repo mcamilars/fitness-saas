@@ -34,7 +34,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       if (typeof respuesta === 'string') {
         mensaje = respuesta;
         error = exception.name;
-      } else if (typeof respuesta === 'object' && respuesta !== null) {
+      } else if (typeof respuesta === 'object') {
         const r = respuesta as { message?: string | string[]; error?: string };
         mensaje = r.message ?? exception.message;
         error = r.error ?? exception.name;
@@ -49,7 +49,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     response.status(statusCode).json(body);
 
-    if (statusCode >= 500) {
+    if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(`${request.method} ${request.url} → ${statusCode}`);
     }
   }
