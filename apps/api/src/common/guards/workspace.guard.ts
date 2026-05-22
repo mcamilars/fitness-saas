@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 import type { Request } from 'express';
+import { EspaciosDeTrabajoRepository } from '../../modules/espacios-de-trabajo/repositories/espacios-de-trabajo.repository';
+import { WorkspaceRegistry } from '../../modules/registry/workspace.registry';
 import type { AuthenticatedUser } from '../types/authenticated-request';
 import {
   WORKSPACE_OWNERSHIP_METADATA,
@@ -30,6 +32,8 @@ export class WorkspaceGuard implements CanActivate {
     if (!workspaceIdUsuario) {
       throw new ForbiddenException('Usuario sin workspace asociado');
     }
+
+    await this.registrarWorkspaceSiNoExiste(workspaceIdUsuario);
 
     const metadata = this.reflector.getAllAndOverride<
       WorkspaceOwnershipMetadata | undefined
@@ -61,6 +65,30 @@ export class WorkspaceGuard implements CanActivate {
     }
 
     return true;
+  }
+
+  private async registrarWorkspaceSiNoExiste(workspaceId: string): Promise<void> {
+    const registry = WorkspaceRegistry.getInstance();
+    if (registry.buscar(workspaceId)) {
+      return;
+    }
+
+    const espaciosDeTrabajoRepository =
+      this.moduleRef.get<EspaciosDeTrabajoRepository>(
+        EspaciosDeTrabajoRepository,
+        { strict: false },
+      );
+
+    const workspace = await espaciosDeTrabajoRepository.findById(workspaceId);
+    if (!workspace) {
+      throw new ForbiddenException('El workspace del usuario no existe');
+    }
+
+    registry.registrar({
+      id: workspace.id,
+      slug: workspace.slug,
+      nombre: workspace.nombre,
+    });
   }
 
   private extraerResourceId(
