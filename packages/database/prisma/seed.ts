@@ -20,6 +20,7 @@ import {
   Rol,
   TipoPlanEntrenamiento,
 } from '@prisma/client';
+import 'dotenv/config';
 import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
