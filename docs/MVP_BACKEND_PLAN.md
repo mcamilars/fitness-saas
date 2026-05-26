@@ -375,11 +375,11 @@ modules/<nombre>/
 - [x] States y prototype reciben este repositorio cuando necesiten persistir.
 
 ### B6.1 Factories
-- [ ] Crear `planes-entrenamiento/factories/plan.factory.ts` (clase abstracta con `crear(dto): PlanDraft`).
-- [ ] Crear `hipertrofia.factory.ts` (series=4, reps=10, descanso=60s).
-- [ ] Crear `fuerza.factory.ts` (series=5, reps=5, descanso=180s).
-- [ ] Crear `resistencia.factory.ts` (series=3, reps=15, descanso=30s).
-- [ ] Crear `plan-factory.provider.ts` con mapa `Record<TipoPlanEntrenamiento, PlanFactory>` inyectable.
+- [x] Crear `planes-entrenamiento/factories/plan.factory.ts` (clase abstracta con `crear(dto): PlanDraft`).
+- [x] Crear `hipertrofia.factory.ts` (series=4, reps=10, descanso=60s).
+- [x] Crear `fuerza.factory.ts` (series=5, reps=5, descanso=180s).
+- [x] Crear `resistencia.factory.ts` (series=3, reps=15, descanso=30s).
+- [x] Crear `plan-factory.provider.ts` con mapa `Record<TipoPlanEntrenamiento, PlanFactory>` inyectable.
 
 ### B6.2 States
 - [ ] Crear `planes-entrenamiento/states/plan-state.interface.ts` con `activar(plan, ctx)` y `archivar(plan, ctx)` donde `ctx = { repository, subject }`.
@@ -417,9 +417,9 @@ modules/<nombre>/
 
 ### B6.6 Tests
 - [ ] `planes-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
-- [ ] `hipertrofia.factory.spec.ts`: defaults correctos.
-- [ ] `fuerza.factory.spec.ts`: defaults correctos.
-- [ ] `resistencia.factory.spec.ts`: defaults correctos.
+- [x] `hipertrofia.factory.spec.ts`: defaults correctos.
+- [x] `fuerza.factory.spec.ts`: defaults correctos.
+- [x] `resistencia.factory.spec.ts`: defaults correctos.
 - [ ] `borrador.state.spec.ts` mockeando repositorio: activar sin ejercicios lanza error; con ejercicios transiciona.
 - [ ] `activo.state.spec.ts` mockeando repositorio: archivar transiciona; activar lanza error.
 - [ ] `archivado.state.spec.ts`: ambas transiciones lanzan error.
