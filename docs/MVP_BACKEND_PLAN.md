@@ -557,16 +557,16 @@ modules/<nombre>/
 **Objetivo:** un único endpoint que el frontend consume para la pantalla principal del cliente.
 
 ### B10.1 `ClienteDashboardFacade`
-- [ ] Crear `dashboard/cliente-dashboard.facade.ts`.
-- [ ] Inyectar **únicamente servicios** (`ClientesService`, `PlanesEntrenamientoService`, `RegistrosService`, `ProgresoService`); el facade no toca repositorios ni Prisma.
-- [ ] Implementar `getDashboardCliente(clienteId, workspaceId)`.
-- [ ] Componer: cliente + plan activo + últimos 5 registros + resumen semanal.
+- [x] Crear `dashboard/cliente-dashboard.facade.ts`.
+- [x] Inyectar **únicamente servicios** (`ClientesService`, `PlanesEntrenamientoService`, `RegistrosService`, `ProgresoService`); el facade no toca repositorios ni Prisma.
+- [x] Implementar `getDashboardCliente(clienteId, workspaceId)`.
+- [x] Componer: cliente + plan activo + últimos 5 registros + resumen semanal.
 
 ### B10.2 Endpoint
-- [ ] `GET /api/clientes/:id/dashboard` (ENTRENADOR).
+- [x] `GET /api/clientes/:id/dashboard` (ENTRENADOR).
 
 ### B10.3 Tests
-- [ ] `cliente-dashboard.facade.spec.ts` con servicios mockeados: verifica composición y orden de llamadas.
+- [x] `cliente-dashboard.facade.spec.ts` con servicios mockeados: verifica composición y orden de llamadas.
 
 ---
 
