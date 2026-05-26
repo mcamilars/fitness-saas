@@ -40,6 +40,22 @@ export class MailerService {
     });
   }
 
+  async enviarCambioPlan(correo: string, mensaje: string): Promise<void> {
+    const template = await this.cargarTemplate('cambio-plan.hbs');
+    const html = template({
+      mensaje,
+      appUrl: this.appUrl,
+      anioActual: new Date().getFullYear(),
+    });
+
+    await this.transporter.sendMail({
+      from: this.from,
+      to: correo,
+      subject: 'Actualización de tu plan de entrenamiento',
+      html,
+    });
+  }
+
   private async cargarTemplate(nombre: string): Promise<handlebars.TemplateDelegate> {
     const templatePath = join(__dirname, 'templates', nombre);
     const contenido = await readFile(templatePath, 'utf8');

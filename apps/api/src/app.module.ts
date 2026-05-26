@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { CommandsModule } from './commands/commands.module';
 import { AppService } from './app.service';
 import { validateEnv } from './config/env.validation';
+import { AsignacionesModule } from './modules/asignaciones/asignaciones.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { EjerciciosModule } from './modules/ejercicios/ejercicios.module';
 import { HealthController } from './modules/health/health.controller';
@@ -23,6 +24,7 @@ import { PlanesEntrenamientoModule } from './modules/planes-entrenamiento/planes
     EjerciciosModule,
     MailerModule,
     PlanesEntrenamientoModule,
+    AsignacionesModule,
     CommandsModule,
   ],
   controllers: [AppController, HealthController],

@@ -444,18 +444,18 @@ modules/<nombre>/
 - [x] Crear `asignaciones/repositories/asignaciones-entrenamiento.repository.ts` con `crear(dto)`, `findPorCliente(clienteId)`, `findPorPlan(planId)`, `updateEstado(id, estado)`, `findActivaPorCliente(clienteId)`.
 
 ### B7.4 Observers concretos
-- [ ] Crear `cliente.observer.ts` que recibe `NotificacionesRepository` (no Prisma) y persiste fila en `Notificacion`.
-- [ ] Crear `email-notification.observer.ts` que recibe `mailer` y envía email con `cambio-plan.hbs`.
-- [ ] Crear template `mailer/templates/cambio-plan.hbs`.
+- [x] Crear `cliente.observer.ts` que recibe `NotificacionesRepository` (no Prisma) y persiste fila en `Notificacion`.
+- [x] Crear `email-notification.observer.ts` que recibe `mailer` y envía email con `cambio-plan.hbs`.
+- [x] Crear template `mailer/templates/cambio-plan.hbs`.
 
 ### B7.5 `AsignacionesService`
-- [ ] Inyectar `AsignacionesEntrenamientoRepository`, `PlanesEntrenamientoRepository`, `ClientesRepository`, `NotificacionesRepository`, `PlanSubject`, `MailerService`.
-- [ ] Implementar `asignarEntrenamiento({ clienteId, planEntrenamientoId })`.
-- [ ] Validar cliente y plan en mismo workspace usando los repositorios.
-- [ ] Validar plan estado = ACTIVO.
-- [ ] `asignacionesRepository.crear({ ..., estado: 'ACTIVO' })`.
-- [ ] Suscribir `ClienteObserver(notificacionesRepository, clienteId)` y `EmailObserver(mailer, correoCliente)` al `PlanSubject` para ese `planId`.
-- [ ] Implementar `cambiarEstado(asignacionId, estado)` → `asignacionesRepository.updateEstado`.
+- [x] Inyectar `AsignacionesEntrenamientoRepository`, `PlanesEntrenamientoRepository`, `ClientesRepository`, `NotificacionesRepository`, `PlanSubject`, `MailerService`.
+- [x] Implementar `asignarEntrenamiento({ clienteId, planEntrenamientoId })`.
+- [x] Validar cliente y plan en mismo workspace usando los repositorios.
+- [x] Validar plan estado = ACTIVO.
+- [x] `asignacionesRepository.crear({ ..., estado: 'ACTIVO' })`.
+- [x] Suscribir `ClienteObserver(notificacionesRepository, clienteId)` y `EmailObserver(mailer, correoCliente)` al `PlanSubject` para ese `planId`.
+- [x] Implementar `cambiarEstado(asignacionId, estado)` → `asignacionesRepository.updateEstado`.
 
 ### B7.6 Disparo desde §B6
 - [ ] En `activar()`: tras persistir, `subject.notify({ tipo: 'PLAN_ACTIVADO' })`.
@@ -475,8 +475,8 @@ modules/<nombre>/
 ### B7.9 Tests
 - [x] `notificaciones.repository.spec.ts` y `asignaciones-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
 - [x] `plan-subject.spec.ts`: subscribe/unsubscribe/notify llaman a observers correctos.
-- [ ] `cliente.observer.spec.ts` mockeando `NotificacionesRepository`: persiste notificación con mensaje según evento.
-- [ ] `email-notification.observer.spec.ts`: invoca mailer con el template correcto.
+- [x] `cliente.observer.spec.ts` mockeando `NotificacionesRepository`: persiste notificación con mensaje según evento.
+- [x] `email-notification.observer.spec.ts`: invoca mailer con el template correcto.
 
 ---
 
