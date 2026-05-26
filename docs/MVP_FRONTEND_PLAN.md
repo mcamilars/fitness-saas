@@ -24,49 +24,49 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** proyecto listo con todas las librerías, providers y primitivos UI.
 
 ### F0.1 Dependencias
-- [ ] `pnpm --filter web add @tanstack/react-query @tanstack/react-query-devtools`.
-- [ ] `pnpm --filter web add react-hook-form zod @hookform/resolvers`.
-- [ ] `pnpm --filter web add sonner lucide-react clsx tailwind-merge class-variance-authority`.
-- [ ] `pnpm --filter web add date-fns`.
+- [x] `pnpm --filter web add @tanstack/react-query @tanstack/react-query-devtools`.
+- [x] `pnpm --filter web add react-hook-form zod @hookform/resolvers`.
+- [x] `pnpm --filter web add sonner lucide-react clsx tailwind-merge class-variance-authority`.
+- [x] `pnpm --filter web add date-fns`.
 
 ### F0.2 Tailwind
-- [ ] Inicializar Tailwind: `npx tailwindcss init -p`.
-- [ ] Configurar `tailwind.config.ts` apuntando a `./src/**/*.{ts,tsx}`.
-- [ ] Crear/actualizar `globals.css` con `@tailwind base; @tailwind components; @tailwind utilities;`.
-- [ ] Importar `globals.css` en `app/layout.tsx`.
+- [x] Inicializar Tailwind: `npx tailwindcss init -p`.
+- [x] Configurar `tailwind.config.ts` apuntando a `./src/**/*.{ts,tsx}`.
+- [x] Crear/actualizar `globals.css` con `@tailwind base; @tailwind components; @tailwind utilities;`.
+- [x] Importar `globals.css` en `app/layout.tsx`.
 
 ### F0.3 shadcn/ui
-- [ ] Ejecutar `npx shadcn@latest init` (estilo `default`, alias `@/components/ui`).
-- [ ] Generar primitivos: `button`, `input`, `label`, `card`, `dialog`, `select`, `tabs`, `badge`, `form`, `textarea`, `table`, `toast`, `skeleton`, `dropdown-menu`, `separator`.
+- [x] Ejecutar `npx shadcn@latest init` (estilo `default`, alias `@/components/ui`).
+- [x] Generar primitivos: `button`, `input`, `label`, `card`, `dialog`, `select`, `tabs`, `badge`, `form`, `textarea`, `table`, `toast`, `skeleton`, `dropdown-menu`, `separator`.
 
 ### F0.4 Providers globales
-- [ ] Crear `apps/web/src/app/providers.tsx` (client).
-- [ ] Configurar `QueryClientProvider` con `defaultOptions: { queries: { staleTime: 60_000, retry: 1 } }`.
-- [ ] Agregar `<Toaster richColors />` de sonner.
-- [ ] Envolver con `<AuthProvider>` (ver F0.5).
-- [ ] Importar `<Providers>` en `app/layout.tsx`.
+- [x] Crear `apps/web/src/app/providers.tsx` (client).
+- [x] Configurar `QueryClientProvider` con `defaultOptions: { queries: { staleTime: 60_000, retry: 1 } }`.
+- [x] Agregar `<Toaster richColors />` de sonner.
+- [x] Envolver con `<AuthProvider>` (ver F0.5).
+- [x] Importar `<Providers>` en `app/layout.tsx`.
 
 ### F0.5 AuthContext
-- [ ] Crear `apps/web/src/lib/auth/auth-context.tsx`.
-- [ ] Estado `user: { id, rol, workspaceId, nombre } | null`.
-- [ ] Implementar `login(token, user)` que guarda en `localStorage` y estado.
-- [ ] Implementar `logout()` que limpia ambos.
-- [ ] Hidratar desde `localStorage` en `useEffect`.
-- [ ] Hook `useAuth()`.
-- [ ] Hook `useRequireAuth(rol?)` que redirige a `/login` si no hay sesión o rol no coincide.
+- [x] Crear `apps/web/src/lib/auth/auth-context.tsx`.
+- [x] Estado `user: { id, rol, workspaceId, nombre } | null`.
+- [x] Implementar `login(token, user)` que guarda en `localStorage` y estado.
+- [x] Implementar `logout()` que limpia ambos.
+- [x] Hidratar desde `localStorage` en `useEffect`.
+- [x] Hook `useAuth()`.
+- [x] Hook `useRequireAuth(rol?)` que redirige a `/login` si no hay sesión o rol no coincide.
 
 ### F0.6 `apiFetch`
-- [ ] Crear `apps/web/src/lib/api/api-fetch.ts`.
-- [ ] Adjuntar `Authorization` automáticamente si hay token.
-- [ ] Lanzar `ApiError` con `status` y `mensaje` en respuestas no-OK.
-- [ ] Exportar tipo `ApiError`.
+- [x] Crear `apps/web/src/lib/api/api-fetch.ts`.
+- [x] Adjuntar `Authorization` automáticamente si hay token.
+- [x] Lanzar `ApiError` con `status` y `mensaje` en respuestas no-OK.
+- [x] Exportar tipo `ApiError`.
 
 ### F0.7 Tipos compartidos
-- [ ] Crear `apps/web/src/lib/types/api.ts` con tipos `Cliente`, `PlanDeEntrenamiento`, `Ejercicio`, `EjercicioPlan`, `RegistroDeEntrenamiento`, `Notificacion`, `DashboardCliente`, `ProgresoResumen`.
+- [x] Crear `apps/web/src/lib/types/api.ts` con tipos `Cliente`, `PlanDeEntrenamiento`, `Ejercicio`, `EjercicioPlan`, `RegistroDeEntrenamiento`, `Notificacion`, `DashboardCliente`, `ProgresoResumen`.
 
 ### F0.8 Layout raíz
-- [ ] Configurar `app/layout.tsx` con HTML base, fuente sans-serif, `<Providers>`.
-- [ ] Crear `app/page.tsx` que redirige según rol: ENTRENADOR → `/workspace`, CLIENTE → `/cliente/plan`, sin sesión → `/login`.
+- [x] Configurar `app/layout.tsx` con HTML base, fuente sans-serif, `<Providers>`.
+- [x] Crear `app/page.tsx` que redirige según rol: ENTRENADOR → `/workspace`, CLIENTE → `/cliente/plan`, sin sesión → `/login`.
 
 ---
 
