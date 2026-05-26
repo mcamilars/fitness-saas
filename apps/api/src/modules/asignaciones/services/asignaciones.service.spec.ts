@@ -55,6 +55,7 @@ describe('AsignacionesService', () => {
   const notificacionesRepository = { crear: jest.fn() };
   const planSubject = {
     subscribe: jest.fn(),
+    notify: jest.fn().mockResolvedValue(undefined),
   };
   const mailer = { enviarCambioPlan: jest.fn() };
 

@@ -575,36 +575,36 @@ modules/<nombre>/
 **Objetivo:** cobertura mínima de los patrones y un e2e que recorra el flujo completo.
 
 ### B11.1 Configuración Jest e2e
-- [ ] Confirmar/ajustar `apps/api/test/jest-e2e.json`.
-- [ ] Agregar variable `DATABASE_URL_TEST` apuntando a esquema/DB de test.
-- [ ] Crear `globalSetup` que ejecute `prisma migrate deploy` sobre la DB de test.
-- [ ] Agregar script `pnpm --filter api test:e2e`.
+- [x] Confirmar/ajustar `apps/api/test/jest-e2e.json`.
+- [x] Agregar variable `DATABASE_URL_TEST` apuntando a esquema/DB de test.
+- [x] Crear `globalSetup` que ejecute `prisma migrate deploy` sobre la DB de test.
+- [x] Agregar script `pnpm --filter api test:e2e`.
 
 ### B11.2 Helpers de test
-- [ ] Crear `apps/api/test/helpers/db.ts` con `truncateAll(prisma)`.
-- [ ] Crear `apps/api/test/helpers/auth.ts` con `registrarEntrenadorYLogin(app)` y `crearClientePorInvitacion(app, token)`.
+- [x] Crear `apps/api/test/helpers/db.ts` con `truncateAll(prisma)`.
+- [x] Crear `apps/api/test/helpers/auth.ts` con `registrarEntrenadorYLogin(app)` y `crearClientePorInvitacion(app, token)`.
 
 ### B11.3 e2e happy path (`happy-path.e2e-spec.ts`)
-- [ ] Paso 1 — `POST /auth/register` entrenador y guardar `tokenEntrenador`.
-- [ ] Paso 2 — `POST /clientes/invitar` con `correo=cli@test` y capturar `tokenInvitacion`.
-- [ ] Paso 3 — `POST /auth/cliente/register` con ese token y guardar `tokenCliente`.
-- [ ] Paso 4 — `POST /ejercicios` ×3; segunda llamada a `GET /ejercicios` no consulta Prisma (Decorator).
-- [ ] Paso 5 — `POST /planes-entrenamiento` con `tipo=HIPERTROFIA`; verificar defaults de la factory.
-- [ ] Paso 6 — `POST /planes-entrenamiento/:id/ejercicios` ×2.
-- [ ] Paso 7 — `PATCH /planes-entrenamiento/:id/activar` (State transition).
-- [ ] Paso 8 — `POST /asignaciones/entrenamiento`.
-- [ ] Paso 9 — `GET /notificaciones` con `tokenCliente` debe devolver ≥1 (Observer).
-- [ ] Paso 10 — `POST /clientes/:id/registros-entrenamiento` con 2 ejercicios (Builder).
-- [ ] Paso 11 — `GET /clientes/:id/dashboard` y verificar shape (Facade).
-- [ ] Paso 12 — `GET /clientes/:id/progreso?vista=semanal` con `periodos.length >= 1` (Strategy).
-- [ ] Paso 13 — `POST /planes-entrenamiento/:id/duplicar`; verificar nuevo id y sufijo `(copia)` (Prototype).
-- [ ] Paso 14 — `DELETE /clientes/:id`; cliente queda `estaActivo=false` (Command + Memento).
-- [ ] Paso 15 — `POST /commands/undo`; cliente vuelve a `estaActivo=true`.
+- [x] Paso 1 — `POST /auth/register` entrenador y guardar `tokenEntrenador`.
+- [x] Paso 2 — `POST /clientes/invitar` con `correo=cli@test` y capturar `tokenInvitacion`.
+- [x] Paso 3 — `POST /auth/cliente/register` con ese token y guardar `tokenCliente`.
+- [x] Paso 4 — `POST /ejercicios` ×3; segunda llamada a `GET /ejercicios` no consulta Prisma (Decorator).
+- [x] Paso 5 — `POST /planes-entrenamiento` con `tipo=HIPERTROFIA`; verificar defaults de la factory.
+- [x] Paso 6 — `POST /planes-entrenamiento/:id/ejercicios` ×2.
+- [x] Paso 7 — `PATCH /planes-entrenamiento/:id/activar` (State transition).
+- [x] Paso 8 — `POST /asignaciones/entrenamiento`.
+- [x] Paso 9 — `GET /notificaciones` con `tokenCliente` debe devolver ≥1 (Observer).
+- [x] Paso 10 — `POST /clientes/:id/registros-entrenamiento` con 2 ejercicios (Builder).
+- [x] Paso 11 — `GET /clientes/:id/dashboard` y verificar shape (Facade).
+- [x] Paso 12 — `GET /clientes/:id/progreso?vista=semanal` con `periodos.length >= 1` (Strategy).
+- [x] Paso 13 — `POST /planes-entrenamiento/:id/duplicar`; verificar nuevo id y sufijo `(copia)` (Prototype).
+- [x] Paso 14 — `DELETE /clientes/:id`; cliente queda `estaActivo=false` (Command + Memento).
+- [x] Paso 15 — `POST /commands/undo`; cliente vuelve a `estaActivo=true`.
 
 ### B11.4 Cobertura mínima
-- [ ] Cada patrón tiene al menos un `.spec.ts` ya escrito en fases anteriores.
-- [ ] Generar reporte con `pnpm --filter api test --coverage`.
-- [ ] Verificar >80% líneas en los archivos de patrones.
+- [x] Cada patrón tiene al menos un `.spec.ts` ya escrito en fases anteriores.
+- [x] Generar reporte con `pnpm --filter api test --coverage`.
+- [x] Verificar >80% líneas en los archivos de patrones.
 
 ---
 

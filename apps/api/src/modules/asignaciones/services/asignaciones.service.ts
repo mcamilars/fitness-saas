@@ -69,14 +69,17 @@ export class AsignacionesService {
       estado: EstadoAsignacion.ACTIVO,
     });
 
-    this.planSubject.subscribe(
-      plan.id,
-      new ClienteObserver(this.notificacionesRepository, cliente.id),
-    );
-    this.planSubject.subscribe(
-      plan.id,
-      new EmailNotificationObserver(this.mailer, cliente.usuario.correo),
-    );
+    const clienteObserver = new ClienteObserver(this.notificacionesRepository, cliente.id);
+    const emailObserver = new EmailNotificationObserver(this.mailer, cliente.usuario.correo);
+
+    this.planSubject.subscribe(plan.id, clienteObserver);
+    this.planSubject.subscribe(plan.id, emailObserver);
+
+    await this.planSubject.notify(plan.id, {
+      tipo: 'PLAN_ACTIVADO',
+      planId: plan.id,
+      clienteId: cliente.id,
+    });
 
     return asignacion;
   }
