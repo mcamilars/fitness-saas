@@ -284,39 +284,41 @@ modules/<nombre>/
 **Objetivo:** mailer Mailtrap funcional, infraestructura Command lista, primer command end-to-end.
 
 ### B4.1 Dependencias
-- [ ] `pnpm --filter api add nodemailer handlebars`.
-- [ ] `pnpm --filter api add -D @types/nodemailer`.
+- [x] `pnpm --filter api add nodemailer handlebars`.
+- [x] `pnpm --filter api add -D @types/nodemailer`.
 
 ### B4.2 `MailerService`
-- [ ] Crear `apps/api/src/modules/mailer/mailer.service.ts`.
-- [ ] Leer credenciales Mailtrap desde `ConfigService` y crear `nodemailer.createTransport`.
-- [ ] Implementar `enviarInvitacion(correo, token)` que compila `templates/invitacion.hbs` con `{ urlInvitacion, anioActual }`.
+- [x] Crear `apps/api/src/modules/mailer/mailer.service.ts`.
+- [x] Leer credenciales Mailtrap desde `ConfigService` y crear `nodemailer.createTransport`.
+- [x] Implementar `enviarInvitacion(correo, token)` que compila `templates/invitacion.hbs` con `{ urlInvitacion, anioActual }`.
 
 ### B4.3 Template Handlebars
-- [ ] Crear `mailer/templates/invitacion.hbs` con saludo, botón con `urlInvitacion` y footer.
-- [ ] Verificar que carga vía `fs.readFile` desde el dist.
+- [x] Crear `mailer/templates/invitacion.hbs` con saludo, botón con `urlInvitacion` y footer.
+- [x] Verificar que carga vía `fs.readFile` desde el dist.
 
 ### B4.4 Interfaz `Command` y `CommandInvoker`
-- [ ] Crear `commands/command.interface.ts` con `execute(): Promise<T>`, `undo(): Promise<void>`, `descripcion(): string`.
-- [ ] Crear `commands/command-invoker.service.ts` con `historial: Command[]` (máx. 50).
-- [ ] Implementar `ejecutar(cmd)`, `deshacerUltimo()`, `getHistorial()`.
+- [x] Crear `commands/command.interface.ts` con `execute(): Promise<T>`, `undo(): Promise<void>`, `descripcion(): string`.
+- [x] Crear `commands/command-invoker.service.ts` con `historial: Command[]` (máx. 50).
+- [x] Implementar `ejecutar(cmd)`, `deshacerUltimo()`, `getHistorial()`.
+- [x] Revisar alineación con diagrama de clases de `docs/poster.pdf`: `CommandInvoker` mantiene `historial: Command[]`, expone `ejecutar(cmd)`, alias `deshacer()` y `deshacerUltimo()`, y `getHistorial()` devuelve la lista de commands.
 
 ### B4.5 `InvitarClienteCommand`
-- [ ] Extender `InvitacionesRepository` con `crear(dto)` y `marcarConsumidaPorId(id)`.
-- [ ] Constructor del command recibe `invitacionesRepository`, `mailer`, `workspaceId`, `correo` (sin Prisma).
-- [ ] `execute()`: genera token uuid, llama `invitacionesRepository.crear({ ... expiraEn = now + 24h })`, envía email.
-- [ ] Guardar `this.invitacionId` para el undo.
-- [ ] `undo()`: `invitacionesRepository.marcarConsumidaPorId(this.invitacionId)`.
+- [x] Extender `InvitacionesRepository` con `crear(dto)` y `marcarConsumidaPorId(id)`.
+- [x] Constructor del command recibe `invitacionesRepository`, `mailer`, `workspaceId`, `correo` (sin Prisma).
+- [x] `execute()`: genera token uuid, llama `invitacionesRepository.crear({ ... expiraEn = now + 24h })`, envía email.
+- [x] Guardar `this.invitacionId` para el undo.
+- [x] `undo()`: `invitacionesRepository.marcarConsumidaPorId(this.invitacionId)`.
+- [x] Implementación alineada con `docs/poster.pdf`: clase concreta `InvitarClienteCommand` implementa `Command`, encapsula `clienteId/correo` y `token`, y expone `execute()`/`undo()` para ser ejecutada por `CommandInvoker`.
 
 ### B4.6 Endpoints
-- [ ] `POST /api/clientes/invitar` body `{ correo }`.
-- [ ] `GET /api/invitaciones/:token/verificar`.
-- [ ] `POST /api/commands/undo`.
+- [x] `POST /api/clientes/invitar` body `{ correo }`.
+- [x] `GET /api/invitaciones/:token/verificar`.
+- [x] `POST /api/commands/undo`.
 
 ### B4.7 Tests
-- [ ] `invitar-cliente.command.spec.ts`: `execute` crea invitación y llama mailer.
-- [ ] `invitar-cliente.command.spec.ts`: `undo` marca consumida.
-- [ ] `command-invoker.service.spec.ts`: ejecutar 3 commands → undo del último deshace solo ese.
+- [x] `invitar-cliente.command.spec.ts`: `execute` crea invitación y llama mailer.
+- [x] `invitar-cliente.command.spec.ts`: `undo` marca consumida.
+- [x] `command-invoker.service.spec.ts`: ejecutar 3 commands → undo del último deshace solo ese.
 
 ---
 
@@ -325,40 +327,40 @@ modules/<nombre>/
 **Objetivo:** CRUD de clientes con soft-delete reversible mediante memento.
 
 ### B5.1 `ClienteMemento` y `ClienteContainer`
-- [ ] Crear `clientes/memento/cliente.memento.ts` con `estado`, `timestamp`, `getEstado()`, `getTimestamp()`.
-- [ ] Tipar `ClienteSnapshot` como subset serializable del cliente.
-- [ ] Crear `clientes/memento/cliente-container.ts` con `mementos: Map<string, ClienteMemento[]>`.
-- [ ] Implementar `guardar(clienteId, snapshot)`, `restaurarUltimo(clienteId)`.
+- [x] Crear `clientes/memento/cliente.memento.ts` con `estado`, `timestamp`, `getEstado()`, `getTimestamp()`.
+- [x] Tipar `ClienteSnapshot` como subset serializable del cliente.
+- [x] Crear `clientes/memento/cliente-container.ts` con `mementos: Map<string, ClienteMemento[]>`.
+- [x] Implementar `guardar(clienteId, snapshot)`, `restaurarUltimo(clienteId)`.
 
 ### B5.2 Extender `ClientesRepository`
-- [ ] Añadir métodos `findAllPorWorkspace(workspaceId)`, `findByIdConPerfil(id)`, `update(id, dto)`, `setActivo(id, valor)`.
-- [ ] Garantizar que todas las queries filtren por `espacioDeTrabajoId` cuando se reciba.
+- [x] Añadir métodos `findAllPorWorkspace(workspaceId)`, `findByIdConPerfil(id)`, `update(id, dto)`, `setActivo(id, valor)`.
+- [x] Garantizar que todas las queries filtren por `espacioDeTrabajoId` cuando se reciba.
 
 ### B5.3 `ClientesService`
-- [ ] Inyectar `ClientesRepository` y `ClienteContainer`.
-- [ ] Implementar `findAllPorWorkspace(workspaceId)` → `repo.findAllPorWorkspace`.
-- [ ] Implementar `findById(id, workspaceId)` → `repo.findByIdConPerfil` + check de workspace.
-- [ ] Implementar `update(id, dto, workspaceId)` → `repo.update`.
-- [ ] Implementar `softDelete(id, workspaceId)`: snapshot → `container.guardar` → `repo.setActivo(id, false)`.
-- [ ] Implementar `restaurar(id, workspaceId)`: `container.restaurarUltimo` → `repo.setActivo(id, true)`.
+- [x] Inyectar `ClientesRepository` y `ClienteContainer`.
+- [x] Implementar `findAllPorWorkspace(workspaceId)` → `repo.findAllPorWorkspace`.
+- [x] Implementar `findById(id, workspaceId)` → `repo.findByIdConPerfil` + check de workspace.
+- [x] Implementar `update(id, dto, workspaceId)` → `repo.update`.
+- [x] Implementar `softDelete(id, workspaceId)`: snapshot → `container.guardar` → `repo.setActivo(id, false)`.
+- [x] Implementar `restaurar(id, workspaceId)`: `container.restaurarUltimo` → `repo.setActivo(id, true)`.
 
 ### B5.4 `DesactivarClienteCommand`
-- [ ] Constructor recibe `clientesService`, `clienteId`, `workspaceId`.
-- [ ] `execute()`: llama `clientesService.softDelete` y guarda `this.clienteId`.
-- [ ] `undo()`: llama `clientesService.restaurar`.
+- [x] Constructor recibe `clientesService`, `clienteId`, `workspaceId`.
+- [x] `execute()`: llama `clientesService.softDelete` y guarda `this.clienteId`.
+- [x] `undo()`: llama `clientesService.restaurar`.
 
 ### B5.5 Controller
-- [ ] `GET /api/clientes` (ENTRENADOR).
-- [ ] `GET /api/clientes/:id`.
-- [ ] `PUT /api/clientes/:id`.
-- [ ] `DELETE /api/clientes/:id` → pasa por `CommandInvoker`.
-- [ ] `POST /api/clientes/:id/restaurar` (atajo directo).
+- [x] `GET /api/clientes` (ENTRENADOR).
+- [x] `GET /api/clientes/:id`.
+- [x] `PUT /api/clientes/:id`.
+- [x] `DELETE /api/clientes/:id` → pasa por `CommandInvoker`.
+- [x] `POST /api/clientes/:id/restaurar` (atajo directo).
 
 ### B5.6 Tests
-- [ ] `clientes.repository.spec.ts` con `PrismaService` mockeado.
-- [ ] `cliente.memento.spec.ts`: snapshot inmutable, timestamp correcto.
-- [ ] `cliente-container.spec.ts`: guardar 2 mementos → restaurar último.
-- [ ] `desactivar-cliente.command.spec.ts` mockeando `ClientesService`: execute desactiva; undo reactiva.
+- [x] `clientes.repository.spec.ts` con `PrismaService` mockeado.
+- [x] `cliente.memento.spec.ts`: snapshot inmutable, timestamp correcto.
+- [x] `cliente-container.spec.ts`: guardar 2 mementos → restaurar último.
+- [x] `desactivar-cliente.command.spec.ts` mockeando `ClientesService`: execute desactiva; undo reactiva.
 
 ---
 
@@ -367,61 +369,61 @@ modules/<nombre>/
 **Objetivo:** módulo más cargado de patrones del MVP. Tres patrones colaborando en la misma entidad.
 
 ### B6.0 `PlanesEntrenamientoRepository`
-- [ ] Crear `planes-entrenamiento/repositories/planes-entrenamiento.repository.ts`.
-- [ ] Métodos: `crear(plan)`, `findAllPorWorkspace(workspaceId)`, `findByIdConEjercicios(id)`, `updateEstado(id, estado)`, `agregarEjercicioPlan(planId, dto)`, `quitarEjercicioPlan(ejercicioPlanId)`, `contarEjercicios(planId)`, `crearDesdeClone(snapshot)`.
-- [ ] `PrismaService` inyectado **solo aquí** para este dominio.
-- [ ] States y prototype reciben este repositorio cuando necesiten persistir.
+- [x] Crear `planes-entrenamiento/repositories/planes-entrenamiento.repository.ts`.
+- [x] Métodos: `crear(plan)`, `findAllPorWorkspace(workspaceId)`, `findByIdConEjercicios(id)`, `updateEstado(id, estado)`, `agregarEjercicioPlan(planId, dto)`, `quitarEjercicioPlan(ejercicioPlanId)`, `contarEjercicios(planId)`, `crearDesdeClone(snapshot)`.
+- [x] `PrismaService` inyectado **solo aquí** para este dominio.
+- [x] States y prototype reciben este repositorio cuando necesiten persistir.
 
 ### B6.1 Factories
-- [ ] Crear `planes-entrenamiento/factories/plan.factory.ts` (clase abstracta con `crear(dto): PlanDraft`).
-- [ ] Crear `hipertrofia.factory.ts` (series=4, reps=10, descanso=60s).
-- [ ] Crear `fuerza.factory.ts` (series=5, reps=5, descanso=180s).
-- [ ] Crear `resistencia.factory.ts` (series=3, reps=15, descanso=30s).
-- [ ] Crear `plan-factory.provider.ts` con mapa `Record<TipoPlanEntrenamiento, PlanFactory>` inyectable.
+- [x] Crear `planes-entrenamiento/factories/plan.factory.ts` (clase abstracta con `crear(dto): PlanDraft`).
+- [x] Crear `hipertrofia.factory.ts` (series=4, reps=10, descanso=60s).
+- [x] Crear `fuerza.factory.ts` (series=5, reps=5, descanso=180s).
+- [x] Crear `resistencia.factory.ts` (series=3, reps=15, descanso=30s).
+- [x] Crear `plan-factory.provider.ts` con mapa `Record<TipoPlanEntrenamiento, PlanFactory>` inyectable.
 
 ### B6.2 States
-- [ ] Crear `planes-entrenamiento/states/plan-state.interface.ts` con `activar(plan, ctx)` y `archivar(plan, ctx)` donde `ctx = { repository, subject }`.
-- [ ] Crear `borrador.state.ts`: `activar` valida `repository.contarEjercicios(plan.id) >= 1`, llama `repository.updateEstado(plan.id, 'ACTIVO')`, dispara observers, retorna `ActivoState`.
-- [ ] `borrador.state.ts`: `archivar` lanza BadRequest.
-- [ ] Crear `activo.state.ts`: `archivar` llama `repository.updateEstado(plan.id, 'ARCHIVADO')`; `activar` lanza BadRequest.
-- [ ] Crear `archivado.state.ts`: ambos lanzan BadRequest.
-- [ ] Crear `state.factory.ts` con `fromEstado(estado): PlanState`.
-- [ ] Confirmar que ningún state importa `PrismaService`.
+- [x] Crear `planes-entrenamiento/states/plan-state.interface.ts` con `activar(plan, ctx)` y `archivar(plan, ctx)` donde `ctx = { repository, subject }`.
+- [x] Crear `borrador.state.ts`: `activar` valida `repository.contarEjercicios(plan.id) >= 1`, llama `repository.updateEstado(plan.id, 'ACTIVO')`, dispara observers, retorna `ActivoState`.
+- [x] `borrador.state.ts`: `archivar` lanza BadRequest.
+- [x] Crear `activo.state.ts`: `archivar` llama `repository.updateEstado(plan.id, 'ARCHIVADO')`; `activar` lanza BadRequest.
+- [x] Crear `archivado.state.ts`: ambos lanzan BadRequest.
+- [x] Crear `state.factory.ts` con `fromEstado(estado): PlanState`.
+- [x] Confirmar que ningún state importa `PrismaService`.
 
 ### B6.3 Prototype
-- [ ] Crear `planes-entrenamiento/prototypes/plan.prototype.ts` con interfaz `Cloneable<T>`.
-- [ ] Implementar `PlanDeEntrenamientoPrototype.clone()` con ids `undefined` y nombre `<original> (copia)`.
+- [x] Crear `planes-entrenamiento/prototypes/plan.prototype.ts` con interfaz `Cloneable<T>`.
+- [x] Implementar `PlanDeEntrenamientoPrototype.clone()` con ids `undefined` y nombre `<original> (copia)`.
 
 ### B6.4 `PlanesEntrenamientoService`
-- [ ] Inyectar `PlanesEntrenamientoRepository`, `PlanFactoriesProvider`, `PlanStateFactory`, `PlanSubject`.
-- [ ] Implementar `crear(tipo, dto, entrenadorId)`: elige factory y persiste con `repository.crear(...)` en estado BORRADOR.
-- [ ] Implementar `findAll(workspaceId)` → `repository.findAllPorWorkspace`.
-- [ ] Implementar `findById(id, workspaceId)` → `repository.findByIdConEjercicios`.
-- [ ] Implementar `activar(id, workspaceId)`: carga plan, instancia state, delega `state.activar(plan, { repository, subject })`.
-- [ ] Implementar `archivar(id, workspaceId)`: análogo a `activar`.
-- [ ] Implementar `duplicar(id, workspaceId)`: carga plan, `prototype.clone()`, `repository.crearDesdeClone(snapshot)`.
-- [ ] Implementar `agregarEjercicio(planId, dto)` → `repository.agregarEjercicioPlan` + notificar si plan ACTIVO.
-- [ ] Implementar `quitarEjercicio(planId, ejercicioPlanId)` → `repository.quitarEjercicioPlan` + notificar si plan ACTIVO.
+- [x] Inyectar `PlanesEntrenamientoRepository`, `PlanFactoriesProvider`, `PlanStateFactory`, `PlanSubject`.
+- [x] Implementar `crear(tipo, dto, entrenadorId)`: elige factory y persiste con `repository.crear(...)` en estado BORRADOR.
+- [x] Implementar `findAll(workspaceId)` → `repository.findAllPorWorkspace`.
+- [x] Implementar `findById(id, workspaceId)` → `repository.findByIdConEjercicios`.
+- [x] Implementar `activar(id, workspaceId)`: carga plan, instancia state, delega `state.activar(plan, { repository, subject })`.
+- [x] Implementar `archivar(id, workspaceId)`: análogo a `activar`.
+- [x] Implementar `duplicar(id, workspaceId)`: carga plan, `prototype.clone()`, `repository.crearDesdeClone(snapshot)`.
+- [x] Implementar `agregarEjercicio(planId, dto)` → `repository.agregarEjercicioPlan` + notificar si plan ACTIVO.
+- [x] Implementar `quitarEjercicio(planId, ejercicioPlanId)` → `repository.quitarEjercicioPlan` + notificar si plan ACTIVO.
 
 ### B6.5 Controller
-- [ ] `POST /api/planes-entrenamiento` body `{ nombre, descripcion, tipo }`.
-- [ ] `GET /api/planes-entrenamiento`.
-- [ ] `GET /api/planes-entrenamiento/:id`.
-- [ ] `PATCH /api/planes-entrenamiento/:id/activar`.
-- [ ] `PATCH /api/planes-entrenamiento/:id/archivar`.
-- [ ] `POST /api/planes-entrenamiento/:id/duplicar`.
-- [ ] `POST /api/planes-entrenamiento/:id/ejercicios`.
-- [ ] `DELETE /api/planes-entrenamiento/:id/ejercicios/:ejercicioPlanId`.
+- [x] `POST /api/planes-entrenamiento` body `{ nombre, descripcion, tipo }`.
+- [x] `GET /api/planes-entrenamiento`.
+- [x] `GET /api/planes-entrenamiento/:id`.
+- [x] `PATCH /api/planes-entrenamiento/:id/activar`.
+- [x] `PATCH /api/planes-entrenamiento/:id/archivar`.
+- [x] `POST /api/planes-entrenamiento/:id/duplicar`.
+- [x] `POST /api/planes-entrenamiento/:id/ejercicios`.
+- [x] `DELETE /api/planes-entrenamiento/:id/ejercicios/:ejercicioPlanId`.
 
 ### B6.6 Tests
-- [ ] `planes-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
-- [ ] `hipertrofia.factory.spec.ts`: defaults correctos.
-- [ ] `fuerza.factory.spec.ts`: defaults correctos.
-- [ ] `resistencia.factory.spec.ts`: defaults correctos.
-- [ ] `borrador.state.spec.ts` mockeando repositorio: activar sin ejercicios lanza error; con ejercicios transiciona.
-- [ ] `activo.state.spec.ts` mockeando repositorio: archivar transiciona; activar lanza error.
-- [ ] `archivado.state.spec.ts`: ambas transiciones lanzan error.
-- [ ] `plan.prototype.spec.ts`: clone genera nuevo objeto con ids vacíos y suffijo `(copia)`.
+- [x] `planes-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
+- [x] `hipertrofia.factory.spec.ts`: defaults correctos.
+- [x] `fuerza.factory.spec.ts`: defaults correctos.
+- [x] `resistencia.factory.spec.ts`: defaults correctos.
+- [x] `borrador.state.spec.ts` mockeando repositorio: activar sin ejercicios lanza error; con ejercicios transiciona.
+- [x] `activo.state.spec.ts` mockeando repositorio: archivar transiciona; activar lanza error.
+- [x] `archivado.state.spec.ts`: ambas transiciones lanzan error.
+- [x] `plan.prototype.spec.ts`: clone genera nuevo objeto con ids vacíos y suffijo `(copia)`.
 
 ---
 
@@ -430,51 +432,51 @@ modules/<nombre>/
 **Objetivo:** asignar plan a cliente y notificar (in-app + email) cuando un plan activo cambia.
 
 ### B7.1 Interfaces Observer
-- [ ] Crear `planes-entrenamiento/observers/subject.interface.ts` con `Observer.update(evento)` y `Subject.subscribe/unsubscribe/notify`.
-- [ ] Definir `EventoPlan = { tipo: 'PLAN_ACTIVADO' | 'PLAN_MODIFICADO' | 'PLAN_ARCHIVADO'; planId; clienteId }`.
+- [x] Crear `planes-entrenamiento/observers/subject.interface.ts` con `Observer.update(evento)` y `Subject.subscribe/unsubscribe/notify`.
+- [x] Definir `EventoPlan = { tipo: 'PLAN_ACTIVADO' | 'PLAN_MODIFICADO' | 'PLAN_ARCHIVADO'; planId; clienteId }`.
 
 ### B7.2 `PlanSubject`
-- [ ] Crear servicio `plan-subject.service.ts` (singleton NestJS) con `Map<planId, Set<Observer>>`.
-- [ ] Implementar `notify(planId, evento)` que itera observers.
+- [x] Crear servicio `plan-subject.service.ts` (singleton NestJS) con `Map<planId, Set<Observer>>`.
+- [x] Implementar `notify(planId, evento)` que itera observers.
 
 ### B7.3 Repositorios involucrados
-- [ ] Crear `notificaciones/repositories/notificaciones.repository.ts` con `crear(dto)`, `findNoLeidasPorCliente(clienteId)`, `marcarLeida(id)`.
-- [ ] Crear `asignaciones/repositories/asignaciones-entrenamiento.repository.ts` con `crear(dto)`, `findPorCliente(clienteId)`, `findPorPlan(planId)`, `updateEstado(id, estado)`, `findActivaPorCliente(clienteId)`.
+- [x] Crear `notificaciones/repositories/notificaciones.repository.ts` con `crear(dto)`, `findNoLeidasPorCliente(clienteId)`, `marcarLeida(id)`.
+- [x] Crear `asignaciones/repositories/asignaciones-entrenamiento.repository.ts` con `crear(dto)`, `findPorCliente(clienteId)`, `findPorPlan(planId)`, `updateEstado(id, estado)`, `findActivaPorCliente(clienteId)`.
 
 ### B7.4 Observers concretos
-- [ ] Crear `cliente.observer.ts` que recibe `NotificacionesRepository` (no Prisma) y persiste fila en `Notificacion`.
-- [ ] Crear `email-notification.observer.ts` que recibe `mailer` y envía email con `cambio-plan.hbs`.
-- [ ] Crear template `mailer/templates/cambio-plan.hbs`.
+- [x] Crear `cliente.observer.ts` que recibe `NotificacionesRepository` (no Prisma) y persiste fila en `Notificacion`.
+- [x] Crear `email-notification.observer.ts` que recibe `mailer` y envía email con `cambio-plan.hbs`.
+- [x] Crear template `mailer/templates/cambio-plan.hbs`.
 
 ### B7.5 `AsignacionesService`
-- [ ] Inyectar `AsignacionesEntrenamientoRepository`, `PlanesEntrenamientoRepository`, `ClientesRepository`, `NotificacionesRepository`, `PlanSubject`, `MailerService`.
-- [ ] Implementar `asignarEntrenamiento({ clienteId, planEntrenamientoId })`.
-- [ ] Validar cliente y plan en mismo workspace usando los repositorios.
-- [ ] Validar plan estado = ACTIVO.
-- [ ] `asignacionesRepository.crear({ ..., estado: 'ACTIVO' })`.
-- [ ] Suscribir `ClienteObserver(notificacionesRepository, clienteId)` y `EmailObserver(mailer, correoCliente)` al `PlanSubject` para ese `planId`.
-- [ ] Implementar `cambiarEstado(asignacionId, estado)` → `asignacionesRepository.updateEstado`.
+- [x] Inyectar `AsignacionesEntrenamientoRepository`, `PlanesEntrenamientoRepository`, `ClientesRepository`, `NotificacionesRepository`, `PlanSubject`, `MailerService`.
+- [x] Implementar `asignarEntrenamiento({ clienteId, planEntrenamientoId })`.
+- [x] Validar cliente y plan en mismo workspace usando los repositorios.
+- [x] Validar plan estado = ACTIVO.
+- [x] `asignacionesRepository.crear({ ..., estado: 'ACTIVO' })`.
+- [x] Suscribir `ClienteObserver(notificacionesRepository, clienteId)` y `EmailObserver(mailer, correoCliente)` al `PlanSubject` para ese `planId`.
+- [x] Implementar `cambiarEstado(asignacionId, estado)` → `asignacionesRepository.updateEstado`.
 
 ### B7.6 Disparo desde §B6
-- [ ] En `activar()`: tras persistir, `subject.notify({ tipo: 'PLAN_ACTIVADO' })`.
-- [ ] En `agregarEjercicio`/`quitarEjercicio` con plan ACTIVO: `subject.notify({ tipo: 'PLAN_MODIFICADO' })`.
-- [ ] En `archivar()`: `subject.notify({ tipo: 'PLAN_ARCHIVADO' })`.
+- [x] En `activar()`: tras persistir, `subject.notify({ tipo: 'PLAN_ACTIVADO' })`.
+- [x] En `agregarEjercicio`/`quitarEjercicio` con plan ACTIVO: `subject.notify({ tipo: 'PLAN_MODIFICADO' })`.
+- [x] En `archivar()`: `subject.notify({ tipo: 'PLAN_ARCHIVADO' })`.
 
 ### B7.7 Controller asignaciones
-- [ ] `POST /api/asignaciones/entrenamiento`.
-- [ ] `GET /api/clientes/:id/asignaciones`.
-- [ ] `PUT /api/asignaciones/:id` body `{ estado }`.
+- [x] `POST /api/asignaciones/entrenamiento`.
+- [x] `GET /api/clientes/:id/asignaciones`.
+- [x] `PUT /api/asignaciones/:id` body `{ estado }`.
 
 ### B7.8 Notificaciones (servicio + endpoints)
-- [ ] Crear `NotificacionesService` que consume `NotificacionesRepository`.
-- [ ] `GET /api/notificaciones` (CLIENTE) — lista no leídas.
-- [ ] `PATCH /api/notificaciones/:id/leer`.
+- [x] Crear `NotificacionesService` que consume `NotificacionesRepository`.
+- [x] `GET /api/notificaciones` (CLIENTE) — lista no leídas.
+- [x] `PATCH /api/notificaciones/:id/leer`.
 
 ### B7.9 Tests
-- [ ] `notificaciones.repository.spec.ts` y `asignaciones-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
-- [ ] `plan-subject.spec.ts`: subscribe/unsubscribe/notify llaman a observers correctos.
-- [ ] `cliente.observer.spec.ts` mockeando `NotificacionesRepository`: persiste notificación con mensaje según evento.
-- [ ] `email-notification.observer.spec.ts`: invoca mailer con el template correcto.
+- [x] `notificaciones.repository.spec.ts` y `asignaciones-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
+- [x] `plan-subject.spec.ts`: subscribe/unsubscribe/notify llaman a observers correctos.
+- [x] `cliente.observer.spec.ts` mockeando `NotificacionesRepository`: persiste notificación con mensaje según evento.
+- [x] `email-notification.observer.spec.ts`: invoca mailer con el template correcto.
 
 ---
 
@@ -483,39 +485,39 @@ modules/<nombre>/
 **Objetivo:** registrar entrenamientos vía Builder y completar el tercer command (archivar plan con undo).
 
 ### B8.1 `RegistroEntrenamientoBuilder`
-- [ ] Crear `registros/builders/registro-entrenamiento.builder.ts`.
-- [ ] Setters: `setFecha`, `setClienteId`, `addEjercicio`, `setNotas`, `setDuracionMin`.
-- [ ] `build()` valida que haya `fecha`, `clienteId` y al menos 1 ejercicio; si no, lanza error.
-- [ ] `build()` devuelve copia inmutable.
+- [x] Crear `registros/builders/registro-entrenamiento.builder.ts`.
+- [x] Setters: `setFecha`, `setClienteId`, `addEjercicio`, `setNotas`, `setDuracionMin`.
+- [x] `build()` valida que haya `fecha`, `clienteId` y al menos 1 ejercicio; si no, lanza error.
+- [x] `build()` devuelve copia inmutable.
 
 ### B8.2 `RegistrosEntrenamientoRepository`
-- [ ] Crear `registros/repositories/registros-entrenamiento.repository.ts`.
-- [ ] Métodos: `crearConEjercicios(payload)` (transacción interna con `RegistroDeEntrenamiento` + `RegistroDeEjercicio[]`), `listarPorCliente(clienteId, filtros)`, `findPorClienteConDetalle(clienteId)` (para progreso §B9).
+- [x] Crear `registros/repositories/registros-entrenamiento.repository.ts`.
+- [x] Métodos: `crearConEjercicios(payload)` (transacción interna con `RegistroDeEntrenamiento` + `RegistroDeEjercicio[]`), `listarPorCliente(clienteId, filtros)`, `findPorClienteConDetalle(clienteId)` (para progreso §B9).
 
 ### B8.3 `RegistrosService`
-- [ ] Inyectar `RegistrosEntrenamientoRepository` y `ClientesRepository`.
-- [ ] Validar que cliente pertenece al workspace vía `ClientesRepository`.
-- [ ] Instanciar builder y aplicar setters iterando el DTO.
-- [ ] Llamar `build()` y persistir vía `registrosRepository.crearConEjercicios(payload)`.
-- [ ] Implementar `listar(clienteId, { page, limit, desde, hasta })` → `registrosRepository.listarPorCliente`.
+- [x] Inyectar `RegistrosEntrenamientoRepository` y `ClientesRepository`.
+- [x] Validar que cliente pertenece al workspace vía `ClientesRepository`.
+- [x] Instanciar builder y aplicar setters iterando el DTO.
+- [x] Llamar `build()` y persistir vía `registrosRepository.crearConEjercicios(payload)`.
+- [x] Implementar `listar(clienteId, { page, limit, desde, hasta })` → `registrosRepository.listarPorCliente`.
 
 ### B8.4 Controller
-- [ ] `POST /api/clientes/:id/registros-entrenamiento`.
-- [ ] `GET /api/clientes/:id/registros-entrenamiento` con paginación.
+- [x] `POST /api/clientes/:id/registros-entrenamiento`.
+- [x] `GET /api/clientes/:id/registros-entrenamiento` con paginación.
 
 ### B8.5 `ArchivarPlanCommand`
-- [ ] Constructor recibe `planesService`, `planId`, `workspaceId`.
-- [ ] `execute()`: guarda `estadoPrevio` y llama `planesService.archivar()`.
-- [ ] `undo()`: si `estadoPrevio === ACTIVO`, llama `planesService.activar()`.
+- [x] Constructor recibe `planesService`, `planId`, `workspaceId`.
+- [x] `execute()`: guarda `estadoPrevio` y llama `planesService.archivar()`.
+- [x] `undo()`: si `estadoPrevio === ACTIVO`, llama `planesService.activar()`.
 
 ### B8.6 Endpoint
-- [ ] `PATCH /api/planes-entrenamiento/:id/archivar` pasa por `CommandInvoker`.
+- [x] `PATCH /api/planes-entrenamiento/:id/archivar` pasa por `CommandInvoker`.
 
 ### B8.7 Tests
-- [ ] `registros-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
-- [ ] `registro-entrenamiento.builder.spec.ts`: build sin ejercicios falla.
-- [ ] `registro-entrenamiento.builder.spec.ts`: build con ejercicios construye objeto correcto.
-- [ ] `archivar-plan.command.spec.ts`: execute archiva; undo restaura estado previo.
+- [x] `registros-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
+- [x] `registro-entrenamiento.builder.spec.ts`: build sin ejercicios falla.
+- [x] `registro-entrenamiento.builder.spec.ts`: build con ejercicios construye objeto correcto.
+- [x] `archivar-plan.command.spec.ts`: execute archiva; undo restaura estado previo.
 
 ---
 
@@ -524,29 +526,29 @@ modules/<nombre>/
 **Objetivo:** tres estrategias intercambiables seleccionables por query param.
 
 ### B9.1 Interfaz y tipos
-- [ ] Crear `progreso/strategies/progreso-strategy.interface.ts` con `calcular(registros): ProgresoResumen`.
-- [ ] Definir `ProgresoResumen` y `PeriodoResumen`.
+- [x] Crear `progreso/strategies/progreso-strategy.interface.ts` con `calcular(registros): ProgresoResumen`.
+- [x] Definir `ProgresoResumen` y `PeriodoResumen`.
 
 ### B9.2 Estrategias concretas
-- [ ] Crear `progreso-semanal.strategy.ts` agrupando por ISO week.
-- [ ] Crear `progreso-mensual.strategy.ts` agrupando por `YYYY-MM`.
-- [ ] Crear `progreso-por-plan.strategy.ts` agrupando por plan asignado vigente.
+- [x] Crear `progreso-semanal.strategy.ts` agrupando por ISO week.
+- [x] Crear `progreso-mensual.strategy.ts` agrupando por `YYYY-MM`.
+- [x] Crear `progreso-por-plan.strategy.ts` agrupando por plan asignado vigente.
 
 ### B9.3 `ProgresoContext` / Service
-- [ ] Crear `progreso/progreso.service.ts`.
-- [ ] Inyectar `RegistrosEntrenamientoRepository` (reuso del de §B8.2; no inyectar Prisma).
-- [ ] Implementar `setEstrategia(s)`.
-- [ ] Implementar `calcularProgreso(clienteId, workspaceId, vista)` que llama `registrosRepository.findPorClienteConDetalle(clienteId)` y delega a la strategy.
+- [x] Crear `progreso/progreso.service.ts`.
+- [x] Inyectar `RegistrosEntrenamientoRepository` (reuso del de §B8.2; no inyectar Prisma).
+- [x] Implementar `setEstrategia(s)`.
+- [x] Implementar `calcularProgreso(clienteId, vista)` que llama `registrosRepository.findPorClienteConDetalle(clienteId)` y delega a la strategy.
 
 ### B9.4 Endpoint
-- [ ] `GET /api/clientes/:id/progreso?vista=semanal|mensual|porPlan` (default `semanal`).
-- [ ] Validar `vista` con `@IsIn(['semanal','mensual','porPlan'])` en query DTO.
+- [x] `GET /api/clientes/:id/progreso?vista=semanal|mensual|porPlan` (default `semanal`).
+- [x] Validar `vista` con `@IsIn(['semanal','mensual','porPlan'])` en query DTO.
 
 ### B9.5 Tests
-- [ ] `progreso-semanal.strategy.spec.ts` con dataset fijo en memoria.
-- [ ] `progreso-mensual.strategy.spec.ts` con dataset fijo en memoria.
-- [ ] `progreso-por-plan.strategy.spec.ts` con dataset fijo en memoria.
-- [ ] `progreso.service.spec.ts`: selecciona la strategy correcta según query.
+- [x] `progreso-semanal.strategy.spec.ts` con dataset fijo en memoria.
+- [x] `progreso-mensual.strategy.spec.ts` con dataset fijo en memoria.
+- [x] `progreso-por-plan.strategy.spec.ts` con dataset fijo en memoria.
+- [x] `progreso.service.spec.ts`: selecciona la strategy correcta según query.
 
 ---
 
@@ -555,16 +557,16 @@ modules/<nombre>/
 **Objetivo:** un único endpoint que el frontend consume para la pantalla principal del cliente.
 
 ### B10.1 `ClienteDashboardFacade`
-- [ ] Crear `dashboard/cliente-dashboard.facade.ts`.
-- [ ] Inyectar **únicamente servicios** (`ClientesService`, `PlanesEntrenamientoService`, `RegistrosService`, `ProgresoService`); el facade no toca repositorios ni Prisma.
-- [ ] Implementar `getDashboardCliente(clienteId, workspaceId)`.
-- [ ] Componer: cliente + plan activo + últimos 5 registros + resumen semanal.
+- [x] Crear `dashboard/cliente-dashboard.facade.ts`.
+- [x] Inyectar **únicamente servicios** (`ClientesService`, `PlanesEntrenamientoService`, `RegistrosService`, `ProgresoService`); el facade no toca repositorios ni Prisma.
+- [x] Implementar `getDashboardCliente(clienteId, workspaceId)`.
+- [x] Componer: cliente + plan activo + últimos 5 registros + resumen semanal.
 
 ### B10.2 Endpoint
-- [ ] `GET /api/clientes/:id/dashboard` (ENTRENADOR).
+- [x] `GET /api/clientes/:id/dashboard` (ENTRENADOR).
 
 ### B10.3 Tests
-- [ ] `cliente-dashboard.facade.spec.ts` con servicios mockeados: verifica composición y orden de llamadas.
+- [x] `cliente-dashboard.facade.spec.ts` con servicios mockeados: verifica composición y orden de llamadas.
 
 ---
 
@@ -573,36 +575,36 @@ modules/<nombre>/
 **Objetivo:** cobertura mínima de los patrones y un e2e que recorra el flujo completo.
 
 ### B11.1 Configuración Jest e2e
-- [ ] Confirmar/ajustar `apps/api/test/jest-e2e.json`.
-- [ ] Agregar variable `DATABASE_URL_TEST` apuntando a esquema/DB de test.
-- [ ] Crear `globalSetup` que ejecute `prisma migrate deploy` sobre la DB de test.
-- [ ] Agregar script `pnpm --filter api test:e2e`.
+- [x] Confirmar/ajustar `apps/api/test/jest-e2e.json`.
+- [x] Agregar variable `DATABASE_URL_TEST` apuntando a esquema/DB de test.
+- [x] Crear `globalSetup` que ejecute `prisma migrate deploy` sobre la DB de test.
+- [x] Agregar script `pnpm --filter api test:e2e`.
 
 ### B11.2 Helpers de test
-- [ ] Crear `apps/api/test/helpers/db.ts` con `truncateAll(prisma)`.
-- [ ] Crear `apps/api/test/helpers/auth.ts` con `registrarEntrenadorYLogin(app)` y `crearClientePorInvitacion(app, token)`.
+- [x] Crear `apps/api/test/helpers/db.ts` con `truncateAll(prisma)`.
+- [x] Crear `apps/api/test/helpers/auth.ts` con `registrarEntrenadorYLogin(app)` y `crearClientePorInvitacion(app, token)`.
 
 ### B11.3 e2e happy path (`happy-path.e2e-spec.ts`)
-- [ ] Paso 1 — `POST /auth/register` entrenador y guardar `tokenEntrenador`.
-- [ ] Paso 2 — `POST /clientes/invitar` con `correo=cli@test` y capturar `tokenInvitacion`.
-- [ ] Paso 3 — `POST /auth/cliente/register` con ese token y guardar `tokenCliente`.
-- [ ] Paso 4 — `POST /ejercicios` ×3; segunda llamada a `GET /ejercicios` no consulta Prisma (Decorator).
-- [ ] Paso 5 — `POST /planes-entrenamiento` con `tipo=HIPERTROFIA`; verificar defaults de la factory.
-- [ ] Paso 6 — `POST /planes-entrenamiento/:id/ejercicios` ×2.
-- [ ] Paso 7 — `PATCH /planes-entrenamiento/:id/activar` (State transition).
-- [ ] Paso 8 — `POST /asignaciones/entrenamiento`.
-- [ ] Paso 9 — `GET /notificaciones` con `tokenCliente` debe devolver ≥1 (Observer).
-- [ ] Paso 10 — `POST /clientes/:id/registros-entrenamiento` con 2 ejercicios (Builder).
-- [ ] Paso 11 — `GET /clientes/:id/dashboard` y verificar shape (Facade).
-- [ ] Paso 12 — `GET /clientes/:id/progreso?vista=semanal` con `periodos.length >= 1` (Strategy).
-- [ ] Paso 13 — `POST /planes-entrenamiento/:id/duplicar`; verificar nuevo id y sufijo `(copia)` (Prototype).
-- [ ] Paso 14 — `DELETE /clientes/:id`; cliente queda `estaActivo=false` (Command + Memento).
-- [ ] Paso 15 — `POST /commands/undo`; cliente vuelve a `estaActivo=true`.
+- [x] Paso 1 — `POST /auth/register` entrenador y guardar `tokenEntrenador`.
+- [x] Paso 2 — `POST /clientes/invitar` con `correo=cli@test` y capturar `tokenInvitacion`.
+- [x] Paso 3 — `POST /auth/cliente/register` con ese token y guardar `tokenCliente`.
+- [x] Paso 4 — `POST /ejercicios` ×3; segunda llamada a `GET /ejercicios` no consulta Prisma (Decorator).
+- [x] Paso 5 — `POST /planes-entrenamiento` con `tipo=HIPERTROFIA`; verificar defaults de la factory.
+- [x] Paso 6 — `POST /planes-entrenamiento/:id/ejercicios` ×2.
+- [x] Paso 7 — `PATCH /planes-entrenamiento/:id/activar` (State transition).
+- [x] Paso 8 — `POST /asignaciones/entrenamiento`.
+- [x] Paso 9 — `GET /notificaciones` con `tokenCliente` debe devolver ≥1 (Observer).
+- [x] Paso 10 — `POST /clientes/:id/registros-entrenamiento` con 2 ejercicios (Builder).
+- [x] Paso 11 — `GET /clientes/:id/dashboard` y verificar shape (Facade).
+- [x] Paso 12 — `GET /clientes/:id/progreso?vista=semanal` con `periodos.length >= 1` (Strategy).
+- [x] Paso 13 — `POST /planes-entrenamiento/:id/duplicar`; verificar nuevo id y sufijo `(copia)` (Prototype).
+- [x] Paso 14 — `DELETE /clientes/:id`; cliente queda `estaActivo=false` (Command + Memento).
+- [x] Paso 15 — `POST /commands/undo`; cliente vuelve a `estaActivo=true`.
 
 ### B11.4 Cobertura mínima
-- [ ] Cada patrón tiene al menos un `.spec.ts` ya escrito en fases anteriores.
-- [ ] Generar reporte con `pnpm --filter api test --coverage`.
-- [ ] Verificar >80% líneas en los archivos de patrones.
+- [x] Cada patrón tiene al menos un `.spec.ts` ya escrito en fases anteriores.
+- [x] Generar reporte con `pnpm --filter api test --coverage`.
+- [x] Verificar >80% líneas en los archivos de patrones.
 
 ---
 
