@@ -25,7 +25,7 @@ export class PlanesEntrenamientoService {
     private readonly planFactoriesProvider: PlanFactoriesProvider,
     private readonly planStateFactory: PlanStateFactory,
     private readonly planSubject: PlanSubject,
-  ) {}
+  ) { }
 
   crear(
     tipo: TipoPlanEntrenamiento,

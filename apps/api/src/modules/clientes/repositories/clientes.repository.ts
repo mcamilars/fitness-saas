@@ -1,8 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { type Cliente, Prisma, PrismaService } from '@repo/database';
 
+// Campos públicos del usuario: excluye explícitamente `contrasenaHash`
+// para que el perfil del cliente nunca exponga el hash de la contraseña.
+const usuarioPublicoSelect = {
+  id: true,
+  correo: true,
+  nombre: true,
+  apellido: true,
+  rol: true,
+  estaActivo: true,
+  creadoEn: true,
+  actualizadoEn: true,
+} satisfies Prisma.UsuarioSelect;
+
 export type ClienteConPerfil = Prisma.ClienteGetPayload<{
-  include: { usuario: true };
+  include: { usuario: { select: typeof usuarioPublicoSelect } };
 }>;
 
 export type ActualizarClienteDto = Prisma.ClienteUpdateInput;
@@ -43,7 +56,7 @@ export class ClientesRepository implements ClientesRepositoryInterface {
   findAllPorWorkspace(workspaceId: string): Promise<ClienteConPerfil[]> {
     return this.prisma.cliente.findMany({
       where: { espacioDeTrabajoId: workspaceId },
-      include: { usuario: true },
+      include: { usuario: { select: usuarioPublicoSelect } },
       orderBy: { creadoEn: 'desc' },
     });
   }
@@ -54,7 +67,7 @@ export class ClientesRepository implements ClientesRepositoryInterface {
   ): Promise<ClienteConPerfil | null> {
     return this.prisma.cliente.findFirst({
       where: { id, ...(workspaceId ? { espacioDeTrabajoId: workspaceId } : {}) },
-      include: { usuario: true },
+      include: { usuario: { select: usuarioPublicoSelect } },
     });
   }
 
@@ -81,7 +94,7 @@ export class ClientesRepository implements ClientesRepositoryInterface {
 
     return client.cliente.findFirst({
       where: { id, ...(workspaceId ? { espacioDeTrabajoId: workspaceId } : {}) },
-      include: { usuario: true },
+      include: { usuario: { select: usuarioPublicoSelect } },
     });
   }
 

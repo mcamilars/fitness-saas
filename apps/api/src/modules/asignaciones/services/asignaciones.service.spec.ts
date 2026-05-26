@@ -45,6 +45,7 @@ describe('AsignacionesService', () => {
   const asignacionesRepository = {
     crear: jest.fn(),
     updateEstado: jest.fn(),
+    findById: jest.fn(),
   };
   const planesRepository = {
     findByIdConEjercicios: jest.fn(),
@@ -143,6 +144,7 @@ describe('AsignacionesService', () => {
   });
 
   it('cambiarEstado delega al repositorio', async () => {
+    asignacionesRepository.findById.mockResolvedValue({ id: 'asignacion-1' });
     asignacionesRepository.updateEstado.mockResolvedValue({ id: 'asignacion-1' });
 
     await service.cambiarEstado('asignacion-1', EstadoAsignacion.INACTIVO);
@@ -151,5 +153,14 @@ describe('AsignacionesService', () => {
       'asignacion-1',
       EstadoAsignacion.INACTIVO,
     );
+  });
+
+  it('cambiarEstado lanza NotFound si la asignación no existe', async () => {
+    asignacionesRepository.findById.mockResolvedValue(null);
+
+    await expect(
+      service.cambiarEstado('inexistente', EstadoAsignacion.INACTIVO),
+    ).rejects.toThrow('Asignación no encontrada');
+    expect(asignacionesRepository.updateEstado).not.toHaveBeenCalled();
   });
 });

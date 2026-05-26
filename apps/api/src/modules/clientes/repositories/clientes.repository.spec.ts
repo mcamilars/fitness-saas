@@ -1,5 +1,21 @@
 import { ClientesRepository } from './clientes.repository';
 
+// Selección esperada del usuario: campos públicos, sin `contrasenaHash`.
+const usuarioPublicoInclude = {
+  usuario: {
+    select: {
+      id: true,
+      correo: true,
+      nombre: true,
+      apellido: true,
+      rol: true,
+      estaActivo: true,
+      creadoEn: true,
+      actualizadoEn: true,
+    },
+  },
+};
+
 describe('ClientesRepository', () => {
   const prisma = {
     cliente: {
@@ -25,7 +41,7 @@ describe('ClientesRepository', () => {
 
     expect(prisma.cliente.findMany).toHaveBeenCalledWith({
       where: { espacioDeTrabajoId: 'workspace-1' },
-      include: { usuario: true },
+      include: usuarioPublicoInclude,
       orderBy: { creadoEn: 'desc' },
     });
   });
@@ -37,7 +53,7 @@ describe('ClientesRepository', () => {
 
     expect(prisma.cliente.findFirst).toHaveBeenCalledWith({
       where: { id: 'cliente-1', espacioDeTrabajoId: 'workspace-1' },
-      include: { usuario: true },
+      include: usuarioPublicoInclude,
     });
   });
 
@@ -57,7 +73,7 @@ describe('ClientesRepository', () => {
     });
     expect(prisma.cliente.findFirst).toHaveBeenCalledWith({
       where: { id: 'cliente-1', espacioDeTrabajoId: 'workspace-1' },
-      include: { usuario: true },
+      include: usuarioPublicoInclude,
     });
   });
 

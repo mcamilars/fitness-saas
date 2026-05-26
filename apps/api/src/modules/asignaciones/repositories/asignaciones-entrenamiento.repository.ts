@@ -17,6 +17,7 @@ export interface AsignacionesEntrenamientoRepositoryInterface {
     dto: CrearAsignacionEntrenamientoInput,
     tx?: Prisma.TransactionClient,
   ): Promise<AsignacionPlanEntrenamiento>;
+  findById(id: string): Promise<AsignacionPlanEntrenamiento | null>;
   findPorCliente(clienteId: string): Promise<AsignacionPlanEntrenamiento[]>;
   findPorPlan(planId: string): Promise<AsignacionPlanEntrenamiento[]>;
   updateEstado(
@@ -47,6 +48,12 @@ export class AsignacionesEntrenamientoRepository
         planDeEntrenamientoId: dto.planDeEntrenamientoId,
         estado: dto.estado ?? EstadoAsignacion.ACTIVO,
       },
+    });
+  }
+
+  findById(id: string): Promise<AsignacionPlanEntrenamiento | null> {
+    return this.prisma.asignacionPlanEntrenamiento.findUnique({
+      where: { id },
     });
   }
 

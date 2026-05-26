@@ -84,10 +84,16 @@ export class AsignacionesService {
     return asignacion;
   }
 
-  cambiarEstado(
+  async cambiarEstado(
     asignacionId: string,
     estado: EstadoAsignacion,
   ): Promise<AsignacionPlanEntrenamiento> {
+    const asignacion =
+      await this.asignacionesRepository.findById(asignacionId);
+    if (!asignacion) {
+      throw new NotFoundException('Asignación no encontrada');
+    }
+
     return this.asignacionesRepository.updateEstado(asignacionId, estado);
   }
 }

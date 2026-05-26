@@ -1,0 +1,601 @@
+{
+  "info": {
+    "name": "Fitness SaaS API",
+    "_postman_id": "fitness-saas-api-collection",
+    "description": "Colección completa de la API del Fitness SaaS (NestJS, prefijo global /api, puerto 4000).\n\n## Cómo usar\n1. Selecciona el entorno o usa las variables de colección ya incluidas (`baseUrl` apunta a http://localhost:4000/api).\n2. Ejecuta **Auth → Login entrenador** (carlos@fitpro.com / Password123!). El token se guarda automáticamente en `{{tokenEntrenador}}`.\n3. Ejecuta **Auth → Login cliente** (ana@example.com / Password123!) para `{{tokenCliente}}`.\n4. La mayoría de las peticiones usan `{{tokenEntrenador}}` por defecto (autenticación Bearer a nivel de colección). Las peticiones exclusivas de CLIENTE (Notificaciones) usan `{{tokenCliente}}`.\n5. Varias peticiones capturan IDs en variables (`clienteId`, `planId`, `ejercicioId`, `asignacionId`, etc.) mediante scripts de test, para encadenar flujos.\n\n## Convenciones\n- Respuestas exitosas envueltas como `{ \"data\": ... }`.\n- Errores normalizados como `{ statusCode, mensaje, error }` (`mensaje` puede ser `string[]` en validaciones).\n- Roles: ENTRENADOR y CLIENTE. Cada petición indica el rol requerido en su descripción.\n\nCredenciales del seed en `packages/database/prisma/SEED_CREDENTIALS.md` (contraseña única: Password123!).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{tokenEntrenador}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api", "type": "string" },
+    { "key": "tokenEntrenador", "value": "", "type": "string" },
+    { "key": "tokenCliente", "value": "", "type": "string" },
+    { "key": "clienteId", "value": "", "type": "string" },
+    { "key": "planId", "value": "", "type": "string" },
+    { "key": "ejercicioId", "value": "", "type": "string" },
+    { "key": "ejercicioPlanId", "value": "", "type": "string" },
+    { "key": "asignacionId", "value": "", "type": "string" },
+    { "key": "registroId", "value": "", "type": "string" },
+    { "key": "notificacionId", "value": "", "type": "string" },
+    { "key": "invitacionToken", "value": "seed-invitacion-token-fitpro-001", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Endpoints públicos (sin token). Registro y login.",
+      "item": [
+        {
+          "name": "Registrar entrenador",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"juan@gym.com\",\n  \"contrasena\": \"secreto123\",\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"nombreWorkspace\": \"Gym Elite\"\n}"
+            },
+            "description": "Público. Crea un usuario ENTRENADOR + su espacio de trabajo. Devuelve un JWT listo para usar.\n\n`contrasena` mínimo 8 caracteres. `nombreWorkspace` mínimo 2 caracteres (genera un slug único)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const t = pm.response.json().data.token;",
+                  "  if (t) pm.collectionVariables.set('tokenEntrenador', t);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login entrenador",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"carlos@fitpro.com\",\n  \"contrasena\": \"Password123!\"\n}"
+            },
+            "description": "Público. Devuelve `{ data: { token, usuario } }`. Guarda el token en `{{tokenEntrenador}}`.\n\nUsuario del seed: carlos@fitpro.com / Password123!"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.code === 200);",
+                  "const t = pm.response.json().data.token;",
+                  "if (t) pm.collectionVariables.set('tokenEntrenador', t);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login cliente",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"ana@example.com\",\n  \"contrasena\": \"Password123!\"\n}"
+            },
+            "description": "Público. Login de un CLIENTE del seed (ana@example.com). Guarda el token en `{{tokenCliente}}`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.code === 200);",
+                  "const t = pm.response.json().data.token;",
+                  "if (t) pm.collectionVariables.set('tokenCliente', t);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar cliente (con invitación)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/cliente/register", "host": ["{{baseUrl}}"], "path": ["auth", "cliente", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tokenInvitacion\": \"{{invitacionToken}}\",\n  \"correo\": \"nuevo.cliente@example.com\",\n  \"contrasena\": \"clave5678\",\n  \"nombre\": \"María\",\n  \"apellido\": \"López\"\n}"
+            },
+            "description": "Público. Consume una invitación válida y crea el usuario CLIENTE.\n\n- `tokenInvitacion`: token de una invitación no consumida y no expirada (el seed crea `seed-invitacion-token-fitpro-001` para `nuevo.cliente@example.com`).\n- `correo` debe coincidir con el de la invitación.\n- `contrasena` mínimo 8 caracteres."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] },
+            "description": "Público. Estado del servicio."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "description": "Gestión de clientes. Rol ENTRENADOR. Tenancy por workspace (JWT).",
+      "item": [
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/clientes", "host": ["{{baseUrl}}"], "path": ["clientes"] },
+            "description": "ENTRENADOR. Lista los clientes del workspace del entrenador autenticado. Respuesta: `{ data: { clientes: [...] } }` (el usuario NO incluye `contrasenaHash`)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const cs = pm.response.json().data.clientes;",
+                  "if (cs && cs.length) pm.collectionVariables.set('clienteId', cs[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener cliente por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/clientes/{{clienteId}}", "host": ["{{baseUrl}}"], "path": ["clientes", "{{clienteId}}"] },
+            "description": "ENTRENADOR. Devuelve el cliente (con perfil de usuario) si pertenece al workspace."
+          }
+        },
+        {
+          "name": "Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/clientes/{{clienteId}}", "host": ["{{baseUrl}}"], "path": ["clientes", "{{clienteId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"estaActivo\": true\n}" },
+            "description": "ENTRENADOR. Actualiza datos del cliente. Campo opcional: `estaActivo` (boolean)."
+          }
+        },
+        {
+          "name": "Desactivar cliente (soft delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/clientes/{{clienteId}}", "host": ["{{baseUrl}}"], "path": ["clientes", "{{clienteId}}"] },
+            "description": "ENTRENADOR. Desactiva el cliente (Command Pattern: la acción puede deshacerse). No borra físicamente."
+          }
+        },
+        {
+          "name": "Restaurar cliente",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/clientes/{{clienteId}}/restaurar", "host": ["{{baseUrl}}"], "path": ["clientes", "{{clienteId}}", "restaurar"] },
+            "description": "ENTRENADOR. Reactiva un cliente previamente desactivado."
+          }
+        },
+        {
+          "name": "Invitar cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/clientes/invitar", "host": ["{{baseUrl}}"], "path": ["clientes", "invitar"] },
+            "body": { "mode": "raw", "raw": "{\n  \"correo\": \"prospecto@example.com\"\n}" },
+            "description": "ENTRENADOR. Crea una invitación y envía un correo con el enlace/token. El cliente luego usa `Auth → Registrar cliente (con invitación)`."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invitaciones",
+      "item": [
+        {
+          "name": "Verificar invitación por token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/invitaciones/{{invitacionToken}}/verificar", "host": ["{{baseUrl}}"], "path": ["invitaciones", "{{invitacionToken}}", "verificar"] },
+            "description": "Público. Verifica si una invitación es válida (existe, no consumida, no expirada). Útil antes de mostrar el formulario de registro de cliente."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ejercicios",
+      "description": "Catálogo de ejercicios. Lectura: cualquier usuario autenticado. Creación: ENTRENADOR. Patrón Decorator (cache) transparente.",
+      "item": [
+        {
+          "name": "Listar ejercicios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/ejercicios", "host": ["{{baseUrl}}"], "path": ["ejercicios"] },
+            "description": "Autenticado. Lista todo el catálogo (servido a través del cache decorator)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const e = pm.response.json().data;",
+                  "if (e && e.length) pm.collectionVariables.set('ejercicioId', e[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ejercicios por grupo muscular",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/ejercicios/por-grupo/PECHO", "host": ["{{baseUrl}}"], "path": ["ejercicios", "por-grupo", "PECHO"] },
+            "description": "Autenticado. Filtra por grupo muscular. Valores: PECHO, ESPALDA, HOMBROS, BICEPS, TRICEPS, PIERNAS, GLUTEOS, CORE, CUERPO_COMPLETO, OTRO."
+          }
+        },
+        {
+          "name": "Obtener ejercicio por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/ejercicios/{{ejercicioId}}", "host": ["{{baseUrl}}"], "path": ["ejercicios", "{{ejercicioId}}"] },
+            "description": "Autenticado. Detalle de un ejercicio."
+          }
+        },
+        {
+          "name": "Crear ejercicio",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/ejercicios", "host": ["{{baseUrl}}"], "path": ["ejercicios"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Press de banca declinado\",\n  \"grupoMuscular\": \"PECHO\",\n  \"descripcion\": \"Énfasis en la porción inferior del pectoral\",\n  \"instrucciones\": \"Acostarse en banco declinado y bajar la barra al pecho bajo...\",\n  \"imagenUrl\": \"https://cdn.example.com/press-declinado.jpg\",\n  \"videoUrl\": \"https://youtube.com/watch?v=abc123\"\n}"
+            },
+            "description": "ENTRENADOR. Crea un ejercicio en el catálogo global. Invalida el cache (flush). Solo `nombre` y `grupoMuscular` son obligatorios."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const id = pm.response.json().data.id;",
+                  "  if (id) pm.collectionVariables.set('ejercicioId', id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Planes de Entrenamiento",
+      "description": "Rol ENTRENADOR. Patrones: Factory (crear por tipo), State (BORRADOR→ACTIVO→ARCHIVADO), Prototype (duplicar), Builder (ejercicios).",
+      "item": [
+        {
+          "name": "Crear plan",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/planes-entrenamiento", "host": ["{{baseUrl}}"], "path": ["planes-entrenamiento"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Hipertrofia 3x semana\",\n  \"descripcion\": \"Plan enfocado en volumen muscular\",\n  \"tipo\": \"HIPERTROFIA\"\n}"
+            },
+            "description": "ENTRENADOR. Crea un plan en estado BORRADOR. `tipo`: HIPERTROFIA | FUERZA | RESISTENCIA. `nombre` mínimo 3 caracteres."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const id = pm.response.json().data.id;",
+                  "  if (id) pm.collectionVariables.set('planId', id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar planes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/planes-entrenamiento", "host": ["{{baseUrl}}"], "path": ["planes-entrenamiento"] },
+            "description": "ENTRENADOR. Lista los planes del entrenador autenticado."
+          }
+        },
+        {
+          "name": "Obtener plan por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/planes-entrenamiento/{{planId}}", "host": ["{{baseUrl}}"], "path": ["planes-entrenamiento", "{{planId}}"] },
+            "description": "ENTRENADOR. Detalle del plan con sus ejercicios."
+          }
+        },
+        {
+          "name": "Agregar ejercicio al plan",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/planes-entrenamiento/{{planId}}/ejercicios", "host": ["{{baseUrl}}"], "path": ["planes-entrenamiento", "{{planId}}", "ejercicios"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ejercicioId\": \"{{ejercicioId}}\",\n  \"series\": 4,\n  \"repeticiones\": 10,\n  \"segundosDeDescanso\": 90,\n  \"notas\": \"Controlar el descenso en 3 segundos\",\n  \"orden\": 1\n}"
+            },
+            "description": "ENTRENADOR. Añade un ejercicio al plan (Builder). `series`, `repeticiones`, `orden` ≥ 1. `segundosDeDescanso` y `notas` opcionales."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const d = pm.response.json().data;",
+                  "  if (d && d.id) pm.collectionVariables.set('ejercicioPlanId', d.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quitar ejercicio del plan",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/planes-entrenamiento/{{planId}}/ejercicios/{{ejercicioPlanId}}", "host": ["{{baseUrl}}"], "path": ["planes-entrenamiento", "{{planId}}", "ejercicios", "{{ejercicioPlanId}}"] },
+            "description": "ENTRENADOR. Elimina un ejercicio del plan por el id de la relación (`ejercicioPlanId`, no el id del ejercicio)."
+          }
+        },
+        {
+          "name": "Activar plan",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/planes-entrenamiento/{{planId}}/activar", "host": ["{{baseUrl}}"], "path": ["planes-entrenamiento", "{{planId}}", "activar"] },
+            "description": "ENTRENADOR. Transición de estado a ACTIVO (State Pattern). Un plan ARCHIVADO no puede activarse."
+          }
+        },
+        {
+          "name": "Archivar plan",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/planes-entrenamiento/{{planId}}/archivar", "host": ["{{baseUrl}}"], "path": ["planes-entrenamiento", "{{planId}}", "archivar"] },
+            "description": "ENTRENADOR. Transición de estado a ARCHIVADO (State Pattern)."
+          }
+        },
+        {
+          "name": "Duplicar plan",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/planes-entrenamiento/{{planId}}/duplicar", "host": ["{{baseUrl}}"], "path": ["planes-entrenamiento", "{{planId}}", "duplicar"] },
+            "description": "ENTRENADOR. Clona el plan y sus ejercicios (Prototype Pattern). El duplicado nace en BORRADOR."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asignaciones",
+      "description": "Rol ENTRENADOR. Asignar planes a clientes. Patrón Observer (genera notificación al cliente).",
+      "item": [
+        {
+          "name": "Asignar plan a cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/asignaciones/entrenamiento", "host": ["{{baseUrl}}"], "path": ["asignaciones", "entrenamiento"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"planEntrenamientoId\": \"{{planId}}\"\n}"
+            },
+            "description": "ENTRENADOR. Asigna un plan ACTIVO a un cliente. Dispara el Observer → crea una notificación para el cliente. Solo se pueden asignar planes en estado ACTIVO."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const id = pm.response.json().data.id;",
+                  "  if (id) pm.collectionVariables.set('asignacionId', id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar asignaciones de un cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/clientes/{{clienteId}}/asignaciones", "host": ["{{baseUrl}}"], "path": ["clientes", "{{clienteId}}", "asignaciones"] },
+            "description": "ENTRENADOR. Lista las asignaciones (planes asignados) de un cliente."
+          }
+        },
+        {
+          "name": "Cambiar estado de asignación",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/asignaciones/{{asignacionId}}", "host": ["{{baseUrl}}"], "path": ["asignaciones", "{{asignacionId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"estado\": \"INACTIVO\"\n}" },
+            "description": "ENTRENADOR. Cambia el estado de la asignación. `estado`: ACTIVO | INACTIVO. Devuelve 404 si la asignación no existe."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Registros de Entrenamiento",
+      "description": "Rol ENTRENADOR o CLIENTE. Registrar sesiones de entrenamiento. Patrón Builder.",
+      "item": [
+        {
+          "name": "Crear registro de entrenamiento",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/clientes/{{clienteId}}/registros-entrenamiento", "host": ["{{baseUrl}}"], "path": ["clientes", "{{clienteId}}", "registros-entrenamiento"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-05-26\",\n  \"duracionMin\": 60,\n  \"notas\": \"Buena sesión, mucha energía\",\n  \"ejercicios\": [\n    {\n      \"nombre\": \"Press de banca\",\n      \"grupoMuscular\": \"PECHO\",\n      \"series\": 4,\n      \"repeticiones\": 10,\n      \"pesoKg\": 45,\n      \"notas\": \"Último set al fallo\"\n    },\n    {\n      \"nombre\": \"Sentadilla\",\n      \"grupoMuscular\": \"PIERNAS\",\n      \"series\": 4,\n      \"repeticiones\": 12,\n      \"pesoKg\": 60\n    }\n  ]\n}"
+            },
+            "description": "ENTRENADOR o CLIENTE. Registra una sesión. `fecha` ISO 8601. `ejercicios[]` con `nombre`, `grupoMuscular`, `series`≥1, `repeticiones`≥1; `pesoKg` y `notas` opcionales. (Usa `{{tokenCliente}}` por defecto: el cliente registra su propia sesión.)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const d = pm.response.json().data;",
+                  "  const id = d.registro ? d.registro.id : d.id;",
+                  "  if (id) pm.collectionVariables.set('registroId', id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar registros (paginado)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/clientes/{{clienteId}}/registros-entrenamiento?page=1&limit=20&desde=2026-01-01&hasta=2026-12-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["clientes", "{{clienteId}}", "registros-entrenamiento"],
+              "query": [
+                { "key": "page", "value": "1", "description": "Número de página (≥1, default 1)" },
+                { "key": "limit", "value": "20", "description": "Registros por página (≥1, default 20)" },
+                { "key": "desde", "value": "2026-01-01", "description": "Filtrar desde fecha (ISO 8601). Opcional.", "disabled": true },
+                { "key": "hasta", "value": "2026-12-31", "description": "Filtrar hasta fecha (ISO 8601). Opcional.", "disabled": true }
+              ]
+            },
+            "description": "ENTRENADOR o CLIENTE. Respuesta paginada: `{ data: { registros: [...], total, page, limit } }`. Los filtros de fecha están deshabilitados por defecto (actívalos en la pestaña Params)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Progreso",
+      "description": "Rol ENTRENADOR o CLIENTE. Análisis de progreso del cliente. Patrón Strategy (vistas).",
+      "item": [
+        {
+          "name": "Progreso del cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/clientes/{{clienteId}}/progreso?vista=semanal",
+              "host": ["{{baseUrl}}"],
+              "path": ["clientes", "{{clienteId}}", "progreso"],
+              "query": [
+                { "key": "vista", "value": "semanal", "description": "Granularidad: semanal | mensual | porPlan (default semanal)" }
+              ]
+            },
+            "description": "ENTRENADOR o CLIENTE. Devuelve `{ data: { progreso: ... } }`. La vista selecciona la estrategia de cálculo (Strategy Pattern)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "description": "Rol ENTRENADOR. Resumen agregado del cliente. Patrón Facade.",
+      "item": [
+        {
+          "name": "Dashboard del cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/clientes/{{clienteId}}/dashboard", "host": ["{{baseUrl}}"], "path": ["clientes", "{{clienteId}}", "dashboard"] },
+            "description": "ENTRENADOR. Agrega información de varios módulos (plan activo, progreso, registros, etc.) tras una sola llamada (Facade). Un token de CLIENTE recibe 403."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notificaciones",
+      "description": "Rol CLIENTE. Usa {{tokenCliente}}. Las notificaciones se generan via Observer al asignar un plan.",
+      "item": [
+        {
+          "name": "Listar notificaciones no leídas",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/notificaciones", "host": ["{{baseUrl}}"], "path": ["notificaciones"] },
+            "description": "CLIENTE. Notificaciones no leídas del cliente autenticado. Respuesta: `{ data: [...] }`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const n = pm.response.json().data;",
+                  "if (n && n.length) pm.collectionVariables.set('notificacionId', n[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Marcar notificación como leída",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/notificaciones/{{notificacionId}}/leer", "host": ["{{baseUrl}}"], "path": ["notificaciones", "{{notificacionId}}", "leer"] },
+            "description": "CLIENTE. Marca una notificación como leída. 404 si no existe."
+          }
+        }
+      ]
+    }
+  ]
+}
