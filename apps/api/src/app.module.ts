@@ -2,11 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from '@repo/database';
 import { AppController } from './app.controller';
+import { CommandsModule } from './commands/commands.module';
 import { AppService } from './app.service';
 import { validateEnv } from './config/env.validation';
 import { AuthModule } from './modules/auth/auth.module';
 import { EjerciciosModule } from './modules/ejercicios/ejercicios.module';
 import { HealthController } from './modules/health/health.controller';
+import { MailerModule } from './modules/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { HealthController } from './modules/health/health.controller';
     PrismaModule,
     AuthModule,
     EjerciciosModule,
+    MailerModule,
+    CommandsModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

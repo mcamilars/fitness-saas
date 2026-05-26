@@ -284,39 +284,41 @@ modules/<nombre>/
 **Objetivo:** mailer Mailtrap funcional, infraestructura Command lista, primer command end-to-end.
 
 ### B4.1 Dependencias
-- [ ] `pnpm --filter api add nodemailer handlebars`.
-- [ ] `pnpm --filter api add -D @types/nodemailer`.
+- [x] `pnpm --filter api add nodemailer handlebars`.
+- [x] `pnpm --filter api add -D @types/nodemailer`.
 
 ### B4.2 `MailerService`
-- [ ] Crear `apps/api/src/modules/mailer/mailer.service.ts`.
-- [ ] Leer credenciales Mailtrap desde `ConfigService` y crear `nodemailer.createTransport`.
-- [ ] Implementar `enviarInvitacion(correo, token)` que compila `templates/invitacion.hbs` con `{ urlInvitacion, anioActual }`.
+- [x] Crear `apps/api/src/modules/mailer/mailer.service.ts`.
+- [x] Leer credenciales Mailtrap desde `ConfigService` y crear `nodemailer.createTransport`.
+- [x] Implementar `enviarInvitacion(correo, token)` que compila `templates/invitacion.hbs` con `{ urlInvitacion, anioActual }`.
 
 ### B4.3 Template Handlebars
-- [ ] Crear `mailer/templates/invitacion.hbs` con saludo, botón con `urlInvitacion` y footer.
-- [ ] Verificar que carga vía `fs.readFile` desde el dist.
+- [x] Crear `mailer/templates/invitacion.hbs` con saludo, botón con `urlInvitacion` y footer.
+- [x] Verificar que carga vía `fs.readFile` desde el dist.
 
 ### B4.4 Interfaz `Command` y `CommandInvoker`
-- [ ] Crear `commands/command.interface.ts` con `execute(): Promise<T>`, `undo(): Promise<void>`, `descripcion(): string`.
-- [ ] Crear `commands/command-invoker.service.ts` con `historial: Command[]` (máx. 50).
-- [ ] Implementar `ejecutar(cmd)`, `deshacerUltimo()`, `getHistorial()`.
+- [x] Crear `commands/command.interface.ts` con `execute(): Promise<T>`, `undo(): Promise<void>`, `descripcion(): string`.
+- [x] Crear `commands/command-invoker.service.ts` con `historial: Command[]` (máx. 50).
+- [x] Implementar `ejecutar(cmd)`, `deshacerUltimo()`, `getHistorial()`.
+- [x] Revisar alineación con diagrama de clases de `docs/poster.pdf`: `CommandInvoker` mantiene `historial: Command[]`, expone `ejecutar(cmd)`, alias `deshacer()` y `deshacerUltimo()`, y `getHistorial()` devuelve la lista de commands.
 
 ### B4.5 `InvitarClienteCommand`
-- [ ] Extender `InvitacionesRepository` con `crear(dto)` y `marcarConsumidaPorId(id)`.
-- [ ] Constructor del command recibe `invitacionesRepository`, `mailer`, `workspaceId`, `correo` (sin Prisma).
-- [ ] `execute()`: genera token uuid, llama `invitacionesRepository.crear({ ... expiraEn = now + 24h })`, envía email.
-- [ ] Guardar `this.invitacionId` para el undo.
-- [ ] `undo()`: `invitacionesRepository.marcarConsumidaPorId(this.invitacionId)`.
+- [x] Extender `InvitacionesRepository` con `crear(dto)` y `marcarConsumidaPorId(id)`.
+- [x] Constructor del command recibe `invitacionesRepository`, `mailer`, `workspaceId`, `correo` (sin Prisma).
+- [x] `execute()`: genera token uuid, llama `invitacionesRepository.crear({ ... expiraEn = now + 24h })`, envía email.
+- [x] Guardar `this.invitacionId` para el undo.
+- [x] `undo()`: `invitacionesRepository.marcarConsumidaPorId(this.invitacionId)`.
+- [x] Implementación alineada con `docs/poster.pdf`: clase concreta `InvitarClienteCommand` implementa `Command`, encapsula `clienteId/correo` y `token`, y expone `execute()`/`undo()` para ser ejecutada por `CommandInvoker`.
 
 ### B4.6 Endpoints
-- [ ] `POST /api/clientes/invitar` body `{ correo }`.
-- [ ] `GET /api/invitaciones/:token/verificar`.
-- [ ] `POST /api/commands/undo`.
+- [x] `POST /api/clientes/invitar` body `{ correo }`.
+- [x] `GET /api/invitaciones/:token/verificar`.
+- [x] `POST /api/commands/undo`.
 
 ### B4.7 Tests
-- [ ] `invitar-cliente.command.spec.ts`: `execute` crea invitación y llama mailer.
-- [ ] `invitar-cliente.command.spec.ts`: `undo` marca consumida.
-- [ ] `command-invoker.service.spec.ts`: ejecutar 3 commands → undo del último deshace solo ese.
+- [x] `invitar-cliente.command.spec.ts`: `execute` crea invitación y llama mailer.
+- [x] `invitar-cliente.command.spec.ts`: `undo` marca consumida.
+- [x] `command-invoker.service.spec.ts`: ejecutar 3 commands → undo del último deshace solo ese.
 
 ---
 
