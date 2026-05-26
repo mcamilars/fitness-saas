@@ -239,43 +239,43 @@ modules/<nombre>/
 **Objetivo:** módulo con `CacheEjerciciosDecorator` envolviendo al impl base, transparente para los controllers.
 
 ### B3.1 Repositorio
-- [ ] Crear `ejercicios/repositories/ejercicios.repository.ts` con `findAll()`, `findById(id)`, `findByGrupo(grupo)`, `crear(dto)`.
-- [ ] `PrismaService` inyectado **solo aquí** para el dominio de ejercicios.
+- [x] Crear `ejercicios/repositories/ejercicios.repository.ts` con `findAll()`, `findById(id)`, `findByGrupo(grupo)`, `crear(dto)`.
+- [x] `PrismaService` inyectado **solo aquí** para el dominio de ejercicios.
 
 ### B3.2 Interfaz de servicio y DTOs
-- [ ] Crear `ejercicios/interfaces/ejercicios-service.interface.ts` con `findAll`, `findById`, `findByGrupo`, `create`.
-- [ ] DTO `CrearEjercicioDto` con `@IsEnum(GrupoMuscular)`.
+- [x] Crear `ejercicios/interfaces/ejercicios-service.interface.ts` con `findAll`, `findById`, `findByGrupo`, `create`.
+- [x] DTO `CrearEjercicioDto` con `@IsEnum(GrupoMuscular)`.
 
 ### B3.3 `EjerciciosServiceImpl`
-- [ ] Implementar la interfaz consumiendo `EjerciciosRepository` (no Prisma).
+- [x] Implementar la interfaz consumiendo `EjerciciosRepository` (no Prisma).
 
 ### B3.4 `BaseDecorator`
-- [ ] Crear `ejercicios/decorators/base.decorator.ts` que recibe `service: EjerciciosServiceInterface` y delega cada método.
+- [x] Crear `ejercicios/decorators/base.decorator.ts` que recibe `service: EjerciciosServiceInterface` y delega cada método.
 
 ### B3.5 `CacheEjerciciosDecorator`
-- [ ] Extender `BaseDecorator`.
-- [ ] Mantener `private cache = new Map<string, any>()`.
-- [ ] Cachear `findAll` con clave `'all'`.
-- [ ] Cachear `findById(id)` con clave `id:<id>`.
-- [ ] Cachear `findByGrupo(g)` con clave `grupo:<g>`.
-- [ ] Implementar `invalidate(key)` y `flush()`.
-- [ ] En `create(dto)`: delegar al inner service y luego `this.flush()`.
+- [x] Extender `BaseDecorator`.
+- [x] Mantener `private cache = new Map<string, any>()`.
+- [x] Cachear `findAll` con clave `'all'`.
+- [x] Cachear `findById(id)` con clave `id:<id>`.
+- [x] Cachear `findByGrupo(g)` con clave `grupo:<g>`.
+- [x] Implementar `invalidate(key)` y `flush()`.
+- [x] En `create(dto)`: delegar al inner service y luego `this.flush()`.
 
 ### B3.6 Provider compuesto
-- [ ] En `EjerciciosModule`, registrar `EjerciciosRepository` y `EjerciciosServiceImpl` como providers.
-- [ ] Registrar `{ provide: 'EJERCICIOS_SERVICE', useFactory: (impl) => new CacheEjerciciosDecorator(impl), inject: [EjerciciosServiceImpl] }`.
-- [ ] Inyectar `@Inject('EJERCICIOS_SERVICE')` en el controller.
+- [x] En `EjerciciosModule`, registrar `EjerciciosRepository` y `EjerciciosServiceImpl` como providers.
+- [x] Registrar `{ provide: 'EJERCICIOS_SERVICE', useFactory: (impl) => new CacheEjerciciosDecorator(impl), inject: [EjerciciosServiceImpl] }`.
+- [x] Inyectar `@Inject('EJERCICIOS_SERVICE')` en el controller.
 
 ### B3.7 Endpoints
-- [ ] `GET /api/ejercicios`.
-- [ ] `GET /api/ejercicios/:id`.
-- [ ] `GET /api/ejercicios/por-grupo/:grupoMuscular`.
-- [ ] `POST /api/ejercicios` (solo ENTRENADOR).
+- [x] `GET /api/ejercicios`.
+- [x] `GET /api/ejercicios/:id`.
+- [x] `GET /api/ejercicios/por-grupo/:grupoMuscular`.
+- [x] `POST /api/ejercicios` (solo ENTRENADOR).
 
 ### B3.8 Tests
-- [ ] `ejercicios.repository.spec.ts` con `PrismaService` mockeado: cada método llama al modelo correcto.
-- [ ] `cache-ejercicios.decorator.spec.ts`: dos llamadas a `findAll()` invocan al impl una sola vez.
-- [ ] `cache-ejercicios.decorator.spec.ts`: `create()` invalida cache.
+- [x] `ejercicios.repository.spec.ts` con `PrismaService` mockeado: cada método llama al modelo correcto.
+- [x] `cache-ejercicios.decorator.spec.ts`: dos llamadas a `findAll()` invocan al impl una sola vez.
+- [x] `cache-ejercicios.decorator.spec.ts`: `create()` invalida cache.
 
 ---
 

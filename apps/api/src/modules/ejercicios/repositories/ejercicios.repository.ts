@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { type Ejercicio, PrismaService } from '@repo/database';
+import { type Ejercicio, GrupoMuscular, Prisma, PrismaService } from '@repo/database';
 
 @Injectable()
 export class EjerciciosRepository {
@@ -9,5 +9,20 @@ export class EjerciciosRepository {
     return this.prisma.ejercicio.findMany({
       orderBy: { nombre: 'asc' },
     });
+  }
+
+  findById(id: string): Promise<Ejercicio | null> {
+    return this.prisma.ejercicio.findUnique({ where: { id } });
+  }
+
+  findByGrupo(grupo: GrupoMuscular): Promise<Ejercicio[]> {
+    return this.prisma.ejercicio.findMany({
+      where: { grupoMuscular: grupo },
+      orderBy: { nombre: 'asc' },
+    });
+  }
+
+  crear(data: Prisma.EjercicioCreateInput): Promise<Ejercicio> {
+    return this.prisma.ejercicio.create({ data });
   }
 }
