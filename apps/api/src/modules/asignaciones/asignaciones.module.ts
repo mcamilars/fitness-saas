@@ -4,6 +4,7 @@ import { ClientesModule } from '../clientes/clientes.module';
 import { MailerModule } from '../mailer/mailer.module';
 import { NotificacionesModule } from '../notificaciones/notificaciones.module';
 import { PlanesEntrenamientoModule } from '../planes-entrenamiento/planes-entrenamiento.module';
+import { AsignacionesController } from './controllers/asignaciones.controller';
 import { AsignacionesEntrenamientoRepository } from './repositories/asignaciones-entrenamiento.repository';
 import { AsignacionesService } from './services/asignaciones.service';
 
@@ -15,6 +16,7 @@ import { AsignacionesService } from './services/asignaciones.service';
     PlanesEntrenamientoModule,
     MailerModule,
   ],
+  controllers: [AsignacionesController],
   providers: [AsignacionesEntrenamientoRepository, AsignacionesService],
   exports: [AsignacionesEntrenamientoRepository, AsignacionesService],
 })

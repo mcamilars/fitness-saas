@@ -458,19 +458,19 @@ modules/<nombre>/
 - [x] Implementar `cambiarEstado(asignacionId, estado)` → `asignacionesRepository.updateEstado`.
 
 ### B7.6 Disparo desde §B6
-- [ ] En `activar()`: tras persistir, `subject.notify({ tipo: 'PLAN_ACTIVADO' })`.
-- [ ] En `agregarEjercicio`/`quitarEjercicio` con plan ACTIVO: `subject.notify({ tipo: 'PLAN_MODIFICADO' })`.
-- [ ] En `archivar()`: `subject.notify({ tipo: 'PLAN_ARCHIVADO' })`.
+- [x] En `activar()`: tras persistir, `subject.notify({ tipo: 'PLAN_ACTIVADO' })`.
+- [x] En `agregarEjercicio`/`quitarEjercicio` con plan ACTIVO: `subject.notify({ tipo: 'PLAN_MODIFICADO' })`.
+- [x] En `archivar()`: `subject.notify({ tipo: 'PLAN_ARCHIVADO' })`.
 
 ### B7.7 Controller asignaciones
-- [ ] `POST /api/asignaciones/entrenamiento`.
-- [ ] `GET /api/clientes/:id/asignaciones`.
-- [ ] `PUT /api/asignaciones/:id` body `{ estado }`.
+- [x] `POST /api/asignaciones/entrenamiento`.
+- [x] `GET /api/clientes/:id/asignaciones`.
+- [x] `PUT /api/asignaciones/:id` body `{ estado }`.
 
 ### B7.8 Notificaciones (servicio + endpoints)
-- [ ] Crear `NotificacionesService` que consume `NotificacionesRepository`.
-- [ ] `GET /api/notificaciones` (CLIENTE) — lista no leídas.
-- [ ] `PATCH /api/notificaciones/:id/leer`.
+- [x] Crear `NotificacionesService` que consume `NotificacionesRepository`.
+- [x] `GET /api/notificaciones` (CLIENTE) — lista no leídas.
+- [x] `PATCH /api/notificaciones/:id/leer`.
 
 ### B7.9 Tests
 - [x] `notificaciones.repository.spec.ts` y `asignaciones-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.

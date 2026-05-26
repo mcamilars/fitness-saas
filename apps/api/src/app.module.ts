@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { EjerciciosModule } from './modules/ejercicios/ejercicios.module';
 import { HealthController } from './modules/health/health.controller';
 import { MailerModule } from './modules/mailer/mailer.module';
+import { NotificacionesModule } from './modules/notificaciones/notificaciones.module';
 import { PlanesEntrenamientoModule } from './modules/planes-entrenamiento/planes-entrenamiento.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { PlanesEntrenamientoModule } from './modules/planes-entrenamiento/planes
     MailerModule,
     PlanesEntrenamientoModule,
     AsignacionesModule,
+    NotificacionesModule,
     CommandsModule,
   ],
   controllers: [AppController, HealthController],
