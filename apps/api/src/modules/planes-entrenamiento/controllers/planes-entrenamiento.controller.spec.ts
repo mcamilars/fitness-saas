@@ -13,11 +13,16 @@ describe('PlanesEntrenamientoController', () => {
     quitarEjercicio: jest.fn(),
   };
 
+  const commandInvoker = { ejecutar: jest.fn() };
+
   let controller: PlanesEntrenamientoController;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    controller = new PlanesEntrenamientoController(service as never);
+    controller = new PlanesEntrenamientoController(
+      service as never,
+      commandInvoker as never,
+    );
   });
 
   it('POST /planes-entrenamiento crea plan para el usuario autenticado', async () => {
@@ -50,6 +55,16 @@ describe('PlanesEntrenamientoController', () => {
     await controller.activar('plan-1', 'workspace-1');
 
     expect(service.activar).toHaveBeenCalledWith('plan-1', 'workspace-1');
+  });
+
+  it('PATCH /:id/archivar pasa por CommandInvoker con ArchivarPlanCommand', async () => {
+    commandInvoker.ejecutar.mockResolvedValue({ id: 'plan-1' });
+
+    await controller.archivar('plan-1', 'workspace-1');
+
+    expect(commandInvoker.ejecutar).toHaveBeenCalledWith(
+      expect.objectContaining({ descripcion: expect.any(Function) }),
+    );
   });
 
   it('POST /:id/ejercicios agrega ejercicio al plan', async () => {

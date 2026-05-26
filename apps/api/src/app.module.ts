@@ -12,6 +12,7 @@ import { HealthController } from './modules/health/health.controller';
 import { MailerModule } from './modules/mailer/mailer.module';
 import { NotificacionesModule } from './modules/notificaciones/notificaciones.module';
 import { PlanesEntrenamientoModule } from './modules/planes-entrenamiento/planes-entrenamiento.module';
+import { RegistrosModule } from './modules/registros/registros.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PlanesEntrenamientoModule } from './modules/planes-entrenamiento/planes
     PlanesEntrenamientoModule,
     AsignacionesModule,
     NotificacionesModule,
+    RegistrosModule,
     CommandsModule,
   ],
   controllers: [AppController, HealthController],

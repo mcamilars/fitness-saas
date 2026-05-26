@@ -502,22 +502,22 @@ modules/<nombre>/
 - [x] Implementar `listar(clienteId, { page, limit, desde, hasta })` → `registrosRepository.listarPorCliente`.
 
 ### B8.4 Controller
-- [ ] `POST /api/clientes/:id/registros-entrenamiento`.
-- [ ] `GET /api/clientes/:id/registros-entrenamiento` con paginación.
+- [x] `POST /api/clientes/:id/registros-entrenamiento`.
+- [x] `GET /api/clientes/:id/registros-entrenamiento` con paginación.
 
 ### B8.5 `ArchivarPlanCommand`
-- [ ] Constructor recibe `planesService`, `planId`, `workspaceId`.
-- [ ] `execute()`: guarda `estadoPrevio` y llama `planesService.archivar()`.
-- [ ] `undo()`: si `estadoPrevio === ACTIVO`, llama `planesService.activar()`.
+- [x] Constructor recibe `planesService`, `planId`, `workspaceId`.
+- [x] `execute()`: guarda `estadoPrevio` y llama `planesService.archivar()`.
+- [x] `undo()`: si `estadoPrevio === ACTIVO`, llama `planesService.activar()`.
 
 ### B8.6 Endpoint
-- [ ] `PATCH /api/planes-entrenamiento/:id/archivar` pasa por `CommandInvoker`.
+- [x] `PATCH /api/planes-entrenamiento/:id/archivar` pasa por `CommandInvoker`.
 
 ### B8.7 Tests
 - [x] `registros-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
 - [x] `registro-entrenamiento.builder.spec.ts`: build sin ejercicios falla.
 - [x] `registro-entrenamiento.builder.spec.ts`: build con ejercicios construye objeto correcto.
-- [ ] `archivar-plan.command.spec.ts`: execute archiva; undo restaura estado previo.
+- [x] `archivar-plan.command.spec.ts`: execute archiva; undo restaura estado previo.
 
 ---
 

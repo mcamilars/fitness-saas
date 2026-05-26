@@ -8,12 +8,14 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { CommandInvokerService } from '../../../commands/command-invoker.service';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { CurrentWorkspace } from '../../../common/decorators/current-workspace.decorator';
 import { Roles } from '../../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../common/guards/roles.guard';
 import type { AuthenticatedUser } from '../../../common/types/authenticated-request';
+import { ArchivarPlanCommand } from '../commands/archivar-plan.command';
 import { AgregarEjercicioPlanDto } from '../dtos/agregar-ejercicio-plan.dto';
 import { CrearPlanEntrenamientoDto } from '../dtos/crear-plan-entrenamiento.dto';
 import { PlanesEntrenamientoService } from '../services/planes-entrenamiento.service';
@@ -24,6 +26,7 @@ import { PlanesEntrenamientoService } from '../services/planes-entrenamiento.ser
 export class PlanesEntrenamientoController {
   constructor(
     private readonly planesEntrenamientoService: PlanesEntrenamientoService,
+    private readonly commandInvoker: CommandInvokerService,
   ) {}
 
   @Post()
@@ -51,7 +54,13 @@ export class PlanesEntrenamientoController {
 
   @Patch(':id/archivar')
   archivar(@Param('id') id: string, @CurrentWorkspace() workspaceId: string) {
-    return this.planesEntrenamientoService.archivar(id, workspaceId);
+    const command = new ArchivarPlanCommand(
+      this.planesEntrenamientoService,
+      id,
+      workspaceId,
+    );
+
+    return this.commandInvoker.ejecutar(command);
   }
 
   @Post(':id/duplicar')

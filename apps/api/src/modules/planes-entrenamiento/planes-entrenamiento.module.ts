@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@repo/database';
+import { CommandsModule } from '../../commands/commands.module';
 import { EntrenadoresModule } from '../entrenadores/entrenadores.module';
 import { PlanesEntrenamientoController } from './controllers/planes-entrenamiento.controller';
 import { PlanFactoriesProvider } from './factories/plan-factory.provider';
@@ -9,7 +10,7 @@ import { PlanesEntrenamientoService } from './services/planes-entrenamiento.serv
 import { PlanStateFactory } from './states/state.factory';
 
 @Module({
-  imports: [PrismaModule, EntrenadoresModule],
+  imports: [PrismaModule, EntrenadoresModule, CommandsModule],
   controllers: [PlanesEntrenamientoController],
   providers: [
     PlanesEntrenamientoRepository,
