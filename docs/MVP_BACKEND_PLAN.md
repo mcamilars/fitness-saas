@@ -485,21 +485,21 @@ modules/<nombre>/
 **Objetivo:** registrar entrenamientos vía Builder y completar el tercer command (archivar plan con undo).
 
 ### B8.1 `RegistroEntrenamientoBuilder`
-- [ ] Crear `registros/builders/registro-entrenamiento.builder.ts`.
-- [ ] Setters: `setFecha`, `setClienteId`, `addEjercicio`, `setNotas`, `setDuracionMin`.
-- [ ] `build()` valida que haya `fecha`, `clienteId` y al menos 1 ejercicio; si no, lanza error.
-- [ ] `build()` devuelve copia inmutable.
+- [x] Crear `registros/builders/registro-entrenamiento.builder.ts`.
+- [x] Setters: `setFecha`, `setClienteId`, `addEjercicio`, `setNotas`, `setDuracionMin`.
+- [x] `build()` valida que haya `fecha`, `clienteId` y al menos 1 ejercicio; si no, lanza error.
+- [x] `build()` devuelve copia inmutable.
 
 ### B8.2 `RegistrosEntrenamientoRepository`
-- [ ] Crear `registros/repositories/registros-entrenamiento.repository.ts`.
-- [ ] Métodos: `crearConEjercicios(payload)` (transacción interna con `RegistroDeEntrenamiento` + `RegistroDeEjercicio[]`), `listarPorCliente(clienteId, filtros)`, `findPorClienteConDetalle(clienteId)` (para progreso §B9).
+- [x] Crear `registros/repositories/registros-entrenamiento.repository.ts`.
+- [x] Métodos: `crearConEjercicios(payload)` (transacción interna con `RegistroDeEntrenamiento` + `RegistroDeEjercicio[]`), `listarPorCliente(clienteId, filtros)`, `findPorClienteConDetalle(clienteId)` (para progreso §B9).
 
 ### B8.3 `RegistrosService`
-- [ ] Inyectar `RegistrosEntrenamientoRepository` y `ClientesRepository`.
-- [ ] Validar que cliente pertenece al workspace vía `ClientesRepository`.
-- [ ] Instanciar builder y aplicar setters iterando el DTO.
-- [ ] Llamar `build()` y persistir vía `registrosRepository.crearConEjercicios(payload)`.
-- [ ] Implementar `listar(clienteId, { page, limit, desde, hasta })` → `registrosRepository.listarPorCliente`.
+- [x] Inyectar `RegistrosEntrenamientoRepository` y `ClientesRepository`.
+- [x] Validar que cliente pertenece al workspace vía `ClientesRepository`.
+- [x] Instanciar builder y aplicar setters iterando el DTO.
+- [x] Llamar `build()` y persistir vía `registrosRepository.crearConEjercicios(payload)`.
+- [x] Implementar `listar(clienteId, { page, limit, desde, hasta })` → `registrosRepository.listarPorCliente`.
 
 ### B8.4 Controller
 - [ ] `POST /api/clientes/:id/registros-entrenamiento`.
@@ -514,9 +514,9 @@ modules/<nombre>/
 - [ ] `PATCH /api/planes-entrenamiento/:id/archivar` pasa por `CommandInvoker`.
 
 ### B8.7 Tests
-- [ ] `registros-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
-- [ ] `registro-entrenamiento.builder.spec.ts`: build sin ejercicios falla.
-- [ ] `registro-entrenamiento.builder.spec.ts`: build con ejercicios construye objeto correcto.
+- [x] `registros-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
+- [x] `registro-entrenamiento.builder.spec.ts`: build sin ejercicios falla.
+- [x] `registro-entrenamiento.builder.spec.ts`: build con ejercicios construye objeto correcto.
 - [ ] `archivar-plan.command.spec.ts`: execute archiva; undo restaura estado previo.
 
 ---
