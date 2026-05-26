@@ -406,17 +406,17 @@ modules/<nombre>/
 - [x] Implementar `quitarEjercicio(planId, ejercicioPlanId)` → `repository.quitarEjercicioPlan` + notificar si plan ACTIVO.
 
 ### B6.5 Controller
-- [ ] `POST /api/planes-entrenamiento` body `{ nombre, descripcion, tipo }`.
-- [ ] `GET /api/planes-entrenamiento`.
-- [ ] `GET /api/planes-entrenamiento/:id`.
-- [ ] `PATCH /api/planes-entrenamiento/:id/activar`.
-- [ ] `PATCH /api/planes-entrenamiento/:id/archivar`.
-- [ ] `POST /api/planes-entrenamiento/:id/duplicar`.
-- [ ] `POST /api/planes-entrenamiento/:id/ejercicios`.
-- [ ] `DELETE /api/planes-entrenamiento/:id/ejercicios/:ejercicioPlanId`.
+- [x] `POST /api/planes-entrenamiento` body `{ nombre, descripcion, tipo }`.
+- [x] `GET /api/planes-entrenamiento`.
+- [x] `GET /api/planes-entrenamiento/:id`.
+- [x] `PATCH /api/planes-entrenamiento/:id/activar`.
+- [x] `PATCH /api/planes-entrenamiento/:id/archivar`.
+- [x] `POST /api/planes-entrenamiento/:id/duplicar`.
+- [x] `POST /api/planes-entrenamiento/:id/ejercicios`.
+- [x] `DELETE /api/planes-entrenamiento/:id/ejercicios/:ejercicioPlanId`.
 
 ### B6.6 Tests
-- [ ] `planes-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
+- [x] `planes-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
 - [x] `hipertrofia.factory.spec.ts`: defaults correctos.
 - [x] `fuerza.factory.spec.ts`: defaults correctos.
 - [x] `resistencia.factory.spec.ts`: defaults correctos.

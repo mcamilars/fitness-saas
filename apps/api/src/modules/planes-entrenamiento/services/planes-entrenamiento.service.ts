@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { EstadoPlan, TipoPlanEntrenamiento, type EjercicioPlan, type PlanDeEntrenamiento } from '@repo/database';
+import { EntrenadoresRepository } from '../../entrenadores/repositories/entrenadores.repository';
 import { PlanFactoriesProvider } from '../factories/plan-factory.provider';
 import { PlanDeEntrenamientoPrototype } from '../prototypes/plan.prototype';
 import {
@@ -20,6 +21,7 @@ export interface CrearPlanEntrenamientoDto {
 export class PlanesEntrenamientoService {
   constructor(
     private readonly planesRepository: PlanesEntrenamientoRepository,
+    private readonly entrenadoresRepository: EntrenadoresRepository,
     private readonly planFactoriesProvider: PlanFactoriesProvider,
     private readonly planStateFactory: PlanStateFactory,
     private readonly planSubject: PlanSubject,
@@ -39,6 +41,19 @@ export class PlanesEntrenamientoService {
       estado: EstadoPlan.BORRADOR,
       entrenador: { connect: { id: entrenadorId } },
     });
+  }
+
+  async crearParaUsuario(
+    dto: CrearPlanEntrenamientoDto,
+    usuarioId: string,
+  ): Promise<PlanDeEntrenamiento> {
+    const entrenador = await this.entrenadoresRepository.findByUsuarioId(usuarioId);
+
+    if (!entrenador) {
+      throw new NotFoundException('Entrenador no encontrado');
+    }
+
+    return this.crear(dto.tipo, dto, entrenador.id);
   }
 
   findAll(workspaceId: string): Promise<PlanConEjercicios[]> {

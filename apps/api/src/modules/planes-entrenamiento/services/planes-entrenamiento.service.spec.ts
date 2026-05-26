@@ -30,6 +30,9 @@ describe('PlanesEntrenamientoService', () => {
     agregarEjercicioPlan: jest.fn(),
     quitarEjercicioPlan: jest.fn(),
   };
+  const entrenadoresRepository = {
+    findByUsuarioId: jest.fn(),
+  };
   const factoriesProvider = {
     obtener: jest.fn(),
   };
@@ -50,6 +53,7 @@ describe('PlanesEntrenamientoService', () => {
     jest.clearAllMocks();
     service = new PlanesEntrenamientoService(
       repository as never,
+      entrenadoresRepository as never,
       factoriesProvider as never,
       stateFactory as never,
       subject as never,
