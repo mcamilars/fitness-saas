@@ -12,6 +12,7 @@ import { HealthController } from './modules/health/health.controller';
 import { MailerModule } from './modules/mailer/mailer.module';
 import { NotificacionesModule } from './modules/notificaciones/notificaciones.module';
 import { PlanesEntrenamientoModule } from './modules/planes-entrenamiento/planes-entrenamiento.module';
+import { ProgresoModule } from './modules/progreso/progreso.module';
 import { RegistrosModule } from './modules/registros/registros.module';
 
 @Module({
@@ -29,6 +30,7 @@ import { RegistrosModule } from './modules/registros/registros.module';
     AsignacionesModule,
     NotificacionesModule,
     RegistrosModule,
+    ProgresoModule,
     CommandsModule,
   ],
   controllers: [AppController, HealthController],

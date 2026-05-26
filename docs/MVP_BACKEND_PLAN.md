@@ -526,29 +526,29 @@ modules/<nombre>/
 **Objetivo:** tres estrategias intercambiables seleccionables por query param.
 
 ### B9.1 Interfaz y tipos
-- [ ] Crear `progreso/strategies/progreso-strategy.interface.ts` con `calcular(registros): ProgresoResumen`.
-- [ ] Definir `ProgresoResumen` y `PeriodoResumen`.
+- [x] Crear `progreso/strategies/progreso-strategy.interface.ts` con `calcular(registros): ProgresoResumen`.
+- [x] Definir `ProgresoResumen` y `PeriodoResumen`.
 
 ### B9.2 Estrategias concretas
-- [ ] Crear `progreso-semanal.strategy.ts` agrupando por ISO week.
-- [ ] Crear `progreso-mensual.strategy.ts` agrupando por `YYYY-MM`.
-- [ ] Crear `progreso-por-plan.strategy.ts` agrupando por plan asignado vigente.
+- [x] Crear `progreso-semanal.strategy.ts` agrupando por ISO week.
+- [x] Crear `progreso-mensual.strategy.ts` agrupando por `YYYY-MM`.
+- [x] Crear `progreso-por-plan.strategy.ts` agrupando por plan asignado vigente.
 
 ### B9.3 `ProgresoContext` / Service
-- [ ] Crear `progreso/progreso.service.ts`.
-- [ ] Inyectar `RegistrosEntrenamientoRepository` (reuso del de §B8.2; no inyectar Prisma).
-- [ ] Implementar `setEstrategia(s)`.
-- [ ] Implementar `calcularProgreso(clienteId, workspaceId, vista)` que llama `registrosRepository.findPorClienteConDetalle(clienteId)` y delega a la strategy.
+- [x] Crear `progreso/progreso.service.ts`.
+- [x] Inyectar `RegistrosEntrenamientoRepository` (reuso del de §B8.2; no inyectar Prisma).
+- [x] Implementar `setEstrategia(s)`.
+- [x] Implementar `calcularProgreso(clienteId, vista)` que llama `registrosRepository.findPorClienteConDetalle(clienteId)` y delega a la strategy.
 
 ### B9.4 Endpoint
-- [ ] `GET /api/clientes/:id/progreso?vista=semanal|mensual|porPlan` (default `semanal`).
-- [ ] Validar `vista` con `@IsIn(['semanal','mensual','porPlan'])` en query DTO.
+- [x] `GET /api/clientes/:id/progreso?vista=semanal|mensual|porPlan` (default `semanal`).
+- [x] Validar `vista` con `@IsIn(['semanal','mensual','porPlan'])` en query DTO.
 
 ### B9.5 Tests
-- [ ] `progreso-semanal.strategy.spec.ts` con dataset fijo en memoria.
-- [ ] `progreso-mensual.strategy.spec.ts` con dataset fijo en memoria.
-- [ ] `progreso-por-plan.strategy.spec.ts` con dataset fijo en memoria.
-- [ ] `progreso.service.spec.ts`: selecciona la strategy correcta según query.
+- [x] `progreso-semanal.strategy.spec.ts` con dataset fijo en memoria.
+- [x] `progreso-mensual.strategy.spec.ts` con dataset fijo en memoria.
+- [x] `progreso-por-plan.strategy.spec.ts` con dataset fijo en memoria.
+- [x] `progreso.service.spec.ts`: selecciona la strategy correcta según query.
 
 ---
 
