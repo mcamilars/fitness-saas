@@ -369,10 +369,10 @@ modules/<nombre>/
 **Objetivo:** módulo más cargado de patrones del MVP. Tres patrones colaborando en la misma entidad.
 
 ### B6.0 `PlanesEntrenamientoRepository`
-- [ ] Crear `planes-entrenamiento/repositories/planes-entrenamiento.repository.ts`.
-- [ ] Métodos: `crear(plan)`, `findAllPorWorkspace(workspaceId)`, `findByIdConEjercicios(id)`, `updateEstado(id, estado)`, `agregarEjercicioPlan(planId, dto)`, `quitarEjercicioPlan(ejercicioPlanId)`, `contarEjercicios(planId)`, `crearDesdeClone(snapshot)`.
-- [ ] `PrismaService` inyectado **solo aquí** para este dominio.
-- [ ] States y prototype reciben este repositorio cuando necesiten persistir.
+- [x] Crear `planes-entrenamiento/repositories/planes-entrenamiento.repository.ts`.
+- [x] Métodos: `crear(plan)`, `findAllPorWorkspace(workspaceId)`, `findByIdConEjercicios(id)`, `updateEstado(id, estado)`, `agregarEjercicioPlan(planId, dto)`, `quitarEjercicioPlan(ejercicioPlanId)`, `contarEjercicios(planId)`, `crearDesdeClone(snapshot)`.
+- [x] `PrismaService` inyectado **solo aquí** para este dominio.
+- [x] States y prototype reciben este repositorio cuando necesiten persistir.
 
 ### B6.1 Factories
 - [ ] Crear `planes-entrenamiento/factories/plan.factory.ts` (clase abstracta con `crear(dto): PlanDraft`).
