@@ -327,10 +327,10 @@ modules/<nombre>/
 **Objetivo:** CRUD de clientes con soft-delete reversible mediante memento.
 
 ### B5.1 `ClienteMemento` y `ClienteContainer`
-- [ ] Crear `clientes/memento/cliente.memento.ts` con `estado`, `timestamp`, `getEstado()`, `getTimestamp()`.
-- [ ] Tipar `ClienteSnapshot` como subset serializable del cliente.
-- [ ] Crear `clientes/memento/cliente-container.ts` con `mementos: Map<string, ClienteMemento[]>`.
-- [ ] Implementar `guardar(clienteId, snapshot)`, `restaurarUltimo(clienteId)`.
+- [x] Crear `clientes/memento/cliente.memento.ts` con `estado`, `timestamp`, `getEstado()`, `getTimestamp()`.
+- [x] Tipar `ClienteSnapshot` como subset serializable del cliente.
+- [x] Crear `clientes/memento/cliente-container.ts` con `mementos: Map<string, ClienteMemento[]>`.
+- [x] Implementar `guardar(clienteId, snapshot)`, `restaurarUltimo(clienteId)`.
 
 ### B5.2 Extender `ClientesRepository`
 - [ ] Añadir métodos `findAllPorWorkspace(workspaceId)`, `findByIdConPerfil(id)`, `update(id, dto)`, `setActivo(id, valor)`.
@@ -358,8 +358,8 @@ modules/<nombre>/
 
 ### B5.6 Tests
 - [ ] `clientes.repository.spec.ts` con `PrismaService` mockeado.
-- [ ] `cliente.memento.spec.ts`: snapshot inmutable, timestamp correcto.
-- [ ] `cliente-container.spec.ts`: guardar 2 mementos → restaurar último.
+- [x] `cliente.memento.spec.ts`: snapshot inmutable, timestamp correcto.
+- [x] `cliente-container.spec.ts`: guardar 2 mementos → restaurar último.
 - [ ] `desactivar-cliente.command.spec.ts` mockeando `ClientesService`: execute desactiva; undo reactiva.
 
 ---
