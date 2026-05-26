@@ -16,7 +16,7 @@ import { useState, useEffect } from "react";
 
 const clienteSchema = z.object({
   correo: z.string().email("Correo inválido"),
-  contrasena: z.string().min(6, "Mínimo 6 caracteres"),
+  contrasena: z.string().min(8, "Mínimo 8 caracteres"),
   nombre: z.string().min(2, "Mínimo 2 caracteres"),
   apellido: z.string().optional(),
 });
@@ -36,7 +36,7 @@ async function registrarCliente(token: string, data: ClienteForm) {
   const res = await fetch(`/api/auth/cliente/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token, ...data }),
+    body: JSON.stringify({ tokenInvitacion: token, ...data }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -54,11 +54,14 @@ const InvitacionPage = ({ params }: { params: Promise<{ token: string }> }) => {
     params.then(p => setToken(p.token));
   }, [params]);
 
-  const { data: invitacion, isLoading } = useQuery({
+  const { data: result, isLoading } = useQuery({
     queryKey: ["invitacion", token],
     queryFn: () => verificarInvitacion(token!),
     enabled: !!token,
   });
+
+  const invitacion = result?.data?.invitacion;
+  const valida = result?.data?.valida;
 
   const {
     register,
@@ -71,7 +74,8 @@ const InvitacionPage = ({ params }: { params: Promise<{ token: string }> }) => {
   const mutation = useMutation({
     mutationFn: (data: ClienteForm) => registrarCliente(token!, data),
     onSuccess: (data) => {
-      login(data.token, data.usuario);
+      const { token: jwt } = data.data;
+      login(jwt, { id: "", correo: "", nombre: "", rol: "CLIENTE", workspaceId: "" });
       router.push("/cliente/plan");
     },
     onError: showApiError,
@@ -90,12 +94,12 @@ const InvitacionPage = ({ params }: { params: Promise<{ token: string }> }) => {
     );
   }
 
-  if (!invitacion?.valida) {
+  if (!valida || !invitacion) {
     return (
       <Card>
         <CardHeader><CardTitle>Invitación no válida</CardTitle></CardHeader>
         <CardContent>
-          <p className="text-red-500">{invitacion?.mensaje || "Esta invitación ha expirado o ya fue utilizada."}</p>
+          <p className="text-red-500">Esta invitación ha expirado o ya fue utilizada.</p>
         </CardContent>
       </Card>
     );
@@ -105,7 +109,7 @@ const InvitacionPage = ({ params }: { params: Promise<{ token: string }> }) => {
     <Card>
       <CardHeader>
         <CardTitle>Completa tu registro</CardTitle>
-        <CardDescription>Ingresa tus datos para unirte a {invitacion.workspaceNombre}</CardDescription>
+        <CardDescription>Ingresa tus datos para unirte</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit((data) => mutation.mutate(data))} className="space-y-4">

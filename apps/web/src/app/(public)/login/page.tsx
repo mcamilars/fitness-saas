@@ -15,7 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 
 const loginSchema = z.object({
   correo: z.string().email("Correo inválido"),
-  contrasena: z.string().min(6, "Mínimo 6 caracteres"),
+  contrasena: z.string().min(8, "Mínimo 8 caracteres"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -48,8 +48,9 @@ const LoginPage = () => {
   const mutation = useMutation({
     mutationFn: loginClient,
     onSuccess: (data) => {
-      login(data.token, data.usuario);
-      const destino = data.usuario.rol === "ENTRENADOR" ? "/workspace" : "/cliente/plan";
+      const { token, usuario } = data.data;
+      login(token, usuario);
+      const destino = usuario.rol === "ENTRENADOR" ? "/workspace" : "/cliente/plan";
       router.push(destino);
     },
     onError: showApiError,

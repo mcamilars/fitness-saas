@@ -15,7 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 
 const registerSchema = z.object({
   correo: z.string().email("Correo inválido"),
-  contrasena: z.string().min(6, "Mínimo 6 caracteres"),
+  contrasena: z.string().min(8, "Mínimo 8 caracteres"),
   nombre: z.string().min(2, "Mínimo 2 caracteres"),
   apellido: z.string().optional(),
   nombreWorkspace: z.string().min(2, "Mínimo 2 caracteres"),
@@ -51,7 +51,8 @@ const RegisterPage = () => {
   const mutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
-      login(data.token, data.usuario);
+      const { token, usuario } = data.data;
+      login(token, usuario);
       router.push("/workspace");
     },
     onError: showApiError,
