@@ -1,14 +1,9 @@
 import type { Ejercicio, GrupoMuscular } from '@repo/database';
 import type { CrearEjercicioDto } from '../dtos/crear-ejercicio.dto';
-import type { EjerciciosServiceInterface } from '../interfaces/ejercicios-service.interface';
 import { BaseDecorator } from './base.decorator';
 
 export class CacheEjerciciosDecorator extends BaseDecorator {
   private readonly cache = new Map<string, Ejercicio | Ejercicio[]>();
-
-  constructor(service: EjerciciosServiceInterface) {
-    super(service);
-  }
 
   async findAll(): Promise<Ejercicio[]> {
     const key = 'all';

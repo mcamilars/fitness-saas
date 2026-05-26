@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto';
+import { type Invitacion } from '@repo/database';
 import { type Command } from '../../../commands/command.interface';
 import { type InvitacionesRepository } from '../../invitaciones/repositories/invitaciones.repository';
 import { type MailerService } from '../../mailer/mailer.service';
 
 const MILISEGUNDOS_24_HORAS = 24 * 60 * 60 * 1000;
-type InvitacionCreada = Awaited<ReturnType<InvitacionesRepository['crear']>>;
 
-export class InvitarClienteCommand implements Command<InvitacionCreada> {
+export class InvitarClienteCommand implements Command<Invitacion> {
   private invitacionId?: string;
   private token?: string;
 
@@ -15,9 +15,9 @@ export class InvitarClienteCommand implements Command<InvitacionCreada> {
     private readonly mailer: MailerService,
     private readonly workspaceId: string,
     private readonly correo: string,
-  ) { }
+  ) {}
 
-  async execute(): Promise<InvitacionCreada> {
+  async execute(): Promise<Invitacion> {
     const token = randomUUID();
     const invitacion = await this.invitacionesRepository.crear({
       espacioDeTrabajoId: this.workspaceId,

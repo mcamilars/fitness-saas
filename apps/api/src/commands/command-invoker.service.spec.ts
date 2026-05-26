@@ -1,4 +1,4 @@
-import { Command } from './command.interface';
+import type { Command } from './command.interface';
 import { CommandInvokerService } from './command-invoker.service';
 
 describe('CommandInvokerService', () => {
