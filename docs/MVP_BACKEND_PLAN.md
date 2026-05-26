@@ -345,22 +345,22 @@ modules/<nombre>/
 - [x] Implementar `restaurar(id, workspaceId)`: `container.restaurarUltimo` → `repo.setActivo(id, true)`.
 
 ### B5.4 `DesactivarClienteCommand`
-- [ ] Constructor recibe `clientesService`, `clienteId`, `workspaceId`.
-- [ ] `execute()`: llama `clientesService.softDelete` y guarda `this.clienteId`.
-- [ ] `undo()`: llama `clientesService.restaurar`.
+- [x] Constructor recibe `clientesService`, `clienteId`, `workspaceId`.
+- [x] `execute()`: llama `clientesService.softDelete` y guarda `this.clienteId`.
+- [x] `undo()`: llama `clientesService.restaurar`.
 
 ### B5.5 Controller
-- [ ] `GET /api/clientes` (ENTRENADOR).
-- [ ] `GET /api/clientes/:id`.
-- [ ] `PUT /api/clientes/:id`.
-- [ ] `DELETE /api/clientes/:id` → pasa por `CommandInvoker`.
-- [ ] `POST /api/clientes/:id/restaurar` (atajo directo).
+- [x] `GET /api/clientes` (ENTRENADOR).
+- [x] `GET /api/clientes/:id`.
+- [x] `PUT /api/clientes/:id`.
+- [x] `DELETE /api/clientes/:id` → pasa por `CommandInvoker`.
+- [x] `POST /api/clientes/:id/restaurar` (atajo directo).
 
 ### B5.6 Tests
 - [x] `clientes.repository.spec.ts` con `PrismaService` mockeado.
 - [x] `cliente.memento.spec.ts`: snapshot inmutable, timestamp correcto.
 - [x] `cliente-container.spec.ts`: guardar 2 mementos → restaurar último.
-- [ ] `desactivar-cliente.command.spec.ts` mockeando `ClientesService`: execute desactiva; undo reactiva.
+- [x] `desactivar-cliente.command.spec.ts` mockeando `ClientesService`: execute desactiva; undo reactiva.
 
 ---
 
