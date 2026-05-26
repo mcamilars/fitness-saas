@@ -25,6 +25,39 @@ describe('EjerciciosCatalog', () => {
     expect(catalog.buscarPorGrupo(GrupoMuscular.PECHO)).toEqual([ejercicio]);
     expect(catalog.buscarPorGrupo(GrupoMuscular.ESPALDA)).toEqual([]);
   });
+
+  it('cargarDesde reemplaza el contenido previo en cada recarga', async () => {
+    const catalog = EjerciciosCatalog.getInstance();
+    const primero = crearEjercicio({
+      id: 'ejercicio-primero',
+      nombre: 'Press banca',
+      grupoMuscular: GrupoMuscular.PECHO,
+    });
+    const segundo = crearEjercicio({
+      id: 'ejercicio-segundo',
+      nombre: 'Sentadilla',
+      grupoMuscular: GrupoMuscular.PIERNAS,
+    });
+
+    await catalog.cargarDesde({ findAll: () => Promise.resolve([primero]) });
+    await catalog.cargarDesde({ findAll: () => Promise.resolve([segundo]) });
+
+    expect(catalog.obtenerTodos()).toEqual([segundo]);
+  });
+
+  it('obtenerTodos devuelve copias defensivas que no mutan el estado interno', async () => {
+    const catalog = EjerciciosCatalog.getInstance();
+    const ejercicio = crearEjercicio({
+      id: 'ejercicio-defensivo',
+      nombre: 'Press banca',
+      grupoMuscular: GrupoMuscular.PECHO,
+    });
+    await catalog.cargarDesde({ findAll: () => Promise.resolve([ejercicio]) });
+
+    catalog.obtenerTodos()[0].nombre = 'Mutado';
+
+    expect(catalog.obtenerTodos()[0].nombre).toBe('Press banca');
+  });
 });
 
 function crearEjercicio(

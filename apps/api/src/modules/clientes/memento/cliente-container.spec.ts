@@ -44,4 +44,18 @@ describe('ClienteContainer', () => {
       snapshotB,
     );
   });
+
+  it('restaurarUltimo retorna null para un cliente sin historial', () => {
+    const container = new ClienteContainer();
+
+    expect(container.restaurarUltimo('cliente-sin-historial')).toBeNull();
+  });
+
+  it('restaurarUltimo retorna null tras agotar el historial de un cliente', () => {
+    const container = new ClienteContainer();
+    container.guardar('cliente-1', crearSnapshot('cliente-1', true));
+
+    expect(container.restaurarUltimo('cliente-1')).not.toBeNull();
+    expect(container.restaurarUltimo('cliente-1')).toBeNull();
+  });
 });

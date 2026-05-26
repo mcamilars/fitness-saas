@@ -68,6 +68,50 @@ describe('ClientesService', () => {
     );
   });
 
+  it('findById lanza NotFound si el cliente no existe', async () => {
+    repository.findByIdConPerfil.mockResolvedValue(null);
+
+    await expect(
+      service.findById('cliente-1', 'workspace-1'),
+    ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('update lanza NotFound si el repositorio no devuelve el cliente actualizado', async () => {
+    repository.findByIdConPerfil.mockResolvedValue(crearCliente());
+    repository.update.mockResolvedValue(null);
+
+    await expect(
+      service.update('cliente-1', { estaActivo: true }, 'workspace-1'),
+    ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('softDelete lanza NotFound si setActivo no devuelve el cliente', async () => {
+    repository.findByIdConPerfil.mockResolvedValue(crearCliente());
+    repository.setActivo.mockResolvedValue(null);
+
+    await expect(
+      service.softDelete('cliente-1', 'workspace-1'),
+    ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('restaurar lanza Forbidden si el snapshot pertenece a otro workspace', async () => {
+    repository.findByIdConPerfil.mockResolvedValue(crearCliente());
+    container.guardar('cliente-1', {
+      id: 'cliente-1',
+      usuarioId: 'usuario-1',
+      entrenadorId: 'entrenador-1',
+      espacioDeTrabajoId: 'workspace-2',
+      estaActivo: true,
+      creadoEn: '2026-01-01T00:00:00.000Z',
+      actualizadoEn: '2026-01-02T00:00:00.000Z',
+    });
+
+    await expect(
+      service.restaurar('cliente-1', 'workspace-1'),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(repository.setActivo).not.toHaveBeenCalled();
+  });
+
   it('update valida workspace y actualiza por repositorio', async () => {
     const cliente = crearCliente();
     repository.findByIdConPerfil.mockResolvedValue(cliente);
