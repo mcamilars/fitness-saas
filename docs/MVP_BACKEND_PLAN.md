@@ -333,8 +333,8 @@ modules/<nombre>/
 - [x] Implementar `guardar(clienteId, snapshot)`, `restaurarUltimo(clienteId)`.
 
 ### B5.2 Extender `ClientesRepository`
-- [ ] Añadir métodos `findAllPorWorkspace(workspaceId)`, `findByIdConPerfil(id)`, `update(id, dto)`, `setActivo(id, valor)`.
-- [ ] Garantizar que todas las queries filtren por `espacioDeTrabajoId` cuando se reciba.
+- [x] Añadir métodos `findAllPorWorkspace(workspaceId)`, `findByIdConPerfil(id)`, `update(id, dto)`, `setActivo(id, valor)`.
+- [x] Garantizar que todas las queries filtren por `espacioDeTrabajoId` cuando se reciba.
 
 ### B5.3 `ClientesService`
 - [ ] Inyectar `ClientesRepository` y `ClienteContainer`.
@@ -357,7 +357,7 @@ modules/<nombre>/
 - [ ] `POST /api/clientes/:id/restaurar` (atajo directo).
 
 ### B5.6 Tests
-- [ ] `clientes.repository.spec.ts` con `PrismaService` mockeado.
+- [x] `clientes.repository.spec.ts` con `PrismaService` mockeado.
 - [x] `cliente.memento.spec.ts`: snapshot inmutable, timestamp correcto.
 - [x] `cliente-container.spec.ts`: guardar 2 mementos → restaurar último.
 - [ ] `desactivar-cliente.command.spec.ts` mockeando `ClientesService`: execute desactiva; undo reactiva.

@@ -1,12 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { type Cliente, Prisma, PrismaService } from '@repo/database';
 
+export type ClienteConPerfil = Prisma.ClienteGetPayload<{
+  include: { usuario: true };
+}>;
+
+export type ActualizarClienteDto = Prisma.ClienteUpdateInput;
+
 export interface ClientesRepositoryInterface {
   findByUsuarioId(usuarioId: string): Promise<Cliente | null>;
+  findAllPorWorkspace(workspaceId: string): Promise<ClienteConPerfil[]>;
+  findByIdConPerfil(
+    id: string,
+    workspaceId?: string,
+  ): Promise<ClienteConPerfil | null>;
   crear(
     data: Prisma.ClienteCreateInput,
     tx?: Prisma.TransactionClient,
   ): Promise<Cliente>;
+  update(
+    id: string,
+    dto: ActualizarClienteDto,
+    workspaceId?: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ClienteConPerfil | null>;
+  setActivo(
+    id: string,
+    valor: boolean,
+    workspaceId?: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ClienteConPerfil | null>;
 }
 
 @Injectable()
@@ -17,11 +40,57 @@ export class ClientesRepository implements ClientesRepositoryInterface {
     return this.prisma.cliente.findUnique({ where: { usuarioId } });
   }
 
+  findAllPorWorkspace(workspaceId: string): Promise<ClienteConPerfil[]> {
+    return this.prisma.cliente.findMany({
+      where: { espacioDeTrabajoId: workspaceId },
+      include: { usuario: true },
+      orderBy: { creadoEn: 'desc' },
+    });
+  }
+
+  findByIdConPerfil(
+    id: string,
+    workspaceId?: string,
+  ): Promise<ClienteConPerfil | null> {
+    return this.prisma.cliente.findFirst({
+      where: { id, ...(workspaceId ? { espacioDeTrabajoId: workspaceId } : {}) },
+      include: { usuario: true },
+    });
+  }
+
   crear(
     data: Prisma.ClienteCreateInput,
     tx?: Prisma.TransactionClient,
   ): Promise<Cliente> {
     const client = tx ?? this.prisma;
     return client.cliente.create({ data });
+  }
+
+  async update(
+    id: string,
+    dto: ActualizarClienteDto,
+    workspaceId?: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ClienteConPerfil | null> {
+    const client = tx ?? this.prisma;
+
+    await client.cliente.updateMany({
+      where: { id, ...(workspaceId ? { espacioDeTrabajoId: workspaceId } : {}) },
+      data: dto,
+    });
+
+    return client.cliente.findFirst({
+      where: { id, ...(workspaceId ? { espacioDeTrabajoId: workspaceId } : {}) },
+      include: { usuario: true },
+    });
+  }
+
+  setActivo(
+    id: string,
+    valor: boolean,
+    workspaceId?: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ClienteConPerfil | null> {
+    return this.update(id, { estaActivo: valor }, workspaceId, tx);
   }
 }
