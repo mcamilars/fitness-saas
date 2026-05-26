@@ -115,7 +115,7 @@ export class PlanesEntrenamientoService {
     );
 
     if (plan.estado === EstadoPlan.ACTIVO) {
-      this.planSubject.notify(plan.id, {
+      await this.planSubject.notify(plan.id, {
         tipo: 'PLAN_MODIFICADO',
         planId: plan.id,
       });
@@ -135,7 +135,7 @@ export class PlanesEntrenamientoService {
     );
 
     if (plan.estado === EstadoPlan.ACTIVO) {
-      this.planSubject.notify(plan.id, {
+      await this.planSubject.notify(plan.id, {
         tipo: 'PLAN_MODIFICADO',
         planId: plan.id,
       });

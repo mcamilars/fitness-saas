@@ -432,16 +432,16 @@ modules/<nombre>/
 **Objetivo:** asignar plan a cliente y notificar (in-app + email) cuando un plan activo cambia.
 
 ### B7.1 Interfaces Observer
-- [ ] Crear `planes-entrenamiento/observers/subject.interface.ts` con `Observer.update(evento)` y `Subject.subscribe/unsubscribe/notify`.
-- [ ] Definir `EventoPlan = { tipo: 'PLAN_ACTIVADO' | 'PLAN_MODIFICADO' | 'PLAN_ARCHIVADO'; planId; clienteId }`.
+- [x] Crear `planes-entrenamiento/observers/subject.interface.ts` con `Observer.update(evento)` y `Subject.subscribe/unsubscribe/notify`.
+- [x] Definir `EventoPlan = { tipo: 'PLAN_ACTIVADO' | 'PLAN_MODIFICADO' | 'PLAN_ARCHIVADO'; planId; clienteId }`.
 
 ### B7.2 `PlanSubject`
-- [ ] Crear servicio `plan-subject.service.ts` (singleton NestJS) con `Map<planId, Set<Observer>>`.
-- [ ] Implementar `notify(planId, evento)` que itera observers.
+- [x] Crear servicio `plan-subject.service.ts` (singleton NestJS) con `Map<planId, Set<Observer>>`.
+- [x] Implementar `notify(planId, evento)` que itera observers.
 
 ### B7.3 Repositorios involucrados
-- [ ] Crear `notificaciones/repositories/notificaciones.repository.ts` con `crear(dto)`, `findNoLeidasPorCliente(clienteId)`, `marcarLeida(id)`.
-- [ ] Crear `asignaciones/repositories/asignaciones-entrenamiento.repository.ts` con `crear(dto)`, `findPorCliente(clienteId)`, `findPorPlan(planId)`, `updateEstado(id, estado)`, `findActivaPorCliente(clienteId)`.
+- [x] Crear `notificaciones/repositories/notificaciones.repository.ts` con `crear(dto)`, `findNoLeidasPorCliente(clienteId)`, `marcarLeida(id)`.
+- [x] Crear `asignaciones/repositories/asignaciones-entrenamiento.repository.ts` con `crear(dto)`, `findPorCliente(clienteId)`, `findPorPlan(planId)`, `updateEstado(id, estado)`, `findActivaPorCliente(clienteId)`.
 
 ### B7.4 Observers concretos
 - [ ] Crear `cliente.observer.ts` que recibe `NotificacionesRepository` (no Prisma) y persiste fila en `Notificacion`.
@@ -473,8 +473,8 @@ modules/<nombre>/
 - [ ] `PATCH /api/notificaciones/:id/leer`.
 
 ### B7.9 Tests
-- [ ] `notificaciones.repository.spec.ts` y `asignaciones-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
-- [ ] `plan-subject.spec.ts`: subscribe/unsubscribe/notify llaman a observers correctos.
+- [x] `notificaciones.repository.spec.ts` y `asignaciones-entrenamiento.repository.spec.ts` con `PrismaService` mockeado.
+- [x] `plan-subject.spec.ts`: subscribe/unsubscribe/notify llaman a observers correctos.
 - [ ] `cliente.observer.spec.ts` mockeando `NotificacionesRepository`: persiste notificación con mensaje según evento.
 - [ ] `email-notification.observer.spec.ts`: invoca mailer con el template correcto.
 
