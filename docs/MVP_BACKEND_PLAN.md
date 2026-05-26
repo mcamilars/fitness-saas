@@ -284,13 +284,13 @@ modules/<nombre>/
 **Objetivo:** mailer Mailtrap funcional, infraestructura Command lista, primer command end-to-end.
 
 ### B4.1 Dependencias
-- [ ] `pnpm --filter api add nodemailer handlebars`.
-- [ ] `pnpm --filter api add -D @types/nodemailer`.
+- [x] `pnpm --filter api add nodemailer handlebars`.
+- [x] `pnpm --filter api add -D @types/nodemailer`.
 
 ### B4.2 `MailerService`
-- [ ] Crear `apps/api/src/modules/mailer/mailer.service.ts`.
-- [ ] Leer credenciales Mailtrap desde `ConfigService` y crear `nodemailer.createTransport`.
-- [ ] Implementar `enviarInvitacion(correo, token)` que compila `templates/invitacion.hbs` con `{ urlInvitacion, anioActual }`.
+- [x] Crear `apps/api/src/modules/mailer/mailer.service.ts`.
+- [x] Leer credenciales Mailtrap desde `ConfigService` y crear `nodemailer.createTransport`.
+- [x] Implementar `enviarInvitacion(correo, token)` que compila `templates/invitacion.hbs` con `{ urlInvitacion, anioActual }`.
 
 ### B4.3 Template Handlebars
 - [ ] Crear `mailer/templates/invitacion.hbs` con saludo, botón con `urlInvitacion` y footer.

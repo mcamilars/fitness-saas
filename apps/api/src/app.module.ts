@@ -7,6 +7,7 @@ import { validateEnv } from './config/env.validation';
 import { AuthModule } from './modules/auth/auth.module';
 import { EjerciciosModule } from './modules/ejercicios/ejercicios.module';
 import { HealthController } from './modules/health/health.controller';
+import { MailerModule } from './modules/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { HealthController } from './modules/health/health.controller';
     PrismaModule,
     AuthModule,
     EjerciciosModule,
+    MailerModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
