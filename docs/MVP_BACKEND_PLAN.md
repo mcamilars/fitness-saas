@@ -382,13 +382,13 @@ modules/<nombre>/
 - [x] Crear `plan-factory.provider.ts` con mapa `Record<TipoPlanEntrenamiento, PlanFactory>` inyectable.
 
 ### B6.2 States
-- [ ] Crear `planes-entrenamiento/states/plan-state.interface.ts` con `activar(plan, ctx)` y `archivar(plan, ctx)` donde `ctx = { repository, subject }`.
-- [ ] Crear `borrador.state.ts`: `activar` valida `repository.contarEjercicios(plan.id) >= 1`, llama `repository.updateEstado(plan.id, 'ACTIVO')`, dispara observers, retorna `ActivoState`.
-- [ ] `borrador.state.ts`: `archivar` lanza BadRequest.
-- [ ] Crear `activo.state.ts`: `archivar` llama `repository.updateEstado(plan.id, 'ARCHIVADO')`; `activar` lanza BadRequest.
-- [ ] Crear `archivado.state.ts`: ambos lanzan BadRequest.
-- [ ] Crear `state.factory.ts` con `fromEstado(estado): PlanState`.
-- [ ] Confirmar que ningún state importa `PrismaService`.
+- [x] Crear `planes-entrenamiento/states/plan-state.interface.ts` con `activar(plan, ctx)` y `archivar(plan, ctx)` donde `ctx = { repository, subject }`.
+- [x] Crear `borrador.state.ts`: `activar` valida `repository.contarEjercicios(plan.id) >= 1`, llama `repository.updateEstado(plan.id, 'ACTIVO')`, dispara observers, retorna `ActivoState`.
+- [x] `borrador.state.ts`: `archivar` lanza BadRequest.
+- [x] Crear `activo.state.ts`: `archivar` llama `repository.updateEstado(plan.id, 'ARCHIVADO')`; `activar` lanza BadRequest.
+- [x] Crear `archivado.state.ts`: ambos lanzan BadRequest.
+- [x] Crear `state.factory.ts` con `fromEstado(estado): PlanState`.
+- [x] Confirmar que ningún state importa `PrismaService`.
 
 ### B6.3 Prototype
 - [ ] Crear `planes-entrenamiento/prototypes/plan.prototype.ts` con interfaz `Cloneable<T>`.
@@ -420,9 +420,9 @@ modules/<nombre>/
 - [x] `hipertrofia.factory.spec.ts`: defaults correctos.
 - [x] `fuerza.factory.spec.ts`: defaults correctos.
 - [x] `resistencia.factory.spec.ts`: defaults correctos.
-- [ ] `borrador.state.spec.ts` mockeando repositorio: activar sin ejercicios lanza error; con ejercicios transiciona.
-- [ ] `activo.state.spec.ts` mockeando repositorio: archivar transiciona; activar lanza error.
-- [ ] `archivado.state.spec.ts`: ambas transiciones lanzan error.
+- [x] `borrador.state.spec.ts` mockeando repositorio: activar sin ejercicios lanza error; con ejercicios transiciona.
+- [x] `activo.state.spec.ts` mockeando repositorio: archivar transiciona; activar lanza error.
+- [x] `archivado.state.spec.ts`: ambas transiciones lanzan error.
 - [ ] `plan.prototype.spec.ts`: clone genera nuevo objeto con ids vacíos y suffijo `(copia)`.
 
 ---
