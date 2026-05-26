@@ -337,12 +337,12 @@ modules/<nombre>/
 - [x] Garantizar que todas las queries filtren por `espacioDeTrabajoId` cuando se reciba.
 
 ### B5.3 `ClientesService`
-- [ ] Inyectar `ClientesRepository` y `ClienteContainer`.
-- [ ] Implementar `findAllPorWorkspace(workspaceId)` → `repo.findAllPorWorkspace`.
-- [ ] Implementar `findById(id, workspaceId)` → `repo.findByIdConPerfil` + check de workspace.
-- [ ] Implementar `update(id, dto, workspaceId)` → `repo.update`.
-- [ ] Implementar `softDelete(id, workspaceId)`: snapshot → `container.guardar` → `repo.setActivo(id, false)`.
-- [ ] Implementar `restaurar(id, workspaceId)`: `container.restaurarUltimo` → `repo.setActivo(id, true)`.
+- [x] Inyectar `ClientesRepository` y `ClienteContainer`.
+- [x] Implementar `findAllPorWorkspace(workspaceId)` → `repo.findAllPorWorkspace`.
+- [x] Implementar `findById(id, workspaceId)` → `repo.findByIdConPerfil` + check de workspace.
+- [x] Implementar `update(id, dto, workspaceId)` → `repo.update`.
+- [x] Implementar `softDelete(id, workspaceId)`: snapshot → `container.guardar` → `repo.setActivo(id, false)`.
+- [x] Implementar `restaurar(id, workspaceId)`: `container.restaurarUltimo` → `repo.setActivo(id, true)`.
 
 ### B5.4 `DesactivarClienteCommand`
 - [ ] Constructor recibe `clientesService`, `clienteId`, `workspaceId`.
