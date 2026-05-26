@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { EjerciciosModule } from './modules/ejercicios/ejercicios.module';
 import { HealthController } from './modules/health/health.controller';
 import { MailerModule } from './modules/mailer/mailer.module';
+import { PlanesEntrenamientoModule } from './modules/planes-entrenamiento/planes-entrenamiento.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MailerModule } from './modules/mailer/mailer.module';
     AuthModule,
     EjerciciosModule,
     MailerModule,
+    PlanesEntrenamientoModule,
     CommandsModule,
   ],
   controllers: [AppController, HealthController],

@@ -391,19 +391,19 @@ modules/<nombre>/
 - [x] Confirmar que ningún state importa `PrismaService`.
 
 ### B6.3 Prototype
-- [ ] Crear `planes-entrenamiento/prototypes/plan.prototype.ts` con interfaz `Cloneable<T>`.
-- [ ] Implementar `PlanDeEntrenamientoPrototype.clone()` con ids `undefined` y nombre `<original> (copia)`.
+- [x] Crear `planes-entrenamiento/prototypes/plan.prototype.ts` con interfaz `Cloneable<T>`.
+- [x] Implementar `PlanDeEntrenamientoPrototype.clone()` con ids `undefined` y nombre `<original> (copia)`.
 
 ### B6.4 `PlanesEntrenamientoService`
-- [ ] Inyectar `PlanesEntrenamientoRepository`, `PlanFactoriesProvider`, `PlanStateFactory`, `PlanSubject`.
-- [ ] Implementar `crear(tipo, dto, entrenadorId)`: elige factory y persiste con `repository.crear(...)` en estado BORRADOR.
-- [ ] Implementar `findAll(workspaceId)` → `repository.findAllPorWorkspace`.
-- [ ] Implementar `findById(id, workspaceId)` → `repository.findByIdConEjercicios`.
-- [ ] Implementar `activar(id, workspaceId)`: carga plan, instancia state, delega `state.activar(plan, { repository, subject })`.
-- [ ] Implementar `archivar(id, workspaceId)`: análogo a `activar`.
-- [ ] Implementar `duplicar(id, workspaceId)`: carga plan, `prototype.clone()`, `repository.crearDesdeClone(snapshot)`.
-- [ ] Implementar `agregarEjercicio(planId, dto)` → `repository.agregarEjercicioPlan` + notificar si plan ACTIVO.
-- [ ] Implementar `quitarEjercicio(planId, ejercicioPlanId)` → `repository.quitarEjercicioPlan` + notificar si plan ACTIVO.
+- [x] Inyectar `PlanesEntrenamientoRepository`, `PlanFactoriesProvider`, `PlanStateFactory`, `PlanSubject`.
+- [x] Implementar `crear(tipo, dto, entrenadorId)`: elige factory y persiste con `repository.crear(...)` en estado BORRADOR.
+- [x] Implementar `findAll(workspaceId)` → `repository.findAllPorWorkspace`.
+- [x] Implementar `findById(id, workspaceId)` → `repository.findByIdConEjercicios`.
+- [x] Implementar `activar(id, workspaceId)`: carga plan, instancia state, delega `state.activar(plan, { repository, subject })`.
+- [x] Implementar `archivar(id, workspaceId)`: análogo a `activar`.
+- [x] Implementar `duplicar(id, workspaceId)`: carga plan, `prototype.clone()`, `repository.crearDesdeClone(snapshot)`.
+- [x] Implementar `agregarEjercicio(planId, dto)` → `repository.agregarEjercicioPlan` + notificar si plan ACTIVO.
+- [x] Implementar `quitarEjercicio(planId, ejercicioPlanId)` → `repository.quitarEjercicioPlan` + notificar si plan ACTIVO.
 
 ### B6.5 Controller
 - [ ] `POST /api/planes-entrenamiento` body `{ nombre, descripcion, tipo }`.
@@ -423,7 +423,7 @@ modules/<nombre>/
 - [x] `borrador.state.spec.ts` mockeando repositorio: activar sin ejercicios lanza error; con ejercicios transiciona.
 - [x] `activo.state.spec.ts` mockeando repositorio: archivar transiciona; activar lanza error.
 - [x] `archivado.state.spec.ts`: ambas transiciones lanzan error.
-- [ ] `plan.prototype.spec.ts`: clone genera nuevo objeto con ids vacíos y suffijo `(copia)`.
+- [x] `plan.prototype.spec.ts`: clone genera nuevo objeto con ids vacíos y suffijo `(copia)`.
 
 ---
 
