@@ -36,7 +36,7 @@ type EjercicioRegistroForm = {
 type State = {
   paso: 1 | 2 | 3;
   fecha: string;
-  duracionMin: number;
+  duracionMin: number | "";
   notas: string;
   planSeleccionadoId?: string;
   ejercicios: EjercicioRegistroForm[];
@@ -72,7 +72,7 @@ function reducer(state: State, action: Action): State {
     case "setGeneral":
       return {
         ...state,
-        [action.field]: action.field === "duracionMin" ? Number(action.value) : action.value,
+        [action.field]: action.field === "duracionMin" ? (action.value === "" ? "" : Number(action.value)) : action.value,
       };
     case "setPlanSeleccionado":
       return {
@@ -181,7 +181,7 @@ export function WizardRegistro({ clienteId }: { clienteId: string }) {
       method: "POST",
       body: JSON.stringify({
         fecha: state.fecha,
-        duracionMin: state.duracionMin,
+        duracionMin: Number(state.duracionMin),
         notas: state.notas || undefined,
         planDeEntrenamientoId: plan?.id,
         ejercicios: state.ejercicios.map((ejercicio) => ({
@@ -212,7 +212,7 @@ export function WizardRegistro({ clienteId }: { clienteId: string }) {
     );
   }
 
-  const puedeContinuarPaso1 = !!state.fecha && state.duracionMin > 0 && (!!plan || asignacionesActivas.length === 0);
+  const puedeContinuarPaso1 = !!state.fecha && state.duracionMin !== "" && state.duracionMin > 0 && (!!plan || asignacionesActivas.length === 0);
   const puedeGuardar = state.ejercicios.length > 0 && state.ejercicios.every((ejercicio) => ejercicio.nombre && ejercicio.series > 0 && ejercicio.repeticiones > 0);
 
   return (
@@ -334,7 +334,7 @@ export function WizardRegistro({ clienteId }: { clienteId: string }) {
           <div className="space-y-4">
             <div className="rounded-lg border p-4 text-sm">
               <p><strong>Fecha:</strong> {state.fecha}</p>
-              <p><strong>Duración:</strong> {state.duracionMin} min</p>
+              <p><strong>Duración:</strong> {state.duracionMin || "—"} min</p>
               <p><strong>Notas:</strong> {state.notas || "—"}</p>
             </div>
             <Table>
