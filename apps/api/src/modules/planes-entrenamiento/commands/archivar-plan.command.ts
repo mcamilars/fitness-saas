@@ -1,4 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
 import { EstadoPlan } from '@repo/database';
 import type { Command } from '../../../commands/command.interface';
 import type { PlanConEjercicios } from '../repositories/planes-entrenamiento.repository';
@@ -26,7 +25,11 @@ export class ArchivarPlanCommand implements Command<PlanConEjercicios> {
       return;
     }
 
-    await this.planesService.activar(this.planId, this.workspaceId);
+    await this.planesService.restaurarEstadoDesdeCommand(
+      this.planId,
+      this.workspaceId,
+      this.estadoPrevio,
+    );
   }
 
   descripcion(): string {

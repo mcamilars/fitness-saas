@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { EstadoPlan, type EjercicioPlan, type PlanDeEntrenamiento, Prisma, PrismaService } from '@repo/database';
 
 export type PlanConEjercicios = Prisma.PlanDeEntrenamientoGetPayload<{
@@ -97,15 +97,29 @@ export class PlanesEntrenamientoRepository
     });
   }
 
-  agregarEjercicioPlan(
+  async agregarEjercicioPlan(
     planId: string,
     dto: AgregarEjercicioPlanInput,
     tx?: Prisma.TransactionClient,
   ): Promise<EjercicioPlan> {
     const client = tx ?? this.prisma;
-    return client.ejercicioPlan.create({
-      data: { ...dto, planDeEntrenamientoId: planId },
-    });
+
+    try {
+      return await client.ejercicioPlan.create({
+        data: { ...dto, planDeEntrenamientoId: planId },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException(
+          'Este ejercicio ya está incluido en el plan. Elige otro ejercicio o elimina el existente antes de agregarlo nuevamente.',
+        );
+      }
+
+      throw error;
+    }
   }
 
   quitarEjercicioPlan(

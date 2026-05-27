@@ -166,50 +166,50 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** wizard de creación, listado, editor con transiciones de estado y duplicación.
 
 ### F4.1 Listado `/workspace/planes`
-- [ ] Crear `app/(entrenador)/workspace/planes/page.tsx`.
-- [ ] `useQuery(['planes'])` → `GET /planes-entrenamiento`.
-- [ ] Cards con nombre, tipo (badge), estado (badge), nº ejercicios, fecha de creación.
-- [ ] Botón `Nuevo plan` → `/workspace/planes/nuevo`.
+- [x] Crear `app/(entrenador)/workspace/planes/page.tsx`.
+- [x] `useQuery(['planes'])` → `GET /planes-entrenamiento`.
+- [x] Cards con nombre, tipo (badge), estado (badge), nº ejercicios, fecha de creación.
+- [x] Botón `Nuevo plan` → `/workspace/planes/nuevo`.
 
 ### F4.2 Wizard `/workspace/planes/nuevo`
-- [ ] Crear `app/(entrenador)/workspace/planes/nuevo/page.tsx`.
-- [ ] Crear componente `<WizardPlan />` con dos pasos en estado local.
-- [ ] Paso 1 (Factory): 3 cards seleccionables `Hipertrofia` (4×10, 60s), `Fuerza` (5×5, 180s), `Resistencia` (3×15, 30s).
-- [ ] Botón `Siguiente` deshabilitado hasta elegir tipo.
-- [ ] Paso 2: form con `nombre`, `descripcion`.
-- [ ] Mutation `POST /planes-entrenamiento` con `{ nombre, descripcion, tipo }`.
-- [ ] En éxito: navega a `/workspace/planes/<id>`.
+- [x] Crear `app/(entrenador)/workspace/planes/nuevo/page.tsx`.
+- [x] Crear componente `<WizardPlan />` con dos pasos en estado local.
+- [x] Paso 1 (Factory): 3 cards seleccionables `Hipertrofia` (4×10, 60s), `Fuerza` (5×5, 180s), `Resistencia` (3×15, 30s).
+- [x] Botón `Siguiente` deshabilitado hasta elegir tipo.
+- [x] Paso 2: form con `nombre`, `descripcion`.
+- [x] Mutation `POST /planes-entrenamiento` con `{ nombre, descripcion, tipo }`.
+- [x] En éxito: navega a `/workspace/planes/<id>`.
 
 ### F4.3 Editor `/workspace/planes/[id]`
-- [ ] Crear `app/(entrenador)/workspace/planes/[id]/page.tsx`.
-- [ ] Header con nombre, badge de tipo, badge de estado, botones según estado.
-- [ ] Tabs `Ejercicios` e `Información`.
+- [x] Crear `app/(entrenador)/workspace/planes/[id]/page.tsx`.
+- [x] Header con nombre, badge de tipo, badge de estado, botones según estado.
+- [x] Tabs `Ejercicios` e `Información`.
 
 ### F4.4 Tab Ejercicios
-- [ ] Tabla `EjercicioPlan` con columnas: orden, ejercicio, grupo, series, reps, descanso, notas, acciones.
-- [ ] Botón `Agregar ejercicio` → dialog con `<Select>` del catálogo (`GET /ejercicios`).
-- [ ] Inputs `series`, `repeticiones`, `segundosDeDescanso`, `orden`, `notas`.
-- [ ] Mutation `POST /planes-entrenamiento/:id/ejercicios`.
-- [ ] Eliminar → `DELETE /planes-entrenamiento/:id/ejercicios/:ejercicioPlanId`.
-- [ ] Deshabilitar acciones si plan ARCHIVADO.
+- [x] Tabla `EjercicioPlan` con columnas: orden, ejercicio, grupo, series, reps, descanso, notas, acciones.
+- [x] Botón `Agregar ejercicio` → dialog con `<Select>` del catálogo (`GET /ejercicios`).
+- [x] Inputs `series`, `repeticiones`, `segundosDeDescanso`, `orden`, `notas`.
+- [x] Mutation `POST /planes-entrenamiento/:id/ejercicios`.
+- [x] Eliminar → `DELETE /planes-entrenamiento/:id/ejercicios/:ejercicioPlanId`.
+- [x] Deshabilitar acciones si plan ARCHIVADO.
 
 ### F4.5 Tab Información
-- [ ] Mostrar `nombre`, `descripcion`, `creadoEn`, `actualizadoEn`.
+- [x] Mostrar `nombre`, `descripcion`, `creadoEn`, `actualizadoEn`.
 - [ ] (Opcional MVP) Form de edición de `nombre/descripcion`.
 
 ### F4.6 Botones de transición de estado (State pattern visible)
-- [ ] Si `BORRADOR`: botón `Activar` (deshabilitado si `ejercicios.length === 0`, con tooltip explicativo).
-- [ ] Si `ACTIVO`: botón `Archivar`.
-- [ ] Si `ARCHIVADO`: sin botones, solo badge.
-- [ ] Mutation `PATCH /planes-entrenamiento/:id/activar`/`/archivar` con invalidación de `['planes']` y `['plan', id]`.
-- [ ] En `Archivar` mostrar `toastConUndo` (POST `/commands/undo`).
-- [ ] Capturar 400/409 del backend (transición inválida) y mostrar toast de error.
+- [x] Si `BORRADOR`: botón `Activar` (deshabilitado si `ejercicios.length === 0`, con tooltip explicativo).
+- [x] Si `ACTIVO`: botón `Archivar`.
+- [x] Si `ARCHIVADO`: sin botones, solo badge.
+- [x] Mutation `PATCH /planes-entrenamiento/:id/activar`/`/archivar` con invalidación de `['planes']` y `['plan', id]`.
+- [x] En `Archivar` mostrar `toastConUndo` (POST `/commands/undo`).
+- [x] Capturar 400/409 del backend (transición inválida) y mostrar toast de error.
 
 ### F4.7 Botón "Duplicar" (Prototype)
-- [ ] Botón visible siempre en header del editor.
-- [ ] Mutation `POST /planes-entrenamiento/:id/duplicar`.
-- [ ] Navegar al nuevo plan `/workspace/planes/<nuevoId>`.
-- [ ] Toast `"Plan duplicado como '<nombre> (copia)'"`.
+- [x] Botón visible siempre en header del editor.
+- [x] Mutation `POST /planes-entrenamiento/:id/duplicar`.
+- [x] Navegar al nuevo plan `/workspace/planes/<nuevoId>`.
+- [x] Toast `"Plan duplicado como '<nombre> (copia)'"`.
 
 ---
 
@@ -300,19 +300,19 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** todo punto del frontend que dispara un Command muestra un toast con acción `Deshacer`.
 
 ### F8.1 Helper `toastConUndo`
-- [ ] Crear `apps/web/src/lib/ui/toast-undo.ts`.
-- [ ] Aceptar `mensaje` y `onUndo: () => Promise<void>`.
-- [ ] Mostrar toast con acción `Deshacer` y `duration: 8000`.
-- [ ] Tras `onUndo`, mostrar toast `Acción deshecha`.
+- [x] Crear `apps/web/src/lib/ui/toast-undo.ts`.
+- [x] Aceptar `mensaje` y `onUndo: () => Promise<void>`.
+- [x] Mostrar toast con acción `Deshacer` y `duration: 8000`.
+- [x] Tras `onUndo`, mostrar toast `Acción deshecha`.
 
 ### F8.2 Aplicar el helper
 - [ ] En `DELETE /clientes/:id` (F3.3): `onUndo` llama `POST /commands/undo`.
-- [ ] En `PATCH /planes-entrenamiento/:id/archivar` (F4.6): igual.
+- [x] En `PATCH /planes-entrenamiento/:id/archivar` (F4.6): igual.
 - [ ] En `POST /clientes/invitar` (F2.4): `onUndo` cancela la invitación.
 
 ### F8.3 Re-fetch tras undo
 - [ ] Tras `onUndo`, invalidar `['clientes']` cuando aplique.
-- [ ] Tras `onUndo`, invalidar `['planes']` cuando aplique.
+- [x] Tras `onUndo`, invalidar `['planes']` cuando aplique.
 - [ ] Tras `onUndo`, invalidar `['invitaciones']` cuando aplique.
 
 ---
