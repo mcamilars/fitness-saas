@@ -118,15 +118,13 @@ describe('ProgresoService', () => {
     expect(resultado.periodos[0].etiqueta).toBe('25 may - 31 may');
   });
 
-  it('setEstrategia permite inyectar una strategy personalizada', async () => {
-    const customStrategy = {
-      calcular: jest.fn().mockReturnValue({ totalSesiones: 99, periodos: [] }),
-    };
+  it('vuelve a ProgresoSemanalStrategy cuando antes se consultó porPlan', async () => {
+    jest.spyOn(semanalStrategy, 'calcular');
+    await service.calcularProgreso('cliente-1', 'porPlan');
 
-    service.setEstrategia(customStrategy);
     const resultado = await service.calcularProgreso('cliente-1', 'semanal');
 
-    expect(customStrategy.calcular).toHaveBeenCalled();
-    expect(resultado.totalSesiones).toBe(99);
+    expect(semanalStrategy.calcular).toHaveBeenCalledWith([registroBase]);
+    expect(resultado.periodos[0].etiqueta).toBe('25 may - 31 may');
   });
 });
