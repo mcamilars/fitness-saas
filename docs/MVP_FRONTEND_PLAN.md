@@ -347,17 +347,17 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 
 **Objetivo:** asegurar que un usuario que recorre la UI dispara todos los patrones del backend.
 
-- [ ] Registrar entrenador → llegar a `/workspace`.
-- [ ] Invitar cliente → tomar token del toast → registrar cliente en `/invitacion/<token>`.
-- [ ] Crear 3 ejercicios → recargar → confirmar respuesta rápida (Decorator).
-- [ ] Crear plan tipo `Hipertrofia` → editor muestra series/reps/descanso por defecto correctos (Factory).
-- [ ] Activar plan → en sesión del cliente aparece notificación (Observer).
-- [ ] Cliente registra entrenamiento via wizard (Builder).
-- [ ] Cliente abre `/cliente/progreso` y cambia entre las 3 tabs (Strategy).
-- [ ] Entrenador abre `/workspace/clientes/<id>` → ve dashboard (Facade).
-- [ ] Entrenador duplica plan → nuevo plan con sufijo `(copia)` (Prototype).
-- [ ] Entrenador archiva plan → toast con `Deshacer` → click → plan vuelve a ACTIVO (State + Command).
-- [ ] Entrenador desactiva cliente → `Deshacer` → cliente vuelve a activo (Command + Memento).
+- [x] Registrar entrenador → llegar a `/workspace`.
+- [x] Invitar cliente → tomar token del toast → registrar cliente en `/invitacion/<token>`.
+- [x] Crear 3 ejercicios → recargar → confirmar respuesta rápida (Decorator).
+- [x] Crear plan tipo `Hipertrofia` → editor muestra series/reps/descanso por defecto correctos (Factory).
+- [x] Activar plan → en sesión del cliente aparece notificación (Observer).
+- [x] Cliente registra entrenamiento via wizard (Builder).
+- [x] Cliente abre `/cliente/progreso` y cambia entre las 3 tabs (Strategy).
+- [x] Entrenador abre `/workspace/clientes/<id>` → ve dashboard (Facade).
+- [x] Entrenador duplica plan → nuevo plan con sufijo `(copia)` (Prototype).
+- [x] Entrenador archiva plan → toast con `Deshacer` → click → plan vuelve a ACTIVO (State + Command).
+- [x] Entrenador desactiva cliente → `Deshacer` → cliente vuelve a activo (Command + Memento).
 
 ---
 
@@ -381,17 +381,17 @@ apps/web/src/
 │   │   └── workspace/
 │   │       ├── page.tsx
 │   │       ├── clientes/[id]/page.tsx
-│   │       ├── planes/
-│   │       │   ├── page.tsx
-│   │       │   ├── nuevo/page.tsx
-│   │       │   └── [id]/page.tsx
-│   │       └── ejercicios/page.tsx
+│   │       ├── ejercicios/page.tsx
+│   │       └── planes/
+│   │           ├── page.tsx
+│   │           ├── nuevo/page.tsx
+│   │           └── [id]/page.tsx
 │   └── (cliente)/
 │       ├── layout.tsx
 │       └── cliente/
-│           ├── plan/page.tsx
-│           ├── registrar/page.tsx
-│           └── progreso/page.tsx
+│           ├── planes/page.tsx
+│           ├── progreso/page.tsx
+│           └── registrar/page.tsx
 ├── components/
 │   ├── ui/                       (shadcn primitives)
 │   ├── layout/
