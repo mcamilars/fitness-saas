@@ -75,32 +75,32 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** rutas `/login`, `/register`, `/invitacion/[token]` funcionales.
 
 ### F1.1 Esqueleto del segmento público
-- [ ] Crear `app/(public)/layout.tsx` con `<main>` centrado + card.
+- [x] Crear `app/(public)/layout.tsx` con `<main>` centrado + card.
 
 ### F1.2 `/login`
-- [ ] Crear `app/(public)/login/page.tsx`.
-- [ ] Form con `correo` y `contrasena` (zod schema).
-- [ ] Mutation a `POST /auth/login`.
-- [ ] En éxito: `login(token, usuario)` y redirige según rol.
-- [ ] Link a `/register`.
+- [x] Crear `app/(public)/login/page.tsx`.
+- [x] Form con `correo` y `contrasena` (zod schema).
+- [x] Mutation a `POST /auth/login`.
+- [x] En éxito: `login(token, usuario)` y redirige según rol.
+- [x] Link a `/register`.
 
 ### F1.3 `/register`
-- [ ] Crear `app/(public)/register/page.tsx`.
-- [ ] Form con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
-- [ ] Mutation a `POST /auth/register`.
-- [ ] En éxito: login automático → redirige a `/workspace`.
+- [x] Crear `app/(public)/register/page.tsx`.
+- [x] Form con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
+- [x] Mutation a `POST /auth/register`.
+- [x] En éxito: login automático → redirige a `/workspace`.
 
 ### F1.4 `/invitacion/[token]`
-- [ ] Crear `app/(public)/invitacion/[token]/page.tsx`.
-- [ ] `useQuery` a `GET /invitaciones/:token/verificar`.
-- [ ] Mostrar error si inválida/expirada/consumida.
-- [ ] Si válida: form con `correo` (prefilled, disabled), `contrasena`, `nombre`, `apellido`.
-- [ ] Mutation a `POST /auth/cliente/register`.
-- [ ] En éxito: login automático → redirige a `/cliente/plan`.
+- [x] Crear `app/(public)/invitacion/[token]/page.tsx`.
+- [x] `useQuery` a `GET /invitaciones/:token/verificar`.
+- [x] Mostrar error si inválida/expirada/consumida.
+- [x] Si válida: form con `correo` (prefilled, disabled), `contrasena`, `nombre`, `apellido`.
+- [x] Mutation a `POST /auth/cliente/register`.
+- [x] En éxito: login automático → redirige a `/cliente/plan`.
 
 ### F1.5 Manejo de errores
-- [ ] Crear hook `useApiErrorToast(error)` que muestra `error.mensaje` en toast.
-- [ ] Aplicar en las 3 mutations.
+- [x] Crear hook `useApiErrorToast(error)` que muestra `error.mensaje` en toast.
+- [x] Aplicar en las 3 mutations.
 
 ---
 
