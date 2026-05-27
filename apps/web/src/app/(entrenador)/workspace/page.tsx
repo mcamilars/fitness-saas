@@ -22,7 +22,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dumbbell, Plus, UserPlus } from "lucide-react";
 import { DialogInvitarCliente } from "@/components/features/clientes/dialog-invitar-cliente";
 import { DialogAsignarPlan } from "@/components/features/clientes/dialog-asignar-plan";
-import { useState } from "react";
 
 interface ClienteWithLastWorkout extends Cliente {
   ultimoEntrenamiento?: string;
