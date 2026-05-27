@@ -12,13 +12,24 @@ import { defineConfig, globalIgnores } from "eslint/config";
  * @param {Object} options
  * @param {Array} options.nextVitals - eslint-config-next/core-web-vitals spread
  * @param {Array} options.nextTs - eslint-config-next/typescript spread
+ * @param {string} options.tsconfigRootDir - Root directory for tsconfig resolution
  * @returns {import("eslint").Linter.Config[]}
  */
-export function nextConfig({ nextVitals, nextTs }) {
+export function nextConfig({ nextVitals, nextTs, tsconfigRootDir }) {
   return defineConfig([
     // ── Next.js presets ──
     ...nextVitals,
     ...nextTs,
+
+    // ── TypeScript parser options ──
+    {
+      name: "next/language-options",
+      languageOptions: {
+        parserOptions: {
+          tsconfigRootDir,
+        },
+      },
+    },
 
     // ── Global ignores ──
     globalIgnores([

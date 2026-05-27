@@ -103,6 +103,17 @@ export class PlanesEntrenamientoService {
     return this.planesRepository.crearDesdeClone(snapshot);
   }
 
+  async restaurarEstadoDesdeCommand(
+    id: string,
+    workspaceId: string,
+    estado: EstadoPlan,
+  ): Promise<PlanConEjercicios> {
+    await this.findById(id, workspaceId);
+    await this.planesRepository.updateEstado(id, estado);
+
+    return this.findById(id, workspaceId);
+  }
+
   async agregarEjercicio(
     planId: string,
     dto: AgregarEjercicioPlanInput,

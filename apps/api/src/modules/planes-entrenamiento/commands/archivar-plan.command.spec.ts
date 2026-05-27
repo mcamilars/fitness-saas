@@ -24,7 +24,7 @@ describe('ArchivarPlanCommand', () => {
     const planesService = {
       findById: jest.fn().mockResolvedValue(planActivo),
       archivar: jest.fn().mockResolvedValue(planArchivado),
-      activar: jest.fn(),
+      restaurarEstadoDesdeCommand: jest.fn(),
     };
 
     const command = new ArchivarPlanCommand(
@@ -40,11 +40,11 @@ describe('ArchivarPlanCommand', () => {
     expect(result).toEqual(planArchivado);
   });
 
-  it('undo activa el plan si el estadoPrevio era ACTIVO', async () => {
+  it('undo restaura el estado previo si era ACTIVO', async () => {
     const planesService = {
       findById: jest.fn().mockResolvedValue(planActivo),
       archivar: jest.fn().mockResolvedValue(planArchivado),
-      activar: jest.fn().mockResolvedValue(planActivo),
+      restaurarEstadoDesdeCommand: jest.fn().mockResolvedValue(planActivo),
     };
 
     const command = new ArchivarPlanCommand(
@@ -56,7 +56,11 @@ describe('ArchivarPlanCommand', () => {
     await command.execute();
     await command.undo();
 
-    expect(planesService.activar).toHaveBeenCalledWith(planId, workspaceId);
+    expect(planesService.restaurarEstadoDesdeCommand).toHaveBeenCalledWith(
+      planId,
+      workspaceId,
+      EstadoPlan.ACTIVO,
+    );
   });
 
   it('undo no hace nada si el estadoPrevio era BORRADOR', async () => {
@@ -66,7 +70,7 @@ describe('ArchivarPlanCommand', () => {
         estado: EstadoPlan.BORRADOR,
       }),
       archivar: jest.fn().mockResolvedValue(planArchivado),
-      activar: jest.fn(),
+      restaurarEstadoDesdeCommand: jest.fn(),
     };
 
     const command = new ArchivarPlanCommand(
@@ -78,14 +82,14 @@ describe('ArchivarPlanCommand', () => {
     await command.execute();
     await command.undo();
 
-    expect(planesService.activar).not.toHaveBeenCalled();
+    expect(planesService.restaurarEstadoDesdeCommand).not.toHaveBeenCalled();
   });
 
   it('undo no hace nada si execute no fue llamado antes', async () => {
     const planesService = {
       findById: jest.fn(),
       archivar: jest.fn(),
-      activar: jest.fn(),
+      restaurarEstadoDesdeCommand: jest.fn(),
     };
 
     const command = new ArchivarPlanCommand(
@@ -96,12 +100,16 @@ describe('ArchivarPlanCommand', () => {
 
     await command.undo();
 
-    expect(planesService.activar).not.toHaveBeenCalled();
+    expect(planesService.restaurarEstadoDesdeCommand).not.toHaveBeenCalled();
   });
 
   it('descripcion describe la operación', () => {
     const command = new ArchivarPlanCommand(
-      { findById: jest.fn(), archivar: jest.fn(), activar: jest.fn() } as never,
+      {
+        findById: jest.fn(),
+        archivar: jest.fn(),
+        restaurarEstadoDesdeCommand: jest.fn(),
+      } as never,
       planId,
       workspaceId,
     );
