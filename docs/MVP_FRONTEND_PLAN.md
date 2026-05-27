@@ -218,15 +218,15 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** listar y crear ejercicios. Endpoint con Decorator activo en backend.
 
 ### F5.1 Listado `/workspace/ejercicios`
-- [ ] Crear `app/(entrenador)/workspace/ejercicios/page.tsx`.
-- [ ] `useQuery(['ejercicios'])` → `GET /ejercicios`.
-- [ ] Filtro por grupo muscular con `<Select>` que dispara `useQuery(['ejercicios', grupo])` a `/ejercicios/por-grupo/:grupo`.
-- [ ] Cards con imagen, nombre, badge de grupo, link al video si existe.
+- [x] Crear `app/(entrenador)/workspace/ejercicios/page.tsx`.
+- [x] `useQuery(['ejercicios'])` → `GET /ejercicios`.
+- [x] Filtro por grupo muscular con `<Select>` que dispara `useQuery(['ejercicios', grupo])` a `/ejercicios/por-grupo/:grupo`.
+- [x] Cards con imagen, nombre, badge de grupo, link al video si existe.
 
 ### F5.2 Dialog "Nuevo ejercicio"
-- [ ] Form con `nombre`, `grupoMuscular` (select del enum), `descripcion`, `instrucciones`, `imagenUrl`, `videoUrl`.
-- [ ] Mutation `POST /ejercicios`.
-- [ ] En éxito: invalidar `['ejercicios']`.
+- [x] Form con `nombre`, `grupoMuscular` (select del enum), `descripcion`, `instrucciones`, `imagenUrl`, `videoUrl`.
+- [x] Mutation `POST /ejercicios`.
+- [x] En éxito: invalidar `['ejercicios']`.
 
 ---
 
