@@ -142,22 +142,22 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** `/workspace/clientes/[id]` consume un único endpoint y renderiza 4 tarjetas.
 
 ### F3.1 Ruta y query
-- [ ] Crear `app/(entrenador)/workspace/clientes/[id]/page.tsx`.
-- [ ] `useQuery(['cliente-dashboard', id], …)` → `GET /clientes/:id/dashboard`.
+- [x] Crear `app/(entrenador)/workspace/clientes/[id]/page.tsx`.
+- [x] `useQuery(['cliente-dashboard', id], …)` → `GET /clientes/:id/dashboard`.
 
 ### F3.2 Layout de tarjetas
-- [ ] Grid 2x2 de `<Card>`.
-- [ ] Tarjeta `Perfil`: nombre, correo, estado, fecha de alta.
-- [ ] Tarjeta `Plan activo`: nombre, tipo (badge), nº ejercicios, botón `Ver plan` → `/workspace/planes/<planId>`.
-- [ ] Tarjeta `Últimos registros`: lista de 5 con fecha, duración, nº ejercicios.
-- [ ] Tarjeta `Progreso semanal`: tabla mini con `etiqueta`, `entrenamientos`, `volumenTotal`.
+- [x] Grid 2x2 de `<Card>`.
+- [x] Tarjeta `Perfil`: nombre, correo, estado, fecha de alta.
+- [x] Tarjeta `Plan activo`: nombre, tipo (badge), nº ejercicios, botón `Ver plan` → `/workspace/planes/<planId>`.
+- [x] Tarjeta `Últimos registros`: lista de 5 con fecha, duración, nº ejercicios.
+- [x] Tarjeta `Progreso semanal`: tabla mini con `etiqueta`, `entrenamientos`, `volumenTotal`.
 
 ### F3.3 Acciones del cliente
-- [ ] Header con dropdown: `Editar`, `Desactivar`.
-- [ ] `Desactivar` → confirm dialog → `DELETE /clientes/:id` → `toastConUndo` (ver F8).
+- [x] Header con dropdown: `Editar`, `Desactivar`.
+- [x] `Desactivar` → confirm dialog → `DELETE /clientes/:id` → `toastConUndo` (ver F8).
 
 ### F3.4 Estado de carga
-- [ ] Skeleton de las 4 cards mientras `isLoading`.
+- [x] Skeleton de las 4 cards mientras `isLoading`.
 
 ---
 
