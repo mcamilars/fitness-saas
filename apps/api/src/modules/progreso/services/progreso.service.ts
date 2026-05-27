@@ -50,6 +50,7 @@ export class ProgresoService {
       return this.estrategia.calcular(registros, contexto);
     }
 
+    this.setEstrategia(this.semanalStrategy);
     return this.estrategia.calcular(registros);
   }
 }

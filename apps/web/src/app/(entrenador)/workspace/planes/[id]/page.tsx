@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { format } from "date-fns";
-import { Copy, Archive, Play } from "lucide-react";
+import { Copy, Archive, Play, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api/api-fetch";
 import { unwrapData } from "@/lib/api/unwrap";
@@ -79,6 +79,15 @@ export default function PlanDetallePage() {
     onError: (error) => toast.error(error instanceof Error ? error.message : "No se pudo archivar el plan"),
   });
 
+  const desarchivar = useMutation({
+    mutationFn: () => apiFetch(`/api/planes-entrenamiento/${id}/activar`, { method: "PATCH" }),
+    onSuccess: () => {
+      toast.success("Plan restaurado");
+      invalidate();
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "No se pudo desarchivar el plan"),
+  });
+
   const duplicar = useMutation({
     mutationFn: async () => {
       const response = await apiFetch<PlanDeEntrenamiento | { data: PlanDeEntrenamiento }>(`/api/planes-entrenamiento/${id}/duplicar`, { method: "POST" });
@@ -142,6 +151,12 @@ export default function PlanDetallePage() {
             <Button disabled={archivar.isPending} variant="outline" onClick={() => archivar.mutate()}>
               <Archive className="mr-2 h-4 w-4" />
               Archivar
+            </Button>
+          ) : null}
+          {plan.estado === "ARCHIVADO" ? (
+            <Button disabled={desarchivar.isPending} variant="outline" onClick={() => desarchivar.mutate()}>
+              <Undo2 className="mr-2 h-4 w-4" />
+              Desarchivar
             </Button>
           ) : null}
           <Button disabled={duplicar.isPending} variant="outline" onClick={() => duplicar.mutate()}>
