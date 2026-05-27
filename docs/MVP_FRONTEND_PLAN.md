@@ -311,14 +311,14 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 - [x] Tras `onUndo`, mostrar toast `Acción deshecha`.
 
 ### F8.2 Aplicar el helper
-- [ ] En `DELETE /clientes/:id` (F3.3): `onUndo` llama `POST /commands/undo`.
+- [x] En `DELETE /clientes/:id` (F3.3): `onUndo` llama `POST /commands/undo`.
 - [x] En `PATCH /planes-entrenamiento/:id/archivar` (F4.6): igual.
-- [ ] En `POST /clientes/invitar` (F2.4): `onUndo` cancela la invitación.
+- [x] En `POST /clientes/invitar` (F2.4): `onUndo` cancela la invitación.
 
 ### F8.3 Re-fetch tras undo
-- [ ] Tras `onUndo`, invalidar `['clientes']` cuando aplique.
+- [x] Tras `onUndo`, invalidar `['clientes']` cuando aplique.
 - [x] Tras `onUndo`, invalidar `['planes']` cuando aplique.
-- [ ] Tras `onUndo`, invalidar `['invitaciones']` cuando aplique.
+- [x] Tras `onUndo`, invalidar `['invitaciones']` cuando aplique.
 
 ---
 
