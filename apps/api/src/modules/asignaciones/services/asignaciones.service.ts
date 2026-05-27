@@ -63,6 +63,15 @@ export class AsignacionesService {
       throw new BadRequestException('Solo se pueden asignar planes activos');
     }
 
+    const asignacionExistente = await this.asignacionesRepository.findActivaPorClienteYPlan(
+      dto.clienteId,
+      dto.planEntrenamientoId,
+    );
+
+    if (asignacionExistente) {
+      throw new BadRequestException('Este plan ya está asignado a este cliente');
+    }
+
     const asignacion = await this.asignacionesRepository.crear({
       clienteId: dto.clienteId,
       planDeEntrenamientoId: dto.planEntrenamientoId,
