@@ -75,32 +75,32 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** rutas `/login`, `/register`, `/invitacion/[token]` funcionales.
 
 ### F1.1 Esqueleto del segmento público
-- [ ] Crear `app/(public)/layout.tsx` con `<main>` centrado + card.
+- [x] Crear `app/(public)/layout.tsx` con `<main>` centrado + card.
 
 ### F1.2 `/login`
-- [ ] Crear `app/(public)/login/page.tsx`.
-- [ ] Form con `correo` y `contrasena` (zod schema).
-- [ ] Mutation a `POST /auth/login`.
-- [ ] En éxito: `login(token, usuario)` y redirige según rol.
-- [ ] Link a `/register`.
+- [x] Crear `app/(public)/login/page.tsx`.
+- [x] Form con `correo` y `contrasena` (zod schema).
+- [x] Mutation a `POST /auth/login`.
+- [x] En éxito: `login(token, usuario)` y redirige según rol.
+- [x] Link a `/register`.
 
 ### F1.3 `/register`
-- [ ] Crear `app/(public)/register/page.tsx`.
-- [ ] Form con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
-- [ ] Mutation a `POST /auth/register`.
-- [ ] En éxito: login automático → redirige a `/workspace`.
+- [x] Crear `app/(public)/register/page.tsx`.
+- [x] Form con `correo`, `contrasena`, `nombre`, `apellido`, `nombreWorkspace`.
+- [x] Mutation a `POST /auth/register`.
+- [x] En éxito: login automático → redirige a `/workspace`.
 
 ### F1.4 `/invitacion/[token]`
-- [ ] Crear `app/(public)/invitacion/[token]/page.tsx`.
-- [ ] `useQuery` a `GET /invitaciones/:token/verificar`.
-- [ ] Mostrar error si inválida/expirada/consumida.
-- [ ] Si válida: form con `correo` (prefilled, disabled), `contrasena`, `nombre`, `apellido`.
-- [ ] Mutation a `POST /auth/cliente/register`.
-- [ ] En éxito: login automático → redirige a `/cliente/plan`.
+- [x] Crear `app/(public)/invitacion/[token]/page.tsx`.
+- [x] `useQuery` a `GET /invitaciones/:token/verificar`.
+- [x] Mostrar error si inválida/expirada/consumida.
+- [x] Si válida: form con `correo` (prefilled, disabled), `contrasena`, `nombre`, `apellido`.
+- [x] Mutation a `POST /auth/cliente/register`.
+- [x] En éxito: login automático → redirige a `/cliente/plan`.
 
 ### F1.5 Manejo de errores
-- [ ] Crear hook `useApiErrorToast(error)` que muestra `error.mensaje` en toast.
-- [ ] Aplicar en las 3 mutations.
+- [x] Crear hook `useApiErrorToast(error)` que muestra `error.mensaje` en toast.
+- [x] Aplicar en las 3 mutations.
 
 ---
 
@@ -109,31 +109,31 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** layout protegido con sidebar y pantalla de listado de clientes.
 
 ### F2.1 Layout protegido
-- [ ] Crear `app/(entrenador)/layout.tsx` (client).
-- [ ] Llamar `useRequireAuth('ENTRENADOR')`.
-- [ ] Renderizar `<SidebarEntrenador />` + `<main>{children}</main>`.
+- [x] Crear `app/(entrenador)/layout.tsx` (client).
+- [x] Llamar `useRequireAuth('ENTRENADOR')`.
+- [x] Renderizar `<SidebarEntrenador />` + `<main>{children}</main>`.
 
 ### F2.2 `<SidebarEntrenador />`
-- [ ] Crear `apps/web/src/components/layout/sidebar-entrenador.tsx`.
-- [ ] Links: `Clientes` (`/workspace`), `Planes` (`/workspace/planes`), `Ejercicios` (`/workspace/ejercicios`).
-- [ ] Footer con nombre del entrenador y botón `Cerrar sesión`.
+- [x] Crear `apps/web/src/components/layout/sidebar-entrenador.tsx`.
+- [x] Links: `Clientes` (`/workspace`), `Planes` (`/workspace/planes`), `Ejercicios` (`/workspace/ejercicios`).
+- [x] Footer con nombre del entrenador y botón `Cerrar sesión`.
 
 ### F2.3 Listado de clientes (`/workspace`)
-- [ ] Crear `app/(entrenador)/workspace/page.tsx`.
-- [ ] `useQuery(['clientes'], …)` → `GET /clientes`.
-- [ ] Tabla con columnas: avatar (iniciales), nombre, correo, estado (badge), último entrenamiento.
-- [ ] Click en fila → navega a `/workspace/clientes/<id>`.
+- [x] Crear `app/(entrenador)/workspace/page.tsx`.
+- [x] `useQuery(['clientes'], …)` → `GET /clientes`.
+- [x] Tabla con columnas: avatar (iniciales), nombre, correo, estado (badge), último entrenamiento.
+- [x] Click en fila → navega a `/workspace/clientes/<id>`.
 
 ### F2.4 Dialog "Invitar cliente"
-- [ ] Botón `Invitar cliente` en header de la tabla.
-- [ ] Crear `<DialogInvitarCliente />` con form `correo` (zod email).
-- [ ] Mutation a `POST /clientes/invitar`.
-- [ ] En éxito: mostrar `tokenInvitacion` en `<Code>` copiable + toast.
-- [ ] Invalidar `['invitaciones']`.
+- [x] Botón `Invitar cliente` en header de la tabla.
+- [x] Crear `<DialogInvitarCliente />` con form `correo` (zod email).
+- [x] Mutation a `POST /clientes/invitar`.
+- [x] En éxito: mostrar `tokenInvitacion` en `<Code>` copiable + toast.
+- [x] Invalidar `['invitaciones']`.
 
 ### F2.5 Estados de carga y vacío
-- [ ] Skeleton de tabla durante `isLoading`.
-- [ ] Empty state con CTA "Invitar tu primer cliente".
+- [x] Skeleton de tabla durante `isLoading`.
+- [x] Empty state con CTA "Invitar tu primer cliente".
 
 ---
 
