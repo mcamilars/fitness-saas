@@ -109,31 +109,31 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** layout protegido con sidebar y pantalla de listado de clientes.
 
 ### F2.1 Layout protegido
-- [ ] Crear `app/(entrenador)/layout.tsx` (client).
-- [ ] Llamar `useRequireAuth('ENTRENADOR')`.
-- [ ] Renderizar `<SidebarEntrenador />` + `<main>{children}</main>`.
+- [x] Crear `app/(entrenador)/layout.tsx` (client).
+- [x] Llamar `useRequireAuth('ENTRENADOR')`.
+- [x] Renderizar `<SidebarEntrenador />` + `<main>{children}</main>`.
 
 ### F2.2 `<SidebarEntrenador />`
-- [ ] Crear `apps/web/src/components/layout/sidebar-entrenador.tsx`.
-- [ ] Links: `Clientes` (`/workspace`), `Planes` (`/workspace/planes`), `Ejercicios` (`/workspace/ejercicios`).
-- [ ] Footer con nombre del entrenador y botón `Cerrar sesión`.
+- [x] Crear `apps/web/src/components/layout/sidebar-entrenador.tsx`.
+- [x] Links: `Clientes` (`/workspace`), `Planes` (`/workspace/planes`), `Ejercicios` (`/workspace/ejercicios`).
+- [x] Footer con nombre del entrenador y botón `Cerrar sesión`.
 
 ### F2.3 Listado de clientes (`/workspace`)
-- [ ] Crear `app/(entrenador)/workspace/page.tsx`.
-- [ ] `useQuery(['clientes'], …)` → `GET /clientes`.
-- [ ] Tabla con columnas: avatar (iniciales), nombre, correo, estado (badge), último entrenamiento.
-- [ ] Click en fila → navega a `/workspace/clientes/<id>`.
+- [x] Crear `app/(entrenador)/workspace/page.tsx`.
+- [x] `useQuery(['clientes'], …)` → `GET /clientes`.
+- [x] Tabla con columnas: avatar (iniciales), nombre, correo, estado (badge), último entrenamiento.
+- [x] Click en fila → navega a `/workspace/clientes/<id>`.
 
 ### F2.4 Dialog "Invitar cliente"
-- [ ] Botón `Invitar cliente` en header de la tabla.
-- [ ] Crear `<DialogInvitarCliente />` con form `correo` (zod email).
-- [ ] Mutation a `POST /clientes/invitar`.
-- [ ] En éxito: mostrar `tokenInvitacion` en `<Code>` copiable + toast.
-- [ ] Invalidar `['invitaciones']`.
+- [x] Botón `Invitar cliente` en header de la tabla.
+- [x] Crear `<DialogInvitarCliente />` con form `correo` (zod email).
+- [x] Mutation a `POST /clientes/invitar`.
+- [x] En éxito: mostrar `tokenInvitacion` en `<Code>` copiable + toast.
+- [x] Invalidar `['invitaciones']`.
 
 ### F2.5 Estados de carga y vacío
-- [ ] Skeleton de tabla durante `isLoading`.
-- [ ] Empty state con CTA "Invitar tu primer cliente".
+- [x] Skeleton de tabla durante `isLoading`.
+- [x] Empty state con CTA "Invitar tu primer cliente".
 
 ---
 
