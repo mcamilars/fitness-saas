@@ -59,37 +59,37 @@ export function NotificacionesBell() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="relative" aria-label="Notificaciones">
-          <Bell className="h-4 w-4" />
+        <Button variant="ghost" size="icon" className="relative text-[#616467] hover:text-[#1A1C1D]" aria-label="Notificaciones">
+          <Bell className="h-5 w-5" />
           {noLeidas > 0 ? (
-            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white">
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#C8E874] px-1 text-[10px] font-bold text-[#1A1C1D]">
               {noLeidas}
             </span>
           ) : null}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80">
-        <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+      <DropdownMenuContent align="end" className="w-80 rounded-xl border border-[#E5E7EB] bg-white shadow-lg">
+        <DropdownMenuLabel className="text-base font-semibold text-[#1A1C1D]">Notificaciones</DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-[#E5E7EB]" />
         {isLoading ? (
-          <DropdownMenuItem disabled>Cargando...</DropdownMenuItem>
+          <DropdownMenuItem disabled className="text-[#616467]">Cargando...</DropdownMenuItem>
         ) : notificaciones.length === 0 ? (
-          <DropdownMenuItem disabled>No tienes notificaciones nuevas</DropdownMenuItem>
+          <DropdownMenuItem disabled className="text-[#616467]">No tienes notificaciones nuevas</DropdownMenuItem>
         ) : (
           notificaciones.slice(0, 10).map((notificacion) => (
             <DropdownMenuItem
               key={notificacion.id}
-              className="flex flex-col items-start gap-1 whitespace-normal"
+              className="flex flex-col items-start gap-1 whitespace-normal py-3 cursor-pointer"
               onClick={() => {
                 if (!notificacion.leida) {
                   marcarLeida(notificacion.id);
                 }
               }}
             >
-              <span className={`text-sm ${!notificacion.leida ? "font-medium" : ""}`}>
+              <span className={`text-sm ${!notificacion.leida ? "font-semibold text-[#1A1C1D]" : "text-[#616467]"}`}>
                 {notificacion.mensaje}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-[#9CA3AF]">
                 {notificacion.creadoEn || notificacion.creadaEn
                   ? `hace ${formatDistanceToNow(new Date(notificacion.creadoEn ?? notificacion.creadaEn!), { locale: es })}`
                   : "Fecha no disponible"}
@@ -99,9 +99,9 @@ export function NotificacionesBell() {
         )}
         {noLeidas > 1 ? (
           <>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-[#E5E7EB]" />
             <DropdownMenuItem
-              className="flex items-center gap-2 justify-center text-blue-600"
+              className="flex items-center gap-2 justify-center text-[#C8E874] cursor-pointer font-medium"
               disabled={marcandoTodas}
               onClick={() => marcarTodasLeidas()}
             >

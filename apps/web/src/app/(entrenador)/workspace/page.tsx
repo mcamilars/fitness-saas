@@ -64,9 +64,9 @@ async function fetchClientes(): Promise<ClienteWithLastWorkout[]> {
 }
 
 const estadoColors: Record<EstadoCliente, string> = {
-  ACTIVO: "bg-green-100 text-green-800",
-  INACTIVO: "bg-slate-100 text-slate-800",
-  PENDIENTE: "bg-yellow-100 text-yellow-800",
+  ACTIVO: "bg-[#C8E874] text-[#1A1C1D]",
+  INACTIVO: "bg-[#ECF2F5] text-[#616467]",
+  PENDIENTE: "bg-[#FEF3C7] text-[#92400E]",
 };
 
 const estadoLabels: Record<EstadoCliente, string> = {
@@ -94,8 +94,8 @@ export default function WorkspacePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Clientes</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-bold text-[#1A1C1D]">Clientes</h1>
+          <p className="text-sm text-[#616467]">
             {clientes?.length ?? 0} cliente{clientes?.length !== 1 ? "s" : ""}
           </p>
         </div>
@@ -106,23 +106,23 @@ export default function WorkspacePage() {
       </div>
 
       {isLoading ? (
-        <div className="rounded-lg border border-slate-200 bg-white">
+        <div className="rounded-[18px] border border-[#E5E7EB] bg-white">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">Avatar</TableHead>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Correo</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Último entrenamiento</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+              <TableRow className="border-[#E5E7EB]">
+                <TableHead className="w-12 text-[#616467]">Avatar</TableHead>
+                <TableHead className="text-[#616467]">Nombre</TableHead>
+                <TableHead className="text-[#616467]">Correo</TableHead>
+                <TableHead className="text-[#616467]">Estado</TableHead>
+                <TableHead className="text-[#616467]">Último entrenamiento</TableHead>
+                <TableHead className="text-right text-[#616467]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i}>
+                <TableRow key={i} className="border-[#E5E7EB]">
                   <TableCell>
-                    <Skeleton className="h-9 w-9 rounded-full" />
+                    <Skeleton className="h-10 w-10 rounded-full" />
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-32" />
@@ -131,13 +131,13 @@ export default function WorkspacePage() {
                     <Skeleton className="h-4 w-40" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-16 rounded-full" />
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-24" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="ml-auto h-9 w-28" />
+                    <Skeleton className="ml-auto h-9 w-28 rounded-full" />
                   </TableCell>
                 </TableRow>
               ))}
@@ -145,14 +145,14 @@ export default function WorkspacePage() {
           </Table>
         </div>
       ) : clientes?.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-12 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
-            <UserPlus className="h-6 w-6 text-slate-400" />
+        <div className="rounded-[18px] border-2 border-dashed border-[#E5E7EB] bg-white p-12 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#ECF2F5]">
+            <UserPlus className="h-6 w-6 text-[#616467]" />
           </div>
-          <h3 className="mb-2 text-lg font-medium text-slate-900">
+          <h3 className="mb-2 text-lg font-semibold text-[#1A1C1D]">
             No hay clientes aún
           </h3>
-          <p className="mb-6 text-sm text-slate-500">
+          <p className="mb-6 text-sm text-[#616467]">
             Invita a tus clientes para que puedan comenzar a entrenar.
           </p>
           <Button onClick={() => setShowInvitar(true)}>
@@ -161,16 +161,16 @@ export default function WorkspacePage() {
           </Button>
         </div>
       ) : (
-        <div className="rounded-lg border border-slate-200 bg-white">
+        <div className="rounded-[18px] border border-[#E5E7EB] bg-white">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">Avatar</TableHead>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Correo</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Último entrenamiento</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+              <TableRow className="border-[#E5E7EB]">
+                <TableHead className="w-12 text-[#616467]">Avatar</TableHead>
+                <TableHead className="text-[#616467]">Nombre</TableHead>
+                <TableHead className="text-[#616467]">Correo</TableHead>
+                <TableHead className="text-[#616467]">Estado</TableHead>
+                <TableHead className="text-[#616467]">Último entrenamiento</TableHead>
+                <TableHead className="text-right text-[#616467]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -179,20 +179,20 @@ export default function WorkspacePage() {
                 return (
                   <TableRow
                     key={cliente.id}
-                    className="cursor-pointer hover:bg-slate-50"
+                    className="cursor-pointer border-[#E5E7EB] hover:bg-[#F4F4F4]"
                     onClick={() => router.push(`/workspace/clientes/${cliente.id}`)}
                   >
                     <TableCell>
-                      <Avatar className="h-9 w-9">
-                        <AvatarFallback className="bg-blue-100 text-blue-700 text-xs">
+                      <Avatar className="h-10 w-10">
+                        <AvatarFallback className="bg-[#ECF2F5] text-[#616467] text-sm font-semibold">
                           {initials}
                         </AvatarFallback>
                       </Avatar>
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium text-[#1A1C1D]">
                       {cliente.nombre} {cliente.apellido}
                     </TableCell>
-                    <TableCell className="text-slate-500">
+                    <TableCell className="text-[#616467]">
                       {cliente.correo}
                     </TableCell>
                     <TableCell>
@@ -203,7 +203,7 @@ export default function WorkspacePage() {
                         {estadoLabels[cliente.estado]}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-500">
+                    <TableCell className="text-[#616467]">
                       {cliente.ultimoEntrenamiento
                         ? formatDistanceToNow(new Date(cliente.ultimoEntrenamiento), {
                             addSuffix: true,
