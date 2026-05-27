@@ -1,4 +1,4 @@
-import { PrismaService } from '@repo/database';
+import { type PrismaService } from '@repo/database';
 
 export async function truncateAll(prisma: PrismaService): Promise<void> {
   await prisma.$executeRaw`

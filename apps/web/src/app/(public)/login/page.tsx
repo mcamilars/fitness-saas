@@ -50,7 +50,7 @@ const LoginPage = () => {
     onSuccess: (data) => {
       const { token, usuario } = data.data;
       login(token, usuario);
-      const destino = usuario.rol === "ENTRENADOR" ? "/workspace" : "/cliente/plan";
+      const destino = usuario.rol === "ENTRENADOR" ? "/workspace" : "/cliente/planes";
       router.push(destino);
     },
     onError: showApiError,

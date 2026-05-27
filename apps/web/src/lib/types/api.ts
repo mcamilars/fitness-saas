@@ -7,10 +7,11 @@ export type GrupoMuscular =
   | "HOMBROS"
   | "BICEPS"
   | "TRICEPS"
-  | "PIERNA"
+  | "PIERNAS"
   | "GLUTEOS"
   | "CORE"
-  | "CARDIO";
+  | "CUERPO_COMPLETO"
+  | "OTRO";
 
 export interface Cliente {
   id: string;
@@ -21,6 +22,20 @@ export interface Cliente {
   fechaAlta: string;
   workspaceId: string;
   planActivoId?: string;
+}
+
+export type EstadoAsignacion = "ACTIVO" | "INACTIVO";
+
+export interface AsignacionEntrenamiento {
+  id: string;
+  clienteId: string;
+  planEntrenamientoId?: string;
+  planDeEntrenamientoId?: string;
+  estado: EstadoAsignacion;
+  asignadoEn: string;
+  planEntrenamiento?: PlanDeEntrenamiento;
+  planDeEntrenamiento?: Pick<PlanDeEntrenamiento, "id" | "nombre">;
+  planDeEntrenamiento?: Pick<PlanDeEntrenamiento, "id" | "nombre">;
 }
 
 export interface PlanDeEntrenamiento {
@@ -62,6 +77,7 @@ export interface RegistroDeEntrenamiento {
   id: string;
   clienteId: string;
   planId?: string;
+  planDeEntrenamientoId?: string;
   fecha: string;
   duracionMin: number;
   notas?: string;
@@ -103,8 +119,38 @@ export interface ProgresoSemanal {
   pesoPromedio?: number;
 }
 
+export type VistaProgreso = "semanal" | "mensual" | "porPlan";
+
+export interface ProgresoDato {
+  etiqueta: string;
+  entrenamientos: number;
+  volumenTotal: number;
+  pesoPromedio?: number;
+}
+
+export interface PeriodoProgresoApi {
+  etiqueta: string;
+  totalSesiones: number;
+  totalEjercicios: number;
+  duracionTotalMin: number;
+}
+
+export interface ProgresoCliente {
+  vista?: VistaProgreso;
+  sesiones?: number;
+  totalSesiones?: number;
+  volumenTotal?: number;
+  pesoPromedio?: number;
+  ejerciciosMasFrecuentes?: {
+    nombre: string;
+    veces: number;
+  }[];
+  datos?: ProgresoDato[];
+  periodos?: PeriodoProgresoApi[];
+}
+
 export interface ProgresoResumen {
-  tipo: "semanal" | "mensual" | "porPlan";
+  tipo: VistaProgreso;
   datos: ProgresoSemanal[];
   volumenTotal: number;
   promedioPeso: number;

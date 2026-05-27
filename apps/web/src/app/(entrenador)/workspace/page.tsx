@@ -17,8 +17,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, UserPlus } from "lucide-react";
+import { Dumbbell, Plus, UserPlus } from "lucide-react";
 import { DialogInvitarCliente } from "@/components/features/clientes/dialog-invitar-cliente";
+import { DialogAsignarPlan } from "@/components/features/clientes/dialog-asignar-plan";
 import { useState } from "react";
 
 interface ClienteWithLastWorkout extends Cliente {
@@ -76,6 +77,7 @@ const estadoLabels: Record<EstadoCliente, string> = {
 export default function WorkspacePage() {
   const router = useRouter();
   const [showInvitar, setShowInvitar] = useState(false);
+  const [clienteParaAsignar, setClienteParaAsignar] = useState<ClienteWithLastWorkout | null>(null);
 
   const { data: clientes, isLoading } = useQuery({
     queryKey: ["clientes"],
@@ -107,6 +109,7 @@ export default function WorkspacePage() {
                 <TableHead>Correo</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Último entrenamiento</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -126,6 +129,9 @@ export default function WorkspacePage() {
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="ml-auto h-9 w-28" />
                   </TableCell>
                 </TableRow>
               ))}
@@ -158,6 +164,7 @@ export default function WorkspacePage() {
                 <TableHead>Correo</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Último entrenamiento</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -197,6 +204,20 @@ export default function WorkspacePage() {
                           })
                         : "Sin registros"}
                     </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setClienteParaAsignar(cliente);
+                        }}
+                      >
+                        <Dumbbell className="mr-2 h-4 w-4" />
+                        Asignar plan
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -206,6 +227,15 @@ export default function WorkspacePage() {
       )}
 
       <DialogInvitarCliente open={showInvitar} onOpenChange={setShowInvitar} />
+      <DialogAsignarPlan
+        cliente={clienteParaAsignar}
+        open={!!clienteParaAsignar}
+        onOpenChange={(open) => {
+          if (!open) {
+            setClienteParaAsignar(null);
+          }
+        }}
+      />
     </div>
   );
 }

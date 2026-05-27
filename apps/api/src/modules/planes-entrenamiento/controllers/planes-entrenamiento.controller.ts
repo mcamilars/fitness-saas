@@ -58,6 +58,7 @@ export class PlanesEntrenamientoController {
   }
 
   @Get(':id')
+  @Roles('ENTRENADOR', 'CLIENTE')
   @ApiOperation({ summary: 'Obtener un plan por ID (con ejercicios)' })
   @ApiParam({ name: 'id', description: 'UUID del plan' })
   @ApiResponse({

@@ -76,6 +76,10 @@ describe('ProgresoService', () => {
       {
         planDeEntrenamientoId: 'plan-abcd1234',
         asignadoEn: new Date('2026-05-01'),
+        planDeEntrenamiento: {
+          id: 'plan-abcd1234',
+          nombre: 'Fuerza 5x5',
+        },
       },
     ]);
 
@@ -87,7 +91,7 @@ describe('ProgresoService', () => {
         asignaciones: expect.arrayContaining([
           expect.objectContaining({
             planDeEntrenamientoId: 'plan-abcd1234',
-            etiqueta: 'Plan plan-abc',
+            etiqueta: 'Fuerza 5x5',
           }),
         ]),
       }),
@@ -111,7 +115,7 @@ describe('ProgresoService', () => {
 
     expect(resultado.totalSesiones).toBe(1);
     expect(resultado.periodos).toHaveLength(1);
-    expect(resultado.periodos[0].etiqueta).toBe('2026-W22');
+    expect(resultado.periodos[0].etiqueta).toBe('25 may - 31 may');
   });
 
   it('setEstrategia permite inyectar una strategy personalizada', async () => {

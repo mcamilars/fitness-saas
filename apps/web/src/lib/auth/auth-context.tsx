@@ -19,6 +19,7 @@ export interface User {
   nombre: string;
   apellido?: string;
   correo: string;
+  clienteId?: string;
 }
 
 interface AuthContextValue {
@@ -82,6 +83,15 @@ export function useAuth() {
   return context;
 }
 
+export function getMiClienteId(user: User | null): string | undefined {
+  return user?.clienteId ?? (user?.rol === "CLIENTE" ? user.id : undefined);
+}
+
+export function useMiClienteId(): string | undefined {
+  const { user } = useAuth();
+  return getMiClienteId(user);
+}
+
 export function useRequireAuth(requiredRol?: Rol) {
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
@@ -92,7 +102,7 @@ export function useRequireAuth(requiredRol?: Rol) {
       return;
     }
     if (requiredRol && user?.rol !== requiredRol) {
-      const redirectPath = user?.rol === "ENTRENADOR" ? "/workspace" : "/cliente/plan";
+      const redirectPath = user?.rol === "ENTRENADOR" ? "/workspace" : "/cliente/planes";
       router.push(redirectPath);
     }
   }, [isAuthenticated, requiredRol, router, user]);

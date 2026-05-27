@@ -43,7 +43,7 @@ export class ProgresoService {
       const contexto = {
         asignaciones: asignaciones.map((a) => ({
           planDeEntrenamientoId: a.planDeEntrenamientoId,
-          etiqueta: `Plan ${a.planDeEntrenamientoId.slice(0, 8)}`,
+          etiqueta: a.planDeEntrenamiento.nombre,
           asignadoEn: new Date(a.asignadoEn),
         })),
       };

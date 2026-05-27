@@ -28,6 +28,7 @@ describe('RegistrosService', () => {
   const registroCreado = {
     id: 'registro-1',
     clienteId: 'cliente-1',
+    planDeEntrenamientoId: null,
     fecha: new Date('2026-05-25'),
     notas: 'sesion intensa',
     duracionMin: 60,
@@ -44,6 +45,10 @@ describe('RegistrosService', () => {
     findByIdConPerfil: jest.fn(),
   };
 
+  const asignacionesRepository = {
+    findActivaPorClienteYPlan: jest.fn(),
+  };
+
   let service: RegistrosService;
 
   beforeEach(() => {
@@ -51,6 +56,7 @@ describe('RegistrosService', () => {
     service = new RegistrosService(
       registrosRepository as never,
       clientesRepository as never,
+      asignacionesRepository as never,
     );
   });
 
@@ -95,6 +101,50 @@ describe('RegistrosService', () => {
         }),
       );
       expect(result).toEqual(registroCreado);
+    });
+
+    it('valida que el plan enviado esté activo y asignado, sin completarlo ni cambiar estados', async () => {
+      clientesRepository.findByIdConPerfil.mockResolvedValue(clienteBase);
+      asignacionesRepository.findActivaPorClienteYPlan.mockResolvedValue({
+        id: 'asignacion-1',
+        clienteId: 'cliente-1',
+        planDeEntrenamientoId: 'plan-1',
+        estado: 'ACTIVO',
+      });
+      registrosRepository.crearConEjercicios.mockResolvedValue({
+        ...registroCreado,
+        planDeEntrenamientoId: 'plan-1',
+      });
+
+      await service.registrar('cliente-1', 'workspace-1', {
+        fecha: dto.fecha,
+        duracionMin: dto.duracionMin,
+        notas: dto.notas,
+        ejercicios: dto.ejercicios,
+        planDeEntrenamientoId: 'plan-1',
+      });
+
+      expect(asignacionesRepository.findActivaPorClienteYPlan).toHaveBeenCalledWith('cliente-1', 'plan-1');
+      expect(registrosRepository.crearConEjercicios).toHaveBeenCalledWith(
+        expect.objectContaining({ planDeEntrenamientoId: 'plan-1' }),
+      );
+    });
+
+    it('lanza ForbiddenException si el plan no está activo/asignado al cliente', async () => {
+      clientesRepository.findByIdConPerfil.mockResolvedValue(clienteBase);
+      asignacionesRepository.findActivaPorClienteYPlan.mockResolvedValue(null);
+
+      await expect(
+        service.registrar('cliente-1', 'workspace-1', {
+          fecha: dto.fecha,
+          duracionMin: dto.duracionMin,
+          notas: dto.notas,
+          ejercicios: dto.ejercicios,
+          planDeEntrenamientoId: 'plan-no-asignado',
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+
+      expect(registrosRepository.crearConEjercicios).not.toHaveBeenCalled();
     });
 
     it('lanza NotFoundException si el cliente no existe en el workspace', async () => {

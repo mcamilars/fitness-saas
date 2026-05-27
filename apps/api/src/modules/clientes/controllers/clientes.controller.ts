@@ -12,10 +12,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandInvokerService } from '../../../commands/command-invoker.service';
+import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { CurrentWorkspace } from '../../../common/decorators/current-workspace.decorator';
 import { Roles } from '../../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../common/guards/roles.guard';
+import type { AuthenticatedUser } from '../../../common/types/authenticated-request';
 import { InvitacionesRepository } from '../../invitaciones/repositories/invitaciones.repository';
 import { MailerService } from '../../mailer/mailer.service';
 import { DesactivarClienteCommand } from '../commands/desactivar-cliente.command';
@@ -48,6 +50,23 @@ export class ClientesController {
     const clientes = await this.clientesService.findAllPorWorkspace(workspaceId);
 
     return { clientes };
+  }
+
+  @Get('me')
+  @Roles('CLIENTE')
+  @ApiOperation({ summary: 'Obtener el perfil de cliente autenticado' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cliente autenticado',
+    schema: { example: { data: { cliente: { id: 'uuid', usuarioId: 'uuid', estaActivo: true } } } },
+  })
+  async findMe(
+    @CurrentUser() user: AuthenticatedUser,
+    @CurrentWorkspace() workspaceId: string,
+  ) {
+    const cliente = await this.clientesService.findByUsuarioId(user.id, workspaceId);
+
+    return { cliente };
   }
 
   @Get(':id')

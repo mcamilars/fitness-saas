@@ -6,6 +6,7 @@ describe('RegistrosEntrenamientoRepository', () => {
   const mockRegistro = {
     id: 'registro-1',
     clienteId: 'cliente-1',
+    planDeEntrenamientoId: null,
     fecha: new Date('2026-05-25'),
     notas: 'buena sesion',
     duracionMin: 60,
@@ -45,6 +46,7 @@ describe('RegistrosEntrenamientoRepository', () => {
 
       const payload: Readonly<RegistroEntrenamientoDraft> = Object.freeze({
         clienteId: 'cliente-1',
+        planDeEntrenamientoId: 'plan-1',
         fecha: new Date('2026-05-25'),
         notas: 'buena sesion',
         duracionMin: 60,
@@ -64,6 +66,7 @@ describe('RegistrosEntrenamientoRepository', () => {
       expect(prisma.registroDeEntrenamiento.create).toHaveBeenCalledWith({
         data: {
           clienteId: 'cliente-1',
+          planDeEntrenamientoId: 'plan-1',
           fecha: payload.fecha,
           notas: 'buena sesion',
           duracionMin: 60,

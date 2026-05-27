@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,7 +18,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Copy, Check } from "lucide-react";
 
 const invitarSchema = z.object({
   correo: z.string().email("Correo inválido"),
@@ -49,8 +47,6 @@ export function DialogInvitarCliente({
   onOpenChange,
 }: DialogInvitarClienteProps) {
   const queryClient = useQueryClient();
-  const [tokenCopiado, setTokenCopiado] = useState<string | null>(null);
-  const [tokenInvitacion, setTokenInvitacion] = useState<string | null>(null);
 
   const {
     register,
@@ -63,28 +59,19 @@ export function DialogInvitarCliente({
 
   const mutation = useMutation({
     mutationFn: invitarCliente,
-    onSuccess: (data) => {
-      setTokenInvitacion(data.tokenInvitacion);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invitaciones"] });
-      toast.success("Invitación creada", {
-        description: "Comparte el token con tu cliente.",
+      toast.success("Invitación enviada", {
+        description: "Se envió el correo de invitación al cliente.",
       });
+      handleClose(false);
     },
     onError: showApiError,
   });
 
-  const handleCopyToken = async () => {
-    if (!tokenInvitacion) {return;}
-    await navigator.clipboard.writeText(tokenInvitacion);
-    setTokenCopiado(tokenInvitacion);
-    setTimeout(() => setTokenCopiado(null), 2000);
-  };
-
   const handleClose = (open: boolean) => {
     if (!open) {
       reset();
-      setTokenInvitacion(null);
-      setTokenCopiado(null);
     }
     onOpenChange(open);
   };
@@ -99,17 +86,20 @@ export function DialogInvitarCliente({
           </DialogDescription>
         </DialogHeader>
 
-        {!tokenInvitacion ? (
-          <form
-            onSubmit={handleSubmit((data) => mutation.mutate(data))}
-            className="space-y-4"
-          >
+        <form
+          onSubmit={handleSubmit((data) => {
+            if (mutation.isPending) {return;}
+            mutation.mutate(data);
+          })}
+          className="space-y-4"
+        >
             <div className="space-y-2">
               <Label htmlFor="correo">Correo electrónico</Label>
               <Input
                 id="correo"
                 type="email"
                 placeholder="cliente@ejemplo.com"
+                disabled={mutation.isPending}
                 {...register("correo")}
               />
               {errors.correo && (
@@ -121,47 +111,15 @@ export function DialogInvitarCliente({
                 type="button"
                 variant="outline"
                 onClick={() => handleClose(false)}
+                disabled={mutation.isPending}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Enviando..." : "Enviar invitación"}
+              <Button type="submit" disabled={isSubmitting || mutation.isPending}>
+                {isSubmitting || mutation.isPending ? "Enviando..." : "Enviar invitación"}
               </Button>
             </DialogFooter>
-          </form>
-        ) : (
-          <div className="space-y-4">
-            <div className="rounded-lg bg-slate-50 p-4">
-              <p className="mb-2 text-sm font-medium text-slate-700">
-                Token de invitación
-              </p>
-              <div className="flex items-center gap-2">
-                <code className="flex-1 rounded bg-white px-3 py-2 text-sm font-mono text-slate-800 border">
-                  {tokenInvitacion}
-                </code>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={handleCopyToken}
-                  className="shrink-0"
-                >
-                  {tokenCopiado ? (
-                    <Check className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              <p className="mt-2 text-xs text-slate-500">
-                Compartí este token con tu cliente. También se envió un correo
-                con el enlace directo.
-              </p>
-            </div>
-            <DialogFooter>
-              <Button onClick={() => handleClose(false)}>Cerrar</Button>
-            </DialogFooter>
-          </div>
-        )}
+        </form>
       </DialogContent>
     </Dialog>
   );

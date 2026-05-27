@@ -209,6 +209,7 @@ model PlanDeEntrenamiento {
 
   ejercicioPlanes EjercicioPlan[]
   asignaciones AsignacionPlanEntrenamiento[]
+  registros RegistroDeEntrenamiento[]
 
   @@map("planes_de_entrenamiento")
 }
@@ -237,17 +238,20 @@ model AsignacionPlanEntrenamiento {
 // ============================================================
 
 model RegistroDeEntrenamiento {
-  id          String   @id @default(uuid())
-  clienteId   String
-  fecha       DateTime
-  notas       String?
-  duracionMin Int?
-  creadoEn    DateTime @default(now())
+  id                    String   @id @default(uuid())
+  clienteId             String
+  planDeEntrenamientoId String?
+  fecha                 DateTime
+  notas                 String?
+  duracionMin           Int?
+  creadoEn              DateTime @default(now())
 
-  cliente Cliente @relation(fields: [clienteId], references: [id])
+  cliente             Cliente               @relation(fields: [clienteId], references: [id])
+  planDeEntrenamiento PlanDeEntrenamiento?  @relation(fields: [planDeEntrenamientoId], references: [id])
 
   ejercicios RegistroDeEjercicio[]
 
+  @@index([clienteId, planDeEntrenamientoId])
   @@map("registros_de_entrenamiento")
 }
 

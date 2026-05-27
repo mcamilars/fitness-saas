@@ -66,7 +66,7 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 
 ### F0.8 Layout raíz
 - [x] Configurar `app/layout.tsx` con HTML base, fuente sans-serif, `<Providers>`.
-- [x] Crear `app/page.tsx` que redirige según rol: ENTRENADOR → `/workspace`, CLIENTE → `/cliente/plan`, sin sesión → `/login`.
+- [x] Crear `app/page.tsx` que redirige según rol: ENTRENADOR → `/workspace`, CLIENTE → `/cliente/planes`, sin sesión → `/login`.
 
 ---
 
@@ -96,7 +96,7 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 - [x] Mostrar error si inválida/expirada/consumida.
 - [x] Si válida: form con `correo` (prefilled, disabled), `contrasena`, `nombre`, `apellido`.
 - [x] Mutation a `POST /auth/cliente/register`.
-- [x] En éxito: login automático → redirige a `/cliente/plan`.
+- [x] En éxito: login automático → redirige a `/cliente/planes`.
 
 ### F1.5 Manejo de errores
 - [x] Crear hook `useApiErrorToast(error)` que muestra `error.mensaje` en toast.
@@ -235,44 +235,49 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** segmento `(cliente)` con plan asignado, registrar entrenamiento y progreso.
 
 ### F6.1 Layout `/cliente`
-- [ ] Crear `app/(cliente)/layout.tsx` (client) con `useRequireAuth('CLIENTE')`.
-- [ ] Crear `<SidebarCliente />` con links `Mi plan`, `Registrar`, `Progreso`.
-- [ ] Incluir `<NotificacionesBell />` en el header (ver F7).
+- [x] Crear `app/(cliente)/layout.tsx` (client) con `useRequireAuth('CLIENTE')`.
+- [x] Crear `<SidebarCliente />` con links `Mi plan`, `Registrar`, `Progreso`.
+- [x] Incluir `<NotificacionesBell />` en el header (ver F7).
 
-### F6.2 `/cliente/plan`
-- [ ] Crear `app/(cliente)/cliente/plan/page.tsx`.
-- [ ] `useQuery(['mi-plan'])` → `GET /clientes/<miClienteId>/asignaciones` filtrando activas (o endpoint dedicado).
-- [ ] Renderizar plan activo: nombre, tipo, lista de ejercicios con series/reps/descanso.
-- [ ] Empty state si no hay plan asignado.
+### F6.1b Preparación de sesión/tipos
+- [x] Extender tipos frontend con `AsignacionEntrenamiento`, `VistaProgreso`, `ProgresoCliente`.
+- [x] Agregar `clienteId` opcional al `AuthContext` y helper `useMiClienteId()`.
+- [x] Guardar `clienteId` al completar registro por invitación.
+
+### F6.2 `/cliente/planes`
+- [x] Crear `app/(cliente)/cliente/planes/page.tsx`.
+- [x] `useQuery(['mi-plan'])` → `GET /clientes/<miClienteId>/asignaciones` filtrando activas (o endpoint dedicado).
+- [x] Renderizar plan activo: nombre, tipo, lista de ejercicios con series/reps/descanso.
+- [x] Empty state si no hay plan asignado.
 
 ### F6.3 `/cliente/registrar` — Wizard Builder
-- [ ] Crear `app/(cliente)/cliente/registrar/page.tsx`.
-- [ ] Crear `<WizardRegistro />` con 3 pasos en `useReducer` para conservar estado entre pasos.
+- [x] Crear `app/(cliente)/cliente/registrar/page.tsx`.
+- [x] Crear `<WizardRegistro />` con 3 pasos en `useReducer` para conservar estado entre pasos.
 
 **Paso 1 — Datos generales:**
-- [ ] Input `fecha` (date picker, default hoy).
-- [ ] Input `duracionMin`.
-- [ ] Input `notas`.
-- [ ] Botón `Siguiente`.
+- [x] Input `fecha` (date picker, default hoy).
+- [x] Input `duracionMin`.
+- [x] Input `notas`.
+- [x] Botón `Siguiente`.
 
 **Paso 2 — Ejercicios:**
-- [ ] Cargar plan activo y mostrar card por `EjercicioPlan` con `series`, `repeticiones`, `pesoKg`, `notas` editables.
-- [ ] Permitir agregar ejercicios libres con botón `+ Otro ejercicio`.
-- [ ] Usar `useFieldArray` de `react-hook-form` para la lista.
-- [ ] Botón `Siguiente`.
+- [x] Cargar plan activo y mostrar card por `EjercicioPlan` con `series`, `repeticiones`, `pesoKg`, `notas` editables.
+- [x] Permitir agregar ejercicios libres con botón `+ Otro ejercicio`.
+- [ ] Usar `useFieldArray` de `react-hook-form` para la lista. *(Pendiente: la implementación actual usa `useReducer` para mantener simple el Builder.)*
+- [x] Botón `Siguiente`.
 
 **Paso 3 — Confirmación:**
-- [ ] Resumen de fecha, duración y lista de ejercicios.
-- [ ] Botón `Guardar registro`.
-- [ ] Mutation `POST /clientes/<miClienteId>/registros-entrenamiento`.
-- [ ] En éxito: toast y redirige a `/cliente/progreso`.
+- [x] Resumen de fecha, duración y lista de ejercicios.
+- [x] Botón `Guardar registro`.
+- [x] Mutation `POST /clientes/<miClienteId>/registros-entrenamiento`.
+- [x] En éxito: toast y redirige a `/cliente/progreso`.
 
 ### F6.4 `/cliente/progreso` — Tabs Strategy
-- [ ] Crear `app/(cliente)/cliente/progreso/page.tsx`.
-- [ ] Tabs con valores `semanal`, `mensual`, `porPlan`.
-- [ ] Cambio de tab cambia query key y dispara `GET /clientes/<miClienteId>/progreso?vista=<valor>`.
-- [ ] Tabla con columnas `etiqueta`, `entrenamientos`, `volumenTotal`, `pesoPromedio`.
-- [ ] (Opcional MVP) Bar chart simple con divs Tailwind, sin Recharts.
+- [x] Crear `app/(cliente)/cliente/progreso/page.tsx`.
+- [x] Tabs con valores `semanal`, `mensual`, `porPlan`.
+- [x] Cambio de tab cambia query key y dispara `GET /clientes/<miClienteId>/progreso?vista=<valor>`.
+- [x] Tabla con columnas `etiqueta`, `entrenamientos`, `volumenTotal`, `pesoPromedio`.
+- [x] (Opcional MVP) Bar chart simple con divs Tailwind, sin Recharts.
 
 ---
 
