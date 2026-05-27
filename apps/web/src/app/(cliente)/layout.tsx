@@ -23,24 +23,24 @@ export default function ClienteLayout({
 
   if (showLoader) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="flex h-screen items-center justify-center bg-[#1A1C1D]">
+        <Loader2 className="h-8 w-8 animate-spin text-[#C8E874]" />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <SidebarCliente />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
-          <div>
-            <p className="text-sm text-slate-500">Portal del cliente</p>
-            <h1 className="text-lg font-semibold text-slate-900">Tu entrenamiento</h1>
+    <div className="flex min-h-screen bg-[#1A1C1D] p-2 lg:p-4">
+      <div className="flex w-full gap-2">
+        <div className="sticky top-2 h-[calc(100vh-16px)] w-64 flex-shrink-0 self-start">
+          <SidebarCliente />
+        </div>
+        <div className="relative min-h-[calc(100vh-16px)] flex-1 overflow-y-auto rounded-[24px] bg-[#F4F4F4] p-4 lg:p-6">
+          <div className="absolute right-6 top-4 z-10">
+            <NotificacionesBell />
           </div>
-          <NotificacionesBell />
-        </header>
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+          {children}
+        </div>
       </div>
     </div>
   );

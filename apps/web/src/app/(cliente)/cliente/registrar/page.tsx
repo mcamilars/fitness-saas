@@ -25,8 +25,8 @@ export default function RegistrarEntrenamientoPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Registrar</h1>
-        <p className="text-sm text-slate-500">Guarda tu sesión de entrenamiento con un wizard Builder.</p>
+        <h1 className="text-2xl font-bold text-[#1A1C1D]">Registrar</h1>
+        <p className="text-sm text-[#616467]">Guarda tu sesión de entrenamiento con un wizard Builder.</p>
       </div>
       <WizardRegistro clienteId={miClienteId} />
     </div>

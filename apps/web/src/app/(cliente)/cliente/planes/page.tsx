@@ -71,8 +71,8 @@ export default function MiPlanPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Mis planes</h1>
-        <p className="text-sm text-slate-500">Consulta las rutinas asignadas por tu entrenador.</p>
+        <h1 className="text-2xl font-bold text-[#1A1C1D]">Mis planes</h1>
+        <p className="text-sm text-[#616467]">Consulta las rutinas asignadas por tu entrenador.</p>
       </div>
 
       {planesConAsignacion.map(({ asignacion, plan }) => (
@@ -94,32 +94,32 @@ export default function MiPlanPage() {
           </CardHeader>
           <CardContent>
             {!plan ? (
-              <p className="text-sm text-slate-500">No se pudo cargar el detalle de este plan.</p>
+              <p className="text-sm text-[#616467]">No se pudo cargar el detalle de este plan.</p>
             ) : plan.ejercicios.length === 0 ? (
-              <p className="text-sm text-slate-500">Este plan aún no tiene ejercicios.</p>
+              <p className="text-sm text-[#616467]">Este plan aún no tiene ejercicios.</p>
             ) : (
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Orden</TableHead>
-                    <TableHead>Ejercicio</TableHead>
-                    <TableHead>Grupo</TableHead>
-                    <TableHead>Series</TableHead>
-                    <TableHead>Reps</TableHead>
-                    <TableHead>Descanso</TableHead>
-                    <TableHead>Notas</TableHead>
+                  <TableRow className="border-[#E5E7EB]">
+                    <TableHead className="text-[#616467]">Orden</TableHead>
+                    <TableHead className="text-[#616467]">Ejercicio</TableHead>
+                    <TableHead className="text-[#616467]">Grupo</TableHead>
+                    <TableHead className="text-[#616467]">Series</TableHead>
+                    <TableHead className="text-[#616467]">Reps</TableHead>
+                    <TableHead className="text-[#616467]">Descanso</TableHead>
+                    <TableHead className="text-[#616467]">Notas</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {plan.ejercicios.map((ejercicioPlan) => (
-                    <TableRow key={ejercicioPlan.id}>
-                      <TableCell>{ejercicioPlan.orden}</TableCell>
-                      <TableCell className="font-medium">{ejercicioPlan.ejercicio.nombre}</TableCell>
-                      <TableCell>{ejercicioPlan.ejercicio.grupoMuscular}</TableCell>
-                      <TableCell>{ejercicioPlan.series}</TableCell>
-                      <TableCell>{ejercicioPlan.repeticiones}</TableCell>
-                      <TableCell>{ejercicioPlan.segundosDeDescanso}s</TableCell>
-                      <TableCell>{ejercicioPlan.notas || "—"}</TableCell>
+                    <TableRow key={ejercicioPlan.id} className="border-[#E5E7EB]">
+                      <TableCell className="text-[#616467]">{ejercicioPlan.orden}</TableCell>
+                      <TableCell className="font-medium text-[#1A1C1D]">{ejercicioPlan.ejercicio.nombre}</TableCell>
+                      <TableCell className="text-[#616467]">{ejercicioPlan.ejercicio.grupoMuscular}</TableCell>
+                      <TableCell className="text-[#616467]">{ejercicioPlan.series}</TableCell>
+                      <TableCell className="text-[#616467]">{ejercicioPlan.repeticiones}</TableCell>
+                      <TableCell className="text-[#616467]">{ejercicioPlan.segundosDeDescanso}s</TableCell>
+                      <TableCell className="text-[#616467]">{ejercicioPlan.notas || "—"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -142,9 +142,9 @@ function MiPlanSkeleton() {
           <Skeleton className="h-4 w-96" />
         </CardHeader>
         <CardContent className="space-y-3">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full rounded-[18px]" />
+          <Skeleton className="h-10 w-full rounded-[18px]" />
+          <Skeleton className="h-10 w-full rounded-[18px]" />
         </CardContent>
       </Card>
     </div>

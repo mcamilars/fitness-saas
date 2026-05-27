@@ -53,8 +53,8 @@ export default function ProgresoPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Progreso</h1>
-        <p className="text-sm text-slate-500">Cambia la estrategia de análisis entre semanal, mensual y por plan.</p>
+        <h1 className="text-2xl font-bold text-[#1A1C1D]">Progreso</h1>
+        <p className="text-sm text-[#616467]">Cambia la estrategia de análisis entre semanal, mensual y por plan.</p>
       </div>
 
       <Tabs value={vista} onValueChange={(value) => setVista(value as VistaProgreso)}>
@@ -68,7 +68,7 @@ export default function ProgresoPage() {
       {loadingCliente || isLoading ? (
         <Card>
           <CardHeader><Skeleton className="h-6 w-48" /></CardHeader>
-          <CardContent className="space-y-3"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></CardContent>
+          <CardContent className="space-y-3"><Skeleton className="h-12 w-full rounded-full" /><Skeleton className="h-12 w-full rounded-full" /></CardContent>
         </Card>
       ) : !progreso ? (
         <Card>
@@ -80,44 +80,71 @@ export default function ProgresoPage() {
       ) : (
         <>
           <div className="grid gap-4 md:grid-cols-3">
-            <Card><CardHeader><CardDescription>Sesiones</CardDescription><CardTitle>{progreso.sesiones ?? progreso.totalSesiones ?? datos.reduce((acc, dato) => acc + dato.entrenamientos, 0)}</CardTitle></CardHeader></Card>
-            <Card><CardHeader><CardDescription>Volumen total</CardDescription><CardTitle>{progreso.volumenTotal ?? datos.reduce((acc, dato) => acc + dato.volumenTotal, 0)}</CardTitle></CardHeader></Card>
-            <Card><CardHeader><CardDescription>Peso promedio</CardDescription><CardTitle>{progreso.pesoPromedio ?? "—"}</CardTitle></CardHeader></Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription className="text-xs font-medium text-[#616467]">Sesiones</CardDescription>
+                <CardTitle className="text-3xl font-bold text-[#1A1C1D]">
+                  {progreso.sesiones ?? progreso.totalSesiones ?? datos.reduce((acc, dato) => acc + dato.entrenamientos, 0)}
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription className="text-xs font-medium text-[#616467]">Volumen total</CardDescription>
+                <CardTitle className="text-3xl font-bold text-[#1A1C1D]">
+                  {progreso.volumenTotal ?? datos.reduce((acc, dato) => acc + dato.volumenTotal, 0)}
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription className="text-xs font-medium text-[#616467]">Peso promedio</CardDescription>
+                <CardTitle className="text-3xl font-bold text-[#1A1C1D]">
+                  {progreso.pesoPromedio ?? "—"}
+                </CardTitle>
+              </CardHeader>
+            </Card>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Detalle {vista}</CardTitle>
+              <CardTitle className="text-lg font-semibold text-[#1A1C1D]">Detalle {vista}</CardTitle>
               <CardDescription>Resultado de la estrategia seleccionada.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Etiqueta</TableHead>
-                    <TableHead>Entrenamientos</TableHead>
-                    <TableHead>Duración total</TableHead>
-                    <TableHead>Ejercicios</TableHead>
+                  <TableRow className="border-[#E5E7EB]">
+                    <TableHead className="text-[#616467]">Etiqueta</TableHead>
+                    <TableHead className="text-[#616467]">Entrenamientos</TableHead>
+                    <TableHead className="text-[#616467]">Duración total</TableHead>
+                    <TableHead className="text-[#616467]">Ejercicios</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {datos.map((dato, index) => (
-                    <TableRow key={`${dato.etiqueta || "sin-etiqueta"}-${index}`}>
-                      <TableCell className="font-medium">{dato.etiqueta || "Sin etiqueta"}</TableCell>
-                      <TableCell>{dato.entrenamientos}</TableCell>
-                      <TableCell>{dato.volumenTotal}</TableCell>
-                      <TableCell>{dato.pesoPromedio ?? "—"}</TableCell>
+                    <TableRow key={`${dato.etiqueta || "sin-etiqueta"}-${index}`} className="border-[#E5E7EB]">
+                      <TableCell className="font-medium text-[#1A1C1D]">{dato.etiqueta || "Sin etiqueta"}</TableCell>
+                      <TableCell className="text-[#616467]">{dato.entrenamientos}</TableCell>
+                      <TableCell className="text-[#616467]">{dato.volumenTotal}</TableCell>
+                      <TableCell className="text-[#616467]">{dato.pesoPromedio ?? "—"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {datos.map((dato, index) => (
-                  <div key={`${dato.etiqueta || "sin-etiqueta"}-${index}`} className="space-y-1">
-                    <div className="flex justify-between text-sm"><span>{dato.etiqueta || "Sin etiqueta"}</span><span>{dato.volumenTotal}</span></div>
-                    <div className="h-3 rounded-full bg-slate-100">
-                      <div className="h-3 rounded-full bg-blue-600" style={{ width: `${Math.max((dato.volumenTotal / maxVolumen) * 100, dato.volumenTotal > 0 ? 8 : 0)}%` }} />
+                  <div key={`${dato.etiqueta || "sin-etiqueta"}-${index}`} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium text-[#1A1C1D]">{dato.etiqueta || "Sin etiqueta"}</span>
+                      <span className="font-semibold text-[#1A1C1D]">{dato.volumenTotal}</span>
+                    </div>
+                    <div className="h-2.5 w-full rounded-full bg-[#ECF2F5]">
+                      <div
+                        className="h-2.5 rounded-full bg-[#C8E874]"
+                        style={{ width: `${Math.max((dato.volumenTotal / maxVolumen) * 100, dato.volumenTotal > 0 ? 8 : 0)}%` }}
+                      />
                     </div>
                   </div>
                 ))}
