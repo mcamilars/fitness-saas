@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { Code } from "lucide-react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api/api-fetch";
 import { showApiError } from "@/lib/hooks/use-api-error-toast";
+import { toastConUndo } from "@/lib/ui/toast-undo";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +50,7 @@ export function DialogInvitarCliente({
   onOpenChange,
 }: DialogInvitarClienteProps) {
   const queryClient = useQueryClient();
+  const [tokenMostrado, setTokenMostrado] = useState<string | null>(null);
 
   const {
     register,
@@ -59,12 +63,16 @@ export function DialogInvitarCliente({
 
   const mutation = useMutation({
     mutationFn: invitarCliente,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["invitaciones"] });
-      toast.success("Invitación enviada", {
-        description: "Se envió el correo de invitación al cliente.",
+    onSuccess: (data) => {
+      setTokenMostrado(data.tokenInvitacion);
+      toastConUndo({
+        mensaje: "Invitación enviada",
+        onUndo: async () => {
+          await apiFetch(`/api/commands/undo`, { method: "POST" });
+          queryClient.invalidateQueries({ queryKey: ["invitaciones"] });
+        },
       });
-      handleClose(false);
+      queryClient.invalidateQueries({ queryKey: ["invitaciones"] });
     },
     onError: showApiError,
   });
@@ -72,8 +80,16 @@ export function DialogInvitarCliente({
   const handleClose = (open: boolean) => {
     if (!open) {
       reset();
+      setTokenMostrado(null);
     }
     onOpenChange(open);
+  };
+
+  const copiarToken = () => {
+    if (tokenMostrado) {
+      navigator.clipboard.writeText(tokenMostrado);
+      toast.success("Token copiado al portapapeles");
+    }
   };
 
   return (
@@ -82,17 +98,39 @@ export function DialogInvitarCliente({
         <DialogHeader>
           <DialogTitle>Invitar cliente</DialogTitle>
           <DialogDescription>
-            Ingresa el correo del cliente para enviarle una invitación.
+            {tokenMostrado
+              ? "Copia el token y compártelo con tu cliente."
+              : "Ingresa el correo del cliente para enviarle una invitación."}
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          onSubmit={handleSubmit((data) => {
-            if (mutation.isPending) {return;}
-            mutation.mutate(data);
-          })}
-          className="space-y-4"
-        >
+        {tokenMostrado ? (
+          <div className="space-y-4">
+            <div className="rounded-lg bg-slate-100 p-4">
+              <div className="flex items-center justify-between">
+                <code className="text-sm font-mono text-slate-700 break-all">
+                  {tokenMostrado}
+                </code>
+                <Button size="sm" variant="ghost" onClick={copiarToken}>
+                  <Code className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <p className="text-sm text-slate-500">
+              Este token expira en 7 días. Compártelo con tu cliente para que se registre.
+            </p>
+            <DialogFooter>
+              <Button onClick={() => handleClose(false)}>Cerrar</Button>
+            </DialogFooter>
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit((data) => {
+              if (mutation.isPending) {return;}
+              mutation.mutate(data);
+            })}
+            className="space-y-4"
+          >
             <div className="space-y-2">
               <Label htmlFor="correo">Correo electrónico</Label>
               <Input
@@ -119,7 +157,8 @@ export function DialogInvitarCliente({
                 {isSubmitting || mutation.isPending ? "Enviando..." : "Enviar invitación"}
               </Button>
             </DialogFooter>
-        </form>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );
