@@ -15,7 +15,7 @@ export class ArchivarPlanCommand implements Command<PlanConEjercicios> {
   async execute(): Promise<PlanConEjercicios> {
     const plan = await this.planesService.findById(this.planId, this.workspaceId);
 
-    this.estadoPrevio = plan.estado as EstadoPlan;
+    this.estadoPrevio = plan.estado;
 
     return this.planesService.archivar(this.planId, this.workspaceId);
   }

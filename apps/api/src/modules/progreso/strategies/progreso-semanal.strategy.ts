@@ -7,13 +7,25 @@ import type {
   ProgresoStrategyContexto,
 } from './progreso-strategy.interface';
 
-function isoWeekLabel(date: Date): string {
-  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-  const dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-  return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+function formatearFechaCorta(date: Date): string {
+  return new Intl.DateTimeFormat('es', {
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  }).format(date);
+}
+
+function semanaLabel(date: Date): string {
+  const fechaUtc = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const dayNum = fechaUtc.getUTCDay() || 7;
+
+  const inicioSemana = new Date(fechaUtc);
+  inicioSemana.setUTCDate(fechaUtc.getUTCDate() - dayNum + 1);
+
+  const finSemana = new Date(inicioSemana);
+  finSemana.setUTCDate(inicioSemana.getUTCDate() + 6);
+
+  return `${formatearFechaCorta(inicioSemana)} - ${formatearFechaCorta(finSemana)}`;
 }
 
 @Injectable()
@@ -25,7 +37,7 @@ export class ProgresoSemanalStrategy implements ProgresoStrategy {
     const mapa = new Map<string, PeriodoResumen>();
 
     for (const registro of registros) {
-      const etiqueta = isoWeekLabel(new Date(registro.fecha));
+      const etiqueta = semanaLabel(new Date(registro.fecha));
 
       const periodo = mapa.get(etiqueta) ?? {
         etiqueta,

@@ -47,6 +47,11 @@ export class EjercicioRegistroDto {
 }
 
 export class CrearRegistroEntrenamientoDto {
+  @ApiPropertyOptional({ example: 'uuid-del-plan', description: 'Plan usado como referencia para esta sesión. No marca el plan como completado.' })
+  @IsOptional()
+  @IsString()
+  planDeEntrenamientoId?: string;
+
   @ApiProperty({ example: '2026-05-26', description: 'Fecha del entrenamiento (ISO 8601)' })
   @IsDateString()
   fecha!: string;

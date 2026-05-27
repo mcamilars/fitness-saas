@@ -18,6 +18,18 @@ export class ClientesService {
     return this.clientesRepository.findAllPorWorkspace(workspaceId);
   }
 
+  async findByUsuarioId(usuarioId: string, workspaceId: string): Promise<ClienteConPerfil> {
+    const clienteBase = await this.clientesRepository.findByUsuarioId(usuarioId);
+
+    if (!clienteBase) {
+      throw new NotFoundException('Cliente no encontrado');
+    }
+
+    const cliente = await this.findById(clienteBase.id, workspaceId);
+
+    return cliente;
+  }
+
   async findById(
     id: string,
     workspaceId: string,

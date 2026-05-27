@@ -54,6 +54,7 @@ export class RegistrosEntrenamientoRepository
     return client.registroDeEntrenamiento.create({
       data: {
         clienteId: payload.clienteId,
+        planDeEntrenamientoId: payload.planDeEntrenamientoId,
         fecha: payload.fecha,
         notas: payload.notas,
         duracionMin: payload.duracionMin,

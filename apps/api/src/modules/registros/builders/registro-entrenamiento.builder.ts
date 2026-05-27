@@ -14,6 +14,7 @@ export interface RegistroDeEjercicioDraft {
 export interface RegistroEntrenamientoDraft {
   fecha: Date;
   clienteId: string;
+  planDeEntrenamientoId?: string;
   ejercicios: RegistroDeEjercicioDraft[];
   notas?: string;
   duracionMin?: number;
@@ -22,6 +23,7 @@ export interface RegistroEntrenamientoDraft {
 export class RegistroEntrenamientoBuilder {
   private fecha?: Date;
   private clienteId?: string;
+  private planDeEntrenamientoId?: string;
   private readonly ejercicios: RegistroDeEjercicioDraft[] = [];
   private notas?: string;
   private duracionMin?: number;
@@ -33,6 +35,11 @@ export class RegistroEntrenamientoBuilder {
 
   setClienteId(clienteId: string): this {
     this.clienteId = clienteId;
+    return this;
+  }
+
+  setPlanDeEntrenamientoId(planDeEntrenamientoId: string): this {
+    this.planDeEntrenamientoId = planDeEntrenamientoId;
     return this;
   }
 
@@ -67,6 +74,7 @@ export class RegistroEntrenamientoBuilder {
     return Object.freeze({
       fecha: new Date(this.fecha),
       clienteId: this.clienteId,
+      planDeEntrenamientoId: this.planDeEntrenamientoId,
       ejercicios: this.ejercicios.map((ejercicio) => ({ ...ejercicio })),
       notas: this.notas,
       duracionMin: this.duracionMin,

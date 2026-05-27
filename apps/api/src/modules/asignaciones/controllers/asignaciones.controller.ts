@@ -36,6 +36,7 @@ export class AsignacionesController {
   }
 
   @Get('clientes/:id/asignaciones')
+  @Roles('ENTRENADOR', 'CLIENTE')
   @ApiOperation({ summary: 'Listar asignaciones de un cliente' })
   @ApiParam({ name: 'id', description: 'UUID del cliente' })
   @ApiResponse({

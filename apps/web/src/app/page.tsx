@@ -17,7 +17,7 @@ export default function Home() {
     if (user?.rol === "ENTRENADOR") {
       router.replace("/workspace");
     } else if (user?.rol === "CLIENTE") {
-      router.replace("/cliente/plan");
+      router.replace("/cliente/planes");
     }
   }, [isAuthenticated, user, router]);
 

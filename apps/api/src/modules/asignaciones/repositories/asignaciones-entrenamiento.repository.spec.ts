@@ -44,6 +44,7 @@ describe('AsignacionesEntrenamientoRepository', () => {
 
     expect(prisma.asignacionPlanEntrenamiento.findMany).toHaveBeenCalledWith({
       where: { clienteId: 'cliente-1' },
+      include: { planDeEntrenamiento: { select: { id: true, nombre: true } } },
       orderBy: { asignadoEn: 'desc' },
     });
   });
@@ -79,6 +80,21 @@ describe('AsignacionesEntrenamientoRepository', () => {
 
     expect(prisma.asignacionPlanEntrenamiento.findFirst).toHaveBeenCalledWith({
       where: { clienteId: 'cliente-1', estado: EstadoAsignacion.ACTIVO },
+      orderBy: { asignadoEn: 'desc' },
+    });
+  });
+
+  it('findActivaPorClienteYPlan valida una asignación activa específica', async () => {
+    prisma.asignacionPlanEntrenamiento.findFirst.mockResolvedValue(null);
+
+    await repository.findActivaPorClienteYPlan('cliente-1', 'plan-1');
+
+    expect(prisma.asignacionPlanEntrenamiento.findFirst).toHaveBeenCalledWith({
+      where: {
+        clienteId: 'cliente-1',
+        planDeEntrenamientoId: 'plan-1',
+        estado: EstadoAsignacion.ACTIVO,
+      },
       orderBy: { asignadoEn: 'desc' },
     });
   });

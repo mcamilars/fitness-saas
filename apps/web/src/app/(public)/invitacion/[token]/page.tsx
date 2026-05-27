@@ -13,12 +13,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 const clienteSchema = z.object({
   correo: z.string().email("Correo inválido"),
   contrasena: z.string().min(8, "Mínimo 8 caracteres"),
   nombre: z.string().min(2, "Mínimo 2 caracteres"),
-  apellido: z.string().optional(),
+  apellido: z.string().min(1, "El apellido es obligatorio"),
 });
 
 type ClienteForm = z.infer<typeof clienteSchema>;
@@ -66,17 +67,41 @@ const InvitacionPage = ({ params }: { params: Promise<{ token: string }> }) => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ClienteForm>({
     resolver: zodResolver(clienteSchema),
+    defaultValues: {
+      correo: "",
+      nombre: "",
+      apellido: "",
+      contrasena: "",
+    },
   });
+
+  useEffect(() => {
+    if (invitacion?.correo) {
+      setValue("correo", invitacion.correo, { shouldValidate: true });
+    }
+  }, [invitacion?.correo, setValue]);
 
   const mutation = useMutation({
     mutationFn: (data: ClienteForm) => registrarCliente(token!, data),
     onSuccess: (data) => {
-      const { token: jwt } = data.data;
-      login(jwt, { id: "", correo: "", nombre: "", rol: "CLIENTE", workspaceId: "" });
-      router.push("/cliente/plan");
+      const { token: jwt, cliente } = data.data;
+      login(jwt, {
+        id: cliente.usuarioId,
+        clienteId: cliente.id,
+        correo: invitacion.correo,
+        nombre: cliente.nombre ?? "Cliente",
+        apellido: cliente.apellido,
+        rol: "CLIENTE",
+        workspaceId: cliente.espacioDeTrabajoId,
+      });
+      toast.success("Cuenta creada correctamente", {
+        description: "Te estamos redirigiendo a tu plan de entrenamiento.",
+      });
+      router.replace("/cliente/planes");
     },
     onError: showApiError,
   });
@@ -112,10 +137,18 @@ const InvitacionPage = ({ params }: { params: Promise<{ token: string }> }) => {
         <CardDescription>Ingresa tus datos para unirte</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit((data) => mutation.mutate(data))} className="space-y-4">
+        <form
+          onSubmit={handleSubmit((data) => {
+            if (mutation.isPending) {return;}
+            mutation.mutate({ ...data, correo: invitacion.correo });
+          })}
+          className="space-y-4"
+        >
           <div className="space-y-2">
             <Label htmlFor="correo">Correo</Label>
             <Input id="correo" type="email" value={invitacion.correo} disabled />
+            <input type="hidden" {...register("correo")} />
+            {errors.correo && <p className="text-sm text-red-500">{errors.correo.message}</p>}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -126,6 +159,7 @@ const InvitacionPage = ({ params }: { params: Promise<{ token: string }> }) => {
             <div className="space-y-2">
               <Label htmlFor="apellido">Apellido</Label>
               <Input id="apellido" {...register("apellido")} placeholder="Tu apellido" />
+              {errors.apellido && <p className="text-sm text-red-500">{errors.apellido.message}</p>}
             </div>
           </div>
           <div className="space-y-2">
@@ -133,8 +167,8 @@ const InvitacionPage = ({ params }: { params: Promise<{ token: string }> }) => {
             <Input id="contrasena" type="password" {...register("contrasena")} placeholder="••••••" />
             {errors.contrasena && <p className="text-sm text-red-500">{errors.contrasena.message}</p>}
           </div>
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Creando cuenta..." : "Crear cuenta"}
+          <Button type="submit" className="w-full" disabled={isSubmitting || mutation.isPending}>
+            {isSubmitting || mutation.isPending ? "Creando cuenta..." : "Crear cuenta"}
           </Button>
         </form>
       </CardContent>

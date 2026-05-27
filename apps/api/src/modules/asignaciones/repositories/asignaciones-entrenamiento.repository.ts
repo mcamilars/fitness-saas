@@ -6,6 +6,10 @@ import {
   PrismaService,
 } from '@repo/database';
 
+export type AsignacionPlanEntrenamientoConPlan = Prisma.AsignacionPlanEntrenamientoGetPayload<{
+  include: { planDeEntrenamiento: { select: { id: true; nombre: true } } };
+}>;
+
 export interface CrearAsignacionEntrenamientoInput {
   clienteId: string;
   planDeEntrenamientoId: string;
@@ -18,7 +22,7 @@ export interface AsignacionesEntrenamientoRepositoryInterface {
     tx?: Prisma.TransactionClient,
   ): Promise<AsignacionPlanEntrenamiento>;
   findById(id: string): Promise<AsignacionPlanEntrenamiento | null>;
-  findPorCliente(clienteId: string): Promise<AsignacionPlanEntrenamiento[]>;
+  findPorCliente(clienteId: string): Promise<AsignacionPlanEntrenamientoConPlan[]>;
   findPorPlan(planId: string): Promise<AsignacionPlanEntrenamiento[]>;
   updateEstado(
     id: string,
@@ -27,6 +31,10 @@ export interface AsignacionesEntrenamientoRepositoryInterface {
   ): Promise<AsignacionPlanEntrenamiento>;
   findActivaPorCliente(
     clienteId: string,
+  ): Promise<AsignacionPlanEntrenamiento | null>;
+  findActivaPorClienteYPlan(
+    clienteId: string,
+    planDeEntrenamientoId: string,
   ): Promise<AsignacionPlanEntrenamiento | null>;
 }
 
@@ -57,9 +65,10 @@ export class AsignacionesEntrenamientoRepository
     });
   }
 
-  findPorCliente(clienteId: string): Promise<AsignacionPlanEntrenamiento[]> {
+  findPorCliente(clienteId: string): Promise<AsignacionPlanEntrenamientoConPlan[]> {
     return this.prisma.asignacionPlanEntrenamiento.findMany({
       where: { clienteId },
+      include: { planDeEntrenamiento: { select: { id: true, nombre: true } } },
       orderBy: { asignadoEn: 'desc' },
     });
   }
@@ -89,6 +98,20 @@ export class AsignacionesEntrenamientoRepository
   ): Promise<AsignacionPlanEntrenamiento | null> {
     return this.prisma.asignacionPlanEntrenamiento.findFirst({
       where: { clienteId, estado: EstadoAsignacion.ACTIVO },
+      orderBy: { asignadoEn: 'desc' },
+    });
+  }
+
+  findActivaPorClienteYPlan(
+    clienteId: string,
+    planDeEntrenamientoId: string,
+  ): Promise<AsignacionPlanEntrenamiento | null> {
+    return this.prisma.asignacionPlanEntrenamiento.findFirst({
+      where: {
+        clienteId,
+        planDeEntrenamientoId,
+        estado: EstadoAsignacion.ACTIVO,
+      },
       orderBy: { asignadoEn: 'desc' },
     });
   }
