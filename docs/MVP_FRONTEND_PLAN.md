@@ -286,17 +286,17 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** el cliente ve en tiempo casi-real las notificaciones disparadas por el observer del backend.
 
 ### F7.1 `<NotificacionesBell />`
-- [ ] Crear `apps/web/src/components/layout/notificaciones-bell.tsx`.
-- [ ] `useQuery(['notificaciones'], { refetchInterval: 30_000 })` → `GET /notificaciones`.
-- [ ] Icono campana + badge con conteo de no leídas.
-- [ ] Dropdown con últimas 10: `mensaje` + tiempo relativo (date-fns).
+- [x] Crear `apps/web/src/components/layout/notificaciones-bell.tsx`.
+- [x] `useQuery(['notificaciones'], { refetchInterval: 30_000 })` → `GET /notificaciones`.
+- [x] Icono campana + badge con conteo de no leídas.
+- [x] Dropdown con últimas 10: `mensaje` + tiempo relativo (date-fns).
 
 ### F7.2 Marcar leída
-- [ ] Click en una notificación → mutation `PATCH /notificaciones/:id/leer`.
-- [ ] Invalidar `['notificaciones']`.
+- [x] Click en una notificación → mutation `PATCH /notificaciones/:id/leer`.
+- [x] Invalidar `['notificaciones']`.
 
 ### F7.3 Botón "Marcar todas"
-- [ ] Botón en el footer del dropdown que itera y marca todas como leídas.
+- [x] Botón en el footer del dropdown que itera y marca todas como leídas.
 
 ---
 
