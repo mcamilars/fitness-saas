@@ -1,7 +1,9 @@
 "use client";
 
-import { Bell } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
+import { Bell, Check } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,13 +25,36 @@ async function fetchNotificaciones() {
 }
 
 export function NotificacionesBell() {
+  const queryClient = useQueryClient();
+
   const { data: notificaciones = [], isLoading } = useQuery({
     queryKey: ["notificaciones"],
     queryFn: fetchNotificaciones,
     refetchInterval: 30_000,
   });
 
+  const { mutate: marcarLeida } = useMutation({
+    mutationFn: (id: string) => apiFetch(`/api/notificaciones/${id}/leer`, { method: "PATCH" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notificaciones"] });
+    },
+  });
+
   const noLeidas = notificaciones.filter((notificacion) => !notificacion.leida).length;
+
+  const { mutate: marcarTodasLeidas, isPending: marcandoTodas } = useMutation({
+    mutationFn: async () => {
+      const ids = notificaciones
+        .filter((notificacion) => !notificacion.leida)
+        .map((notificacion) => notificacion.id);
+      await Promise.all(
+        ids.map((id) => apiFetch(`/api/notificaciones/${id}/leer`, { method: "PATCH" }))
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notificaciones"] });
+    },
+  });
 
   return (
     <DropdownMenu>
@@ -52,16 +77,39 @@ export function NotificacionesBell() {
           <DropdownMenuItem disabled>No tienes notificaciones nuevas</DropdownMenuItem>
         ) : (
           notificaciones.slice(0, 10).map((notificacion) => (
-            <DropdownMenuItem key={notificacion.id} className="flex flex-col items-start gap-1 whitespace-normal">
-              <span className="text-sm">{notificacion.mensaje}</span>
+            <DropdownMenuItem
+              key={notificacion.id}
+              className="flex flex-col items-start gap-1 whitespace-normal"
+              onClick={() => {
+                if (!notificacion.leida) {
+                  marcarLeida(notificacion.id);
+                }
+              }}
+            >
+              <span className={`text-sm ${!notificacion.leida ? "font-medium" : ""}`}>
+                {notificacion.mensaje}
+              </span>
               <span className="text-xs text-muted-foreground">
                 {notificacion.creadoEn || notificacion.creadaEn
-                  ? new Date(notificacion.creadoEn ?? notificacion.creadaEn!).toLocaleString()
+                  ? `hace ${formatDistanceToNow(new Date(notificacion.creadoEn ?? notificacion.creadaEn!), { locale: es })}`
                   : "Fecha no disponible"}
               </span>
             </DropdownMenuItem>
           ))
         )}
+        {noLeidas > 1 ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="flex items-center gap-2 justify-center text-blue-600"
+              disabled={marcandoTodas}
+              onClick={() => marcarTodasLeidas()}
+            >
+              <Check className="h-4 w-4" />
+              <span>Marcar todas como leídas</span>
+            </DropdownMenuItem>
+          </>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );
