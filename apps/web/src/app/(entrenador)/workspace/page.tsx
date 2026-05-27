@@ -1,8 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "@/lib/auth/auth-context";
 import { apiFetch } from "@/lib/api/api-fetch";
 import type { Cliente, EstadoCliente } from "@/lib/types/api";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -78,11 +80,16 @@ export default function WorkspacePage() {
   const router = useRouter();
   const [showInvitar, setShowInvitar] = useState(false);
   const [clienteParaAsignar, setClienteParaAsignar] = useState<ClienteWithLastWorkout | null>(null);
+  const { user } = useAuth();
 
-  const { data: clientes, isLoading } = useQuery({
+  const { data: clientes, isLoading, refetch } = useQuery({
     queryKey: ["clientes"],
     queryFn: fetchClientes,
   });
+
+  useEffect(() => {
+    refetch();
+  }, [user?.workspaceId, refetch]);
 
   return (
     <div className="space-y-6">
