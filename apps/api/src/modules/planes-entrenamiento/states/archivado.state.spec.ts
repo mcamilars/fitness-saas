@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { EstadoPlan, TipoPlanEntrenamiento } from '@repo/database';
+import { ActivoState } from './activo.state';
 import { ArchivadoState } from './archivado.state';
 
 describe('ArchivadoState', () => {
@@ -13,14 +14,22 @@ describe('ArchivadoState', () => {
     creadoEn: new Date(),
     actualizadoEn: new Date(),
   };
-  const repository = {};
+  const repository = { updateEstado: jest.fn().mockResolvedValue(undefined) };
+  const subject = { notify: jest.fn().mockResolvedValue(undefined) };
 
-  it('activar lanza error', async () => {
+  it('activar transiciona a ActivoState', async () => {
     const state = new ArchivadoState();
+    const nextState = await state.activar(plan, {
+      repository: repository as never,
+      subject: subject as never,
+    });
 
-    await expect(
-      state.activar(plan, { repository: repository as never }),
-    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(repository.updateEstado).toHaveBeenCalledWith(plan.id, EstadoPlan.ACTIVO);
+    expect(subject.notify).toHaveBeenCalledWith(plan.id, {
+      tipo: 'PLAN_ACTIVADO',
+      planId: plan.id,
+    });
+    expect(nextState).toBeInstanceOf(ActivoState);
   });
 
   it('archivar lanza error', async () => {
