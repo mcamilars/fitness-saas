@@ -327,19 +327,19 @@ Referencias cruzadas: `MVP_BACKEND_PLAN.md`, `deep-dive-patterns.md`, `design-pa
 **Objetivo:** experiencia consistente en bordes.
 
 ### F9.1 `ErrorBoundary` y `error.tsx`
-- [ ] Crear `app/error.tsx` con `<Card>` `Algo salió mal` + botón `Reintentar`.
-- [ ] Crear `app/(entrenador)/error.tsx`.
-- [ ] Crear `app/(cliente)/error.tsx`.
+- [x] Crear `app/error.tsx` con `<Card>` `Algo salió mal` + botón `Reintentar`.
+- [x] Crear `app/(entrenador)/error.tsx`.
+- [x] Crear `app/(cliente)/error.tsx`.
 
 ### F9.2 `not-found.tsx`
-- [ ] Crear `app/not-found.tsx` con enlace a `/`.
+- [x] Crear `app/not-found.tsx` con enlace a `/`.
 
 ### F9.3 Loaders coherentes
-- [ ] Revisar cada página y asegurar que toda `useQuery` tenga un skeleton equivalente.
+- [x] Revisar cada página y asegurar que toda `useQuery` tenga un skeleton equivalente.
 
 ### F9.4 Interceptor de 401
-- [ ] En `apiFetch`, si `status === 401`: limpiar `localStorage`.
-- [ ] Redirigir a `/login`.
+- [x] En `apiFetch`, si `status === 401`: limpiar `localStorage`.
+- [x] Redirigir a `/login`.
 
 ---
 

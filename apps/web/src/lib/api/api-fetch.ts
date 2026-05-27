@@ -33,6 +33,13 @@ export async function apiFetch<T = unknown>(
 
   const response = await fetch(url, config);
 
+  if (response.status === 401) {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_user");
+    window.location.href = "/login";
+    throw new ApiError(401, "Sesión expirada");
+  }
+
   if (!response.ok) {
     let errorMessage = `HTTP ${response.status}`;
     try {
